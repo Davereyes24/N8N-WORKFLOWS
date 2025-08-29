@@ -1,0 +1,672 @@
+{
+  "name": "AI agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You have received a new client request:  \n\n**Request:**  \n{{ $json.text }} {{ $json.chatInput }}\n\n👉 Your task:  \n1. Retrieve relevant context from **transcripts, frameworks, templates, and Notion**.  \n2. Decide which  workflow this request belongs to:  \n   - Proposal Workflow  \n   - GTM Doc Workflow  \n   - VSL Script Worflow\nCall the appropriate workflow to start the needed workflow for the request \n",
+        "options": {
+          "systemMessage": "You are **Revitk Orchestrator Agent**, responsible for routing client requests to the correct specialized workflow.  \nYou do **not** generate the final deliverable yourself — instead, you decide whether to call the **Proposal Workflow**, **GTM Doc Workflow**, or **VSL Script Workflow**.  \n\n### 🔑 Core Directives\n1. **Input Context Sources**\n   - Use **Call Transcript Vector Store** (client conversations).  \n   - Use **Frameworks Vector Store** (Revitk methodology).  \n   - Use **Templates Vector Store** (output examples).  \n   - Search **Notion Pages** if additional knowledge is needed.  \n\n2. **Routing Logic**\n   - If the request is about **closing a deal, presenting a business case, or pricing → Route to Proposal Workflow**.  \n   - If the request is about **strategy, positioning, sales process, ICP, or GTM → Route to GTM Doc Workflow**.  \n   - If the request is about **video pitch, persuasive messaging, storytelling, or sales script → Route to VSL Script Workflow**.  \n\n3. **Output Responsibility**\n   - Your only output is to return a **clear instruction** for which workflow should be triggered, along with the **request and relevant context**.  \n   - Do not generate the final deliverable yourself.  \n\nFnal response sould be in narrative format"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        -320
+      ],
+      "id": "0bfba387-670a-47a7-b9c9-4db60bf08c11",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        -96
+      ],
+      "id": "4af377ed-a4de-43ce-a066-63edc1e0acb5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C098835GBD5",
+          "mode": "list",
+          "cachedResultName": "ai-swarm-development"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -320
+      ],
+      "id": "94143bae-923c-4a05-98f0-0254c6e2db5e",
+      "name": "Slack Trigger",
+      "webhookId": "6eb8cbc3-7513-4adc-9630-abf5cd77500a",
+      "credentials": {
+        "slackApi": {
+          "id": "ZQwf1noJzeCt65P1",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        112
+      ],
+      "id": "4cdca9c0-86b3-4224-b23a-15e848ee9587",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.user }}",
+        "collectionName": "n8n chat",
+        "databaseName": "Customer",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "326a1714-ce30-4331-b051-926be54d318f",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Text', `Pages to be inserted as links `, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "1934a16e-f043-4445-b951-284d52387ab3",
+      "name": "Search a page in Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "Pdf5CnVgIwUs8A64",
+          "name": "Notion account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C098835GBD5",
+          "mode": "list",
+          "cachedResultName": "ai-swarm-development"
+        },
+        "text": "={{ $json.output }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1808,
+        -320
+      ],
+      "id": "333e399c-e465-4be0-9c30-e24fbd5ffac2",
+      "name": "Send a message1",
+      "webhookId": "39ddf116-82c8-415b-ab9e-c9ba2b8f03b7",
+      "credentials": {
+        "slackApi": {
+          "id": "ZQwf1noJzeCt65P1",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Templates",
+          "mode": "list",
+          "cachedResultName": "Templates"
+        },
+        "vectorIndexName": "Template_index",
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "c5c7a826-8fe9-4ccb-a118-ae98347ec942",
+      "name": "Template_index Atlas Vector Store2",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Framework",
+          "mode": "list",
+          "cachedResultName": "Framework"
+        },
+        "vectorIndexName": "vector_index",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "03888056-8b41-413d-8e61-ea2c65e36a47",
+      "name": "Framework Atlas Vector Store1",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Transcipt",
+          "mode": "list",
+          "cachedResultName": "Transcipt"
+        },
+        "vectorIndexName": "Transcript_index",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        -96
+      ],
+      "id": "b8646966-8613-4b84-9742-f2f4eab27bf7",
+      "name": "Transcript Atlas Vector Store3",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        112
+      ],
+      "id": "99cbbca3-6fc7-4abd-ba2d-a5ecafd7f027",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        112
+      ],
+      "id": "fb66a2cd-46de-4b26-89c6-1540515434ac",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this workdlow when Instructed to Create proposal",
+        "workflowId": {
+          "__rl": true,
+          "value": "A53GSLr5DnPE25oC",
+          "mode": "list",
+          "cachedResultName": "Proposal-Swarm"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer', `Client name`, 'string') }}",
+            "Proposal request": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Proposal_request', `title of the document`, 'string') }}",
+            "Transcript document title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Transcript_document_title', `title of the onbooarding transcript`, 'string') }}",
+            "Context": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Context', `all other relevant context `, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Customer",
+              "displayName": "Customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Proposal request",
+              "displayName": "Proposal request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Transcript document title",
+              "displayName": "Transcript document title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Context",
+              "displayName": "Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "c0aa6989-74de-440c-84e7-2dfa4a2d9889",
+      "name": "Call Proposal workflow"
+    },
+    {
+      "parameters": {
+        "description": "Call this workdlow when Instructed to Create A GTM Document ",
+        "workflowId": {
+          "__rl": true,
+          "value": "szPQSi6huRACOG8u",
+          "mode": "list",
+          "cachedResultName": "GTM swarm"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company_name', `Company name in the request`, 'string') }}",
+            "Company domail": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company_domail', `Company domain in the request`, 'string') }}",
+            "other details": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('other_details', `other relevant details such as transcript name and date`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company domail",
+              "displayName": "Company domail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "other details",
+              "displayName": "other details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -96
+      ],
+      "id": "2d0a03fb-0297-48d4-981d-b8cae0f6d4a7",
+      "name": "Call GTM Workflow"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Rs5hpL1AzTEzhMCg",
+          "mode": "list",
+          "cachedResultName": "VSL -swarm"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CLient name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CLient_name', `same of the client to be requested`, 'string') }}",
+            "Context": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Context', `All relevant information for a VSL`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "CLient name",
+              "displayName": "CLient name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Context",
+              "displayName": "Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        -96
+      ],
+      "id": "c5972ef2-064f-4455-89f5-f294fbd3eb45",
+      "name": "Call VSL"
+    }
+  ],
+  "pinData": {
+    "Slack Trigger": [
+      {
+        "json": {
+          "user": "U097XBBEP1T",
+          "type": "app_mention",
+          "ts": "1756435052.689109",
+          "client_msg_id": "6d1a81b7-f90e-45f5-9359-22e516e6695f",
+          "text": "<@U0994CCM8KT> Can you prepare a VSL for Ravencourt ?",
+          "team": "T07KH6ZECCD",
+          "blocks": [
+            {
+              "type": "rich_text",
+              "block_id": "RYQdt",
+              "elements": [
+                {
+                  "type": "rich_text_section",
+                  "elements": [
+                    {
+                      "type": "user",
+                      "user_id": "U0994CCM8KT"
+                    },
+                    {
+                      "type": "text",
+                      "text": " Can you prepare a VSL for Ravencourt ?"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "channel": "C098835GBD5",
+          "event_ts": "1756435052.689109"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Framework Atlas Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a page in Notion": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Framework Atlas Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template_index Atlas Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Atlas Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Template_index Atlas Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Transcript Atlas Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Proposal workflow": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call GTM Workflow": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call VSL": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "71b9b93b-7058-4705-b848-1a0a03b6941c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76c799b332dead2b68bc6d773d7289aa5b6d95e7093e86bab151c9e9ac571b72"
+  },
+  "id": "0QsITw3txq1PnlU9",
+  "tags": []
+}

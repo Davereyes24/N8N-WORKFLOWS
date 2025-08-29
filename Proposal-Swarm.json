@@ -1,0 +1,504 @@
+{
+  "name": "Proposal-Swarm",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Customer",
+              "type": "any"
+            },
+            {
+              "name": "Proposal request",
+              "type": "any"
+            },
+            {
+              "name": "Transcript document title",
+              "type": "any"
+            },
+            {
+              "name": "Context",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        112,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**ROLE AND GOAL:**\nYou are \"Alex,\" an expert sales support assistant for the founder of Revitk. Your sole purpose is to take the raw discovery call transcript provided below and generate a complete, personalized, and perfectly formatted business case proposal. The output must be in Notion-ready Markdown. You **must** use the `Google Search` tool to gather financial data to ensure the proposal is accurate and credible.\n\n**CONTEXT:**\nThe prospect has already watched a detailed Video Sales Letter (VSL). This document is the final, logical business case to help them make a decision. Your tone should be confident and clear. details about the client ( {{ $json.Customer }} {{ $json['Proposal request'] }} {{ $json['Transcript document title'] }}{{ $json.Context }}\n\n**STEP 1: METICULOUSLY EXTRACT & RESEARCH KEY INFORMATION**\nBefore writing anything, you must complete the following data-gathering protocol.\n\n1. **Transcript Extraction:** Scan the entire transcript and pull out the following data points:\n    - `[Customer Name]`: The name of the prospect's company.\n    - `[Customer's Industry/Niche]`: The industry they operate in (e.g., \"SaaS recruitment,\" \"pothole repair contracting,\" \"cybersecurity for SMEs\").\n    - `[Company's Stated Goal]`: Their primary business objective mentioned on the call (e.g., \"grow revenue to £5M,\" \"escape the feast-or-famine cycle,\" \"build a scalable sales team\").\n    - `[Current Pains & Failed Solutions]`: Their specific struggles, using their own words (e.g., \"outbound isn't working,\" \"we've been burned by SEO agencies,\" \"I'm the main sales engine\").\n2. **Mandatory Online Research for Cost Per Lead (CPL):**\n    - You **must** use the `Brave Search` tool to find the cost per lead for the prospect's specific industry and region (assume UK if not specified).\n    - **Example Search Queries:** `average CPL for B2B tech services UK`, `cost per lead recruitment industry benchmarks 2025`, `maximum cost per lead cybersecurity marketing`.\n    - From your research, determine a realistic range for the `Expected Cost Per Lead (CPL)` and use it to populate the table in the template.\n3. **Conditional Online Research for Customer Value (LTV):**\n    - First, check the transcript for any mention of their average customer value, deal size, profit per sale, or lifetime value.\n    - **If a value is mentioned**, use that number.\n    - **If no value is mentioned**, you **must** trigger this online search protocol. Use `Google Search` to estimate a realistic LTV for a company in their industry.\n    - **Example Search Queries:** `average contract value for managed IT services UK`, `typical pricing for SaaS recruitment fees`, `profit margins for SME cybersecurity providers`.\n    - Use your findings to make an educated assumption for the `Assumed Profit Per Customer (LTV)` variable. You MUST state that this is an estimate in the final output, for example: `£2,500 (our estimate based on industry data)`.\n\n**STEP 2: POPULATE THE TEMPLATE EXACTLY AS SHOWN**\nUse all the information gathered in Step 1 to populate the template below. Every section, heading, emoji, and piece of formatting must be replicated precisely.\n\n**CRITICAL FORMATTING RULE FOR NOTION:**\nThe template uses heading formats like `## <mark>🟡 Section Title</mark>`. The `<mark>` tag is a visual instruction. When you generate a heading with this format, you MUST include a parenthetical note immediately after it explaining how to apply the color in Notion. For example: `## <mark>🟡 What Are Your Options?</mark>` should be generated as: `## <mark>🟡 What Are Your Options?</mark> *(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)*`. Apply this rule to all headings that have the `<mark>` tag.\n\n**THE TEMPLATE:**\n\n### **Business Case: A Predictable Growth Engine for [Customer Name]**\n\n**Headline:** **[Customer Name]'s** leadership team should implement the **45-Day Predictable Growth Launchpad**, starting **[Suggest a near-future date, e.g., Monday, July 14th, 2025]**. This will result in a scalable flow of high-intent sales appointments and an additional **[Calculate and insert Best Case `💸 Projected New Monthly Profit`]** in monthly revenue, while avoiding the **£20k+ cost and high failure rate** created by hiring a salesperson without a proven system.\n\n---\n\n### **What We Understand**\n\nDespite having a strong service offering and expertise in **[Customer's Industry/Niche]**, our conversation highlighted that **[Customer Name]** is struggling with **[Insert a summary of their `Current Pains & Failed Solutions` using their words]**.\n\nThis directly impacts your company's goal to **[Insert `Company's Stated Goal`]**. The opportunity cost is significant; every month that a predictable system isn't in place, you are missing high-value clients, representing a potential **[Calculate and insert Best Case `💸 Projected New Monthly Profit`]** in lost monthly revenue.\n\n---\n\n### **Recommended Approach**\n\nThe recommended approach is to install a systematized, content-driven sales engine that turns cold prospects into pre-sold customers before they reach a sales call. This approach is built on a proven framework responsible for over £180M in B2B sales and is designed to solve your core strategic challenges. **Revitk's 45-Day Launchpad** provides the turnkey solution for this.\n\n---\n\n### **The Predictable Growth Engine & Your Return on Investment**\n\nThis section outlines exactly how we will build your predictable growth engine and the realistic financial return.\n\n### **How Your Engine Is Built…**\n\n1. **🎯 Crafting Compelling Ads:** We create irresistible ad copy that connects with the specific problems you mentioned.\n2. **❌ Filtering for the Perfect Fit:** We strategically disqualify prospects who aren't a good fit, ensuring you only engage with those ready to buy.\n3. **🎬 The High-Conversion VSL:** We create a compelling VSL that answers every question, builds trust, and pre-sells your prospects completely.\n4. **🤖 AI-Powered Automation:** We use AI and automation to ensure the right thing happens at the right time, with minimum effort from your team.\n\n### **What’s The ROI?**\n\n> ⚠️ The projections below are based on live industry data and our consistent client results. This is not a guarantee but a realistic indication of what to expect.\n> \n\n**Key Assumptions & Inputs**\n\n- 💰 **Monthly Ad Spend:** **£3,000**\n- 🎯 **Expected Cost Per Lead (CPL):** **[Insert CPL range from your online research]**\n- 📈 **Projected Close Rate:** **10% - 30%**\n- 💼 **Assumed Profit Per Customer (LTV):** **[Insert extracted or researched `LTV`]**\n\n**Projected Performance Scenarios**\n\n| Performance Metric | Worst Case Scenario | Best Case Scenario |\n| --- | --- | --- |\n| **Leads Generated per Month** | \\~43 leads | 75 leads |\n| **Projected Cost Per Qualified Call** | £400 | £200 |\n| **📞 Qualified Calls per Month** | \\~7 Calls | 15 Calls |\n| **🤝 New Customers per Month** | \\~1 Customer | 4-5 Customers |\n| **💸 Projected New Monthly Profit** | **[Calculate Worst Case Profit]** | **[Calculate Best Case Profit]** |\n| **Return on Ad Spend (ROAS)** | **[Calculate Worst Case ROAS]** | **[Calculate Best Case ROAS]** |\n\n**The Cost of Inaction:** By not implementing this system, **[Customer Name]** is forgoing between **[Worst Case Profit x 12]** and **[Best Case Profit x 12]** in new annual recurring revenue.\n\n---\n\n### **What We Build For You**\n\nYou are acquiring a complete, turnkey growth system. We build and deliver:\n\n- **🧠 GTM Workshop & Sales Process:** A custom \"Cold to Sold\" Sales Process and GTM consultancy.\n- **🛠️ CRM System & Automation Build:** A complete CRM setup with AI agents and automations.\n- **🚀 Ad Funnel & Creative Engine:** Your entire Facebook ad funnel, Business Manager, and all creative assets.\n- **🤖 AI Appointment Setter:** A managed AI appointment setter to book qualified appointments.\n- **💰 £1,000 Ad Spend... On Us:** We fund the first £1,000 of your ad spend.\n\n---\n\n### **Your Investment**\n\nA one-time payment of **£7,400** for the full 45-Day Launchpad build and execution.\n\n---\n\n### **Your Required Commitment**\n\n- **90-minute GTM Strategy Workshop** (Week 1).\n- **Approx. 40 minutes to record the VSL** (Week 2).\n- **Availability to take pre-sold sales calls** (Starting Week 3).\n\n---\n\n## \\<mark\\>🟡 What Are Your Options?\\</mark\\>\n\n*(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)*\n\nYou have four clear paths forward.\n\n1. **🧑‍💼 Hire a Salesperson:** The highest-risk option, costing **£20k-£30k** over 6 months with a **\\>50% failure rate**.\n2. **🏢 Hire a Lead Gen Agency:** They solve for traffic but ignore if leads convert to **cash**.\n3. **🛑 Stay As You Are:** An active decision to accept unpredictable growth and forgo up to **[Best Case Profit x 12]** in new annual revenue.\n4. **🚀 Or... Work With Us:** The lowest-risk, highest-upside path, where the best case is a **[Best Case ROAS]** return on investment.\n\n---\n\n## \\<mark\\>🛡️ Our Commitment Guarantee\\</mark\\>\n\n*(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)*\n\nWe will deliver your complete Go-To-Market consultancy and strategic recommendations within the first 10 days. If at that point you are not 100% satisfied that we are the right partner to achieve these results for you, we will refund your entire investment. No hassle, no questions asked.\n\n---\n\n## \\<mark\\>✅ The Logical Next Step\\</mark\\>\n\n*(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)*\n\nThe most effective, lowest-risk path to scalable growth is to **install the system first**.\n\n➡️ **Let's confirm the project and schedule your 90-minute GTM Workshop.**",
+        "options": {
+          "systemMessage": "You are Alex, an expert sales support assistant for the founder of Revitk.\n\nYour mission is to generate a personalized, Notion-ready business case proposal from a client discovery call.\n\nThe process has four phases:\n\nRetrieve transcript from the Transcript Vector Store.\n\nExtract key data points.\n\nRun financial research with Google Search.\n\nGenerate a Notion database page with the complete proposal.\n\n🔹 Workflow Instructions\nStep 0: Transcript Retrieval\n\nAccess the Transcript Vector Store.\n\nLocate the transcript associated with:\n\nCompany Name: {{ $json.Customer }}\n\nProposal Request: {{ $json['Proposal request'] }}\n\nTranscript Title: {{ $json['Transcript document title'] }}\n\nUse the retrieved transcript text for all following steps.\n\nStep 1: Extract Key Data\n\nFrom the transcript, meticulously extract:\n\n[Customer Name]\n\n[Customer's Industry/Niche]\n\n[Company's Stated Goal]\n\n[Current Pains & Failed Solutions]\n\nStep 2: Research Protocol\n\nMandatory: Use Google Search to find average CPL benchmarks for the customer’s industry & region (default UK).\n\nConditional: If transcript does not provide LTV, research average customer value, deal size, or profit per client for that industry. Mark this clearly as an estimate.\n\nStep 3: Populate Template\n\nFill in the Business Case Proposal Template (see below) exactly as shown:\n\nPreserve all headings, emojis, and tables.\n\nAlways include highlight color instructions in parentheses for <mark> headings.\n\nCompute:\n\nWorst & Best Case Projected New Monthly Profit\n\nWorst & Best Case ROAS\n\nAnnual Cost of Inaction\n\nStep 4: Notion Page Formatting\n\nOutput must be in Notion-ready Markdown.\n\nDeliver as a Notion Database Page with these properties:\n\nTitle: Business Case: A Predictable Growth Engine for [Customer Name]\n\nTags: Proposal, Business Case, Revitk\n\nClient Name: [Customer Name]\n\nIndustry: [Customer's Industry/Niche]\n\nGoal: [Company's Stated Goal]\n\nTranscript Source: {{ $json['Transcript document title'] }}\n\n🔹 Business Case Template (to be populated)\n\n(The assistant must fill this fully with extracted + researched data)\n\nBusiness Case: A Predictable Growth Engine for [Customer Name]\n\nHeadline: [Customer Name]'s leadership team should implement the 45-Day Predictable Growth Launchpad, starting [Suggest near-future date]. This will result in a scalable flow of high-intent sales appointments and an additional [💸 Best Case Projected New Monthly Profit] in monthly revenue, while avoiding the £20k+ cost and high failure rate created by hiring a salesperson without a proven system.\n\nWhat We Understand\n\n[Insert transcript-based pains, goals, and missed revenue]\n\nRecommended Approach\n\n[Insert recommended solution text as per template]\n\nThe Predictable Growth Engine & Your ROI\n\n[Insert table with CPL, Close Rate, LTV, Profit, ROAS calculations]\n\nWhat We Build For You\n\n[List of deliverables]\n\nYour Investment\n\n[One-time payment of £7,400]\n\nYour Required Commitment\n\n[List commitments]\n\n<mark>🟡 What Are Your Options?</mark>\n\n(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)\n[List 4 options]\n\n<mark>🛡️ Our Commitment Guarantee</mark>\n\n(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)\n[Guarantee text]\n\n<mark>✅ The Logical Next Step</mark>\n\n(In Notion, highlight this heading, click the \"A\" icon, and select 'Yellow' under BACKGROUND)\n[CTA to schedule GTM workshop]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        288
+      ],
+      "id": "97cfeeba-cd66-4dd0-81ab-2096ebdbc88d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        512
+      ],
+      "id": "2bc95215-c7aa-445f-af28-ac219a6fcd71",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        720
+      ],
+      "id": "66f7efce-bd5e-46f5-8126-ce04099509e3",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Templates",
+          "mode": "list",
+          "cachedResultName": "Templates"
+        },
+        "vectorIndexName": "Template_index",
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        512
+      ],
+      "id": "ef9b0d49-c53f-44e4-858b-f214705054fd",
+      "name": "Template_index Atlas Vector Store2",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Framework",
+          "mode": "list",
+          "cachedResultName": "Framework"
+        },
+        "vectorIndexName": "vector_index",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        512
+      ],
+      "id": "c241ab59-38e7-4ebb-a959-9c5d4c942265",
+      "name": "Framework Atlas Vector Store1",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all frameworks information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Transcipt",
+          "mode": "list",
+          "cachedResultName": "Transcipt"
+        },
+        "vectorIndexName": "Transcript_index",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        512
+      ],
+      "id": "2e6a3e16-5ae8-4efa-8b02-51d900cdb488",
+      "name": "Transcript Atlas Vector Store3",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        720
+      ],
+      "id": "f6d23931-7a90-4273-9a67-aabc86b126ef",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        720
+      ],
+      "id": "415e27e0-de7c-4590-aee5-cad0430d357c",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "1a4fcceb-c6eb-8043-888b-c7bfa321b88a",
+          "mode": "list",
+          "cachedResultName": "Revitk Proposal Database",
+          "cachedResultUrl": "https://www.notion.so/1a4fccebc6eb8043888bc7bfa321b88a"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', `Title of the proposal`, 'string') }}",
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues0_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues1_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues2_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues3_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues4_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues5_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues6_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues7_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues8_Text', `Content of the proposal`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues9_Text', `Content of the proposal`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        496
+      ],
+      "id": "05ef42cd-9901-4303-82a8-212a851d4594",
+      "name": "Create a database page in Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "K8pjU7jHOovykdgx",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the web using Brave Search treat this tool as google search tool",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "count": 20
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearchTool",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        512
+      ],
+      "id": "18be34e5-d34e-40d1-bb69-a7751b561cd7",
+      "name": "Brave Search1",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "A2JHcYJm3hrXPMBg",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=place this page into a database page {{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        288
+      ],
+      "id": "904c03a2-7e73-412f-902b-5d7c79dfa240",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        512
+      ],
+      "id": "a285ab2b-df4b-453d-bdd2-eba8bfa45f17",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "Customer": "Exceleris",
+          "Proposal request": "Proposal for Exceleris — How Revitk can work with Exceleris (use Onboarding call as primary context)",
+          "Transcript document title": "Exceleris Onboarding Call (onboarding transcript)",
+          "Context": "Sources used: Exceleris Onboarding Call transcript (primary); Revitk frameworks: 45-Day Predictable Growth Launchpad, GTM Workshop & ICP prioritisation; Templates: Revitk Proposal template, GTM Blueprint, VSL/One-pager templates; Notion pages searched for Exceleris workspace (if present). Initial context summary: - Problem statement: extracted from onboarding call: prospects and lead follow-up gaps, unclear ICP/prioritisation, manual outreach bottlenecks, and conversion friction points. - Opportunity: design a 45-day GTM & outbound Launchpad to lock offers, build CRM+automation, enrich lead lists, and pre-sell meetings. - Priority objectives to include in proposal: define 1-3 propositions, build 200-500 target contacts, book 10-20 qualified meetings during the program, deliver CRM automations and playbook. - Recommended deliverable: Client-ready Notion-compatible proposal (Markdown) + SOW and milestone payment schedule. - Ask for client inputs: onboarding call recording confirmation, access to marketing assets, preferred CRM, and decision-maker contacts. Please produce a full client proposal draft, Notion-compatible Markdown, SOW, and invoice schedule as next artifacts."
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Framework Atlas Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Template_index Atlas Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Transcript Atlas Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Framework Atlas Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template_index Atlas Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Atlas Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page in Notion": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a10da149-af9f-4471-a2df-9f669e798ee4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76c799b332dead2b68bc6d773d7289aa5b6d95e7093e86bab151c9e9ac571b72"
+  },
+  "id": "A53GSLr5DnPE25oC",
+  "tags": []
+}
