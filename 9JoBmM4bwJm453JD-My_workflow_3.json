@@ -1,0 +1,339 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        256
+      ],
+      "id": "8a813fed-2d36-447c-9d6a-cbb247520832",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "GPT-5.2"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an exter article writer take in all information and  write a well though out article with nuanced arguments"
+            },
+            {
+              "content": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoning": {
+            "reasoningOptions": {
+              "effort": "high"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        -32
+      ],
+      "id": "412db64c-f635-4231-83dc-f9a78b85f4b0",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "hours"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        -192
+      ],
+      "id": "3e687a39-e7c9-40df-b033-ec03a5d4efdc",
+      "name": "Wait",
+      "webhookId": "1c7f92cd-3557-496c-9bff-dae48504d217",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "options": {
+          "purpose": "assistants"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        96
+      ],
+      "id": "9935ae89-eaef-4d91-ac3f-e64e8959e4e1",
+      "name": "Upload a file",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.activtrak.com/reports/v2/activitylog",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "startDate",
+              "value": "=2026-04-10T23:00:00+08:00"
+            },
+            {
+              "name": "endDate",
+              "value": "=2026-04-11T23:00:00+08:00"
+            },
+            {
+              "name": "clientId",
+              "value": "=55799"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "pageSize",
+              "value": "1000"
+            },
+            {
+              "name": "minDuration",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        656,
+        -240
+      ],
+      "id": "c9e322c5-acb0-465e-9681-1142614257e8",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "url": "https://api.activtrak.com/reports/v2/workinghours/users",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "=2026-04-10T23:00:00+08:00"
+            },
+            {
+              "name": "to",
+              "value": "=2026-04-11T23:00:00+08:00"
+            },
+            {
+              "name": "clientId",
+              "value": "=55799"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "pageSize",
+              "value": "1000"
+            },
+            {
+              "name": "minDuration",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        -176
+      ],
+      "id": "73bc10a0-cf9c-4952-9a80-5d1016fce525",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-fable-5",
+          "mode": "list",
+          "cachedResultName": "Claude Fable 5"
+        },
+        "options": {
+          "thinkingMode": "adaptive"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        256
+      ],
+      "id": "a5164350-0407-48fd-86b5-94417a81c88a",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EDH5Xk3JUsm5zVIZ",
+          "name": "Anthropic account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.6-sol",
+          "mode": "list",
+          "cachedResultName": "gpt-5.6-sol"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        272
+      ],
+      "id": "11aff712-9823-4729-ac52-508fb21c39f7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        -64
+      ],
+      "id": "86680052-9896-43f9-a20f-e35a958cfd0a",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "85ac6223-f0f7-4d09-a0bc-50942ed1bf54",
+      "name": "When chat message received",
+      "webhookId": "dc2ced96-bbd6-4289-83d9-4ffd219a1326"
+    }
+  ],
+  "connections": {
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

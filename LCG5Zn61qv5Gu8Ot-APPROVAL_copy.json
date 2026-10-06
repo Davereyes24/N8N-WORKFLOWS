@@ -1,0 +1,2988 @@
+{
+  "name": "APPROVAL copy",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestId": "={{ $('Webhook').item.json.query.requestId }}",
+            "HR user": "={{ $('Webhook').item.json.query.admin_user }}",
+            "HR descision": "={{ $('Webhook').item.json.query.changeDecision }}",
+            "approverId": "={{ $('Webhook').item.json.query.approverId }}",
+            "HR notes": "={{ $json.Notes }}",
+            "Decision Date": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "requestId"
+          ],
+          "schema": [
+            {
+              "id": "requestId",
+              "displayName": "requestId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateFiled",
+              "displayName": "DateFiled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateFrom",
+              "displayName": "DateFrom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateTo",
+              "displayName": "DateTo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Doer Reason",
+              "displayName": "Doer Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI recomendation",
+              "displayName": "AI recomendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LeaveStatus",
+              "displayName": "LeaveStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RejectReason",
+              "displayName": "RejectReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order number",
+              "displayName": "Order number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cancelType",
+              "displayName": "cancelType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "employeeId",
+              "displayName": "employeeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "requestType",
+              "displayName": "requestType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "transactionId",
+              "displayName": "transactionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "actionType",
+              "displayName": "actionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "approverId",
+              "displayName": "approverId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HR notes",
+              "displayName": "HR notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR descision",
+              "displayName": "HR descision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR user",
+              "displayName": "HR user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Overiden?",
+              "displayName": "Overiden?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "attachments",
+              "displayName": "attachments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "assigned to",
+              "displayName": "assigned to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "COA request",
+              "displayName": "COA request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Decision Date",
+              "displayName": "Decision Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        -256
+      ],
+      "id": "fa842d25-24c5-4cca-81e1-eeb46bdec515",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "eEv0nNxwjlpw6eBu",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        32
+      ],
+      "id": "bfe65bc5-b53c-4401-83db-ed827f6b67ce",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "=Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        32
+      ],
+      "id": "b85a6619-e134-41da-8004-1ae74e13c7ea",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        -160
+      ],
+      "id": "984ed765-8ce8-4215-9957-4fcd20c19efc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -160
+      ],
+      "id": "90c5bf8a-6ec7-4450-9f95-dcf021b5e438",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "cancelType",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        -160
+      ],
+      "id": "02844dc3-d895-4227-bcb8-49e41ce6becb",
+      "name": "create approvals",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8452a80-59f3-4e62-8e76-b5f92849f92c",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json.requestType }}",
+              "rightValue": "CertificateOfAttendance",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        -304
+      ],
+      "id": "3d92022b-4041-4904-b561-4be79d7c0fd7",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -352,
+        -960
+      ],
+      "id": "4864fcc6-e4cd-419e-82f2-616be5cc6800",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        -960
+      ],
+      "id": "9b6ba844-810b-439b-9568-136476b9106f",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields4').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields4').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "resend"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Webhook').item.json.query.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "={{ $('Webhook').item.json.query.approverId }}"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Webhook').item.json.query.Reason }}"
+            },
+            {
+              "name": "cancelType",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Webhook').item.json.query.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        -960
+      ],
+      "id": "06fb3a8e-8efd-41fa-bbe6-fbf8a2b09f3c",
+      "name": "create approvals4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "Approved",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "77ed2a3a-578d-4306-bc5a-501e5e7ab6b2"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "030551f2-0246-4771-bde4-e7049dfa627a",
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "Rejected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8950d509-dd7e-4237-bc7e-218b009c306a",
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "New",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        16
+      ],
+      "id": "460151c6-13b0-495d-a225-afb9ec04b355",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        224
+      ],
+      "id": "5884ea5d-4d65-48ce-8290-96bc2b9c4e65",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        224
+      ],
+      "id": "6242fc23-a5a5-4502-a4fc-0b9c2263cff8",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields5').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields5').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "resend"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Webhook').item.json.query.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        224
+      ],
+      "id": "027e4ad2-bd93-4191-9d7d-e2033f298f13",
+      "name": "create approvals5",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        -544
+      ],
+      "id": "405c2227-27ad-40c1-9034-4983da423d22",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "=Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -544
+      ],
+      "id": "30c4310f-99f5-4616-8c5c-6d59b6e6f314",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields2').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields2').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Reject"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        -544
+      ],
+      "id": "323ddce6-7085-4c28-b217-74daf6792b33",
+      "name": "create approvals2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        -736
+      ],
+      "id": "017b34bb-0017-4814-b9e9-6b145dfd69a8",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -736
+      ],
+      "id": "a602f59e-d3a7-49e8-b682-59125bff7f5d",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields3').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        -736
+      ],
+      "id": "658ea274-a197-471d-96d3-d60e8779fc1d",
+      "name": "create approvals3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "Approved",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "77ed2a3a-578d-4306-bc5a-501e5e7ab6b2"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "030551f2-0246-4771-bde4-e7049dfa627a",
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "Rejected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8950d509-dd7e-4237-bc7e-218b009c306a",
+                    "leftValue": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}",
+                    "rightValue": "New",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        -560
+      ],
+      "id": "8c9a2083-16be-4330-9b12-89f0f35c46f6",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1440,
+        -352
+      ],
+      "id": "17c2e4a4-3c9f-4e25-8179-3cd235eef314",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -352
+      ],
+      "id": "546ae59b-e601-497d-ad7d-5f4afce1e588",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields6').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields6').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "resend"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        -352
+      ],
+      "id": "25e4d890-87cc-4eec-b548-8f69ef27f37b",
+      "name": "create approvals6",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields1').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields1').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "Reject"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "="
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        32
+      ],
+      "id": "4a858ce2-8893-4977-8443-156d6478d72a",
+      "name": "create approvals7",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7583bf3d-5416-4e40-8fb3-3e3dbbfdcc5b",
+              "leftValue": "={{ $json.query.admin_notes }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        -256
+      ],
+      "id": "622bd81f-2d50-4ffc-b35e-3380b013aed3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c2cc884-49ee-43f2-93d9-b9e2e6aef30a",
+              "name": "Notes",
+              "value": "=",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        -352
+      ],
+      "id": "e7038dd9-be8f-4c1e-a6be-4c81cec06b82",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b41b48fd-ea6d-4c0b-904b-735b5a0f8c65",
+              "name": "Notes",
+              "value": "={{ $json['HR notes'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        -160
+      ],
+      "id": "27ac9e29-fefb-44d8-b688-4b75eb01212e",
+      "name": "Edit Fields7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -352,
+        448
+      ],
+      "id": "9d79f405-4698-49bd-8dd1-96dc1fb879fa",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        448
+      ],
+      "id": "57e785c3-9e5b-4011-92c1-c94caa79df13",
+      "name": "Edit Fields8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/AttendanceLog",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-ActionType-Id",
+              "value": "1"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"attendanceLog\": {\n    \"employeeBiometricId\": \"215864\",\n    \"logDateTime\": \"2026-05-05T02:28:01Z\",\n    \"logTypeId\": \"0\",\n    \"notes\": \"Logged in via Web Bundy at 103.144.156.161\",\n    \"locationInformation\": {\n      \"locationName\": \"-\",\n      \"longitude\": \"121.0275\",\n      \"latitude\": \"15.5036\"\n    }\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        96,
+        448
+      ],
+      "id": "b1d8399c-9820-405f-8fb6-0cf3af5588d8",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "url": "https://api.sprout.ph/empservice/api/v1/Employees/17540",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "include",
+              "value": "WorkInformation"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        448
+      ],
+      "id": "5c222284-ac6a-49ef-a92d-ec143dfbfc92",
+      "name": "HTTP Request9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields5').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields5').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "resend"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        224
+      ],
+      "id": "7924ef0c-8835-475e-a51d-44143b6b0d71",
+      "name": "create approvals8",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields1').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields1').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "Reject"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        32
+      ],
+      "id": "bd8d0555-5999-4666-96c8-06e780012d6f",
+      "name": "create approvals9",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "cancelType",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -160
+      ],
+      "id": "c4770842-0042-4834-a14f-71efb31b7dfc",
+      "name": "create approvals1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields6').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields6').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "resend"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json['HR descision'] }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -352
+      ],
+      "id": "8562eb08-31a9-4646-91e8-74b93a42d091",
+      "name": "create approvals10",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields2').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields2').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Reject"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $('Append or update row in sheet').item.json['HR notes'] }}"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -544
+      ],
+      "id": "a8b79c5b-19fd-404e-a17c-bb61be182ead",
+      "name": "create approvals11",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields3').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Get row(s) in sheet').item.json.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -736
+      ],
+      "id": "6e25acdb-099e-44e5-a1e4-e631ab5edd80",
+      "name": "create approvals12",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.sprout.ph/hrgen/api/v1/Lookups/Locations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "SortColumn",
+              "value": "Id"
+            },
+            {
+              "name": "SortOrder",
+              "value": "asc"
+            },
+            {
+              "name": "PageNumber",
+              "value": "1"
+            },
+            {
+              "name": "RowsPerPage",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -576,
+        672
+      ],
+      "id": "6d14b45c-aed4-4b04-8142-f0388a89e744",
+      "name": "HTTP Request10"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1852334841,
+          "mode": "list",
+          "cachedResultName": "Sheet5",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=1852334841"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -128,
+        -256
+      ],
+      "id": "3e2ca6ef-775d-4c7f-b0ac-f2a49261cb41",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "eEv0nNxwjlpw6eBu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -352,
+        -256
+      ],
+      "id": "a5f3098d-6558-4cc8-ac1a-e3097d2b4d55",
+      "name": "HTTP Request11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        -256
+      ],
+      "id": "8c41860a-18de-4e7a-bf9e-55e830ab442f",
+      "name": "Edit Fields9"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -192
+      ],
+      "id": "c870dd91-be48-49a8-9fa3-25197870fcb6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/timeattendance/api/v1/Leave/{{ $('Get row(s) in sheet').item.json.requestId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request11').item.json.token_type }} {{ $('HTTP Request11').item.json.access_token }}"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        -32
+      ],
+      "id": "f7c24efd-7a4a-4d18-af54-8a5e3059ad4b",
+      "name": "HTTP Request12",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "create approvals7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "create approvals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "create approvals4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "create approvals5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "create approvals2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "create approvals3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "create approvals6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals7": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals5": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals6": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request9": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields9": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request11": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request12": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

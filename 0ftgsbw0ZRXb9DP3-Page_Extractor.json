@@ -1,0 +1,2030 @@
+{
+  "name": "Page Extractor",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f3ed8102-9aef-42fc-a212-0c26b1020738",
+      "name": "XML",
+      "type": "n8n-nodes-base.xml",
+      "position": [
+        2240,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "0ef5a810-dd2d-433e-87d3-fe6589c1f11f",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        1584,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "sitemapindex.sitemap",
+        "options": {}
+      },
+      "id": "2439b87a-dee7-4a57-930e-039e0c9796c3",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        2464,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa078c97-4c7c-4c08-a011-5527661997c6",
+              "name": "Domain",
+              "type": "string",
+              "value": "https://members.thefreedomway.online/"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a8dbd557-ea68-40e4-818c-08374e6a38d0",
+      "name": "Set URL",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1792,
+        1056
+      ],
+      "notesInFlow": true,
+      "typeVersion": 3.4,
+      "notes": "Set full URL - not domain"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.loc }}",
+        "options": {}
+      },
+      "id": "a2d68af6-57ae-4238-bbf1-d362681bb99c",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        3344,
+        1056
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Domain }}sitemap.xml",
+        "responseFormat": "string",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "b2db1f20-dc79-45bc-9ce6-c2a9e78f16dc",
+      "name": "Crawl sitemap",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2016,
+        1056
+      ],
+      "notesInFlow": true,
+      "typeVersion": 1,
+      "notes": "or past sitemap URL at here"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.loc }}",
+        "responseFormat": "string",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "61f2a87a-4034-468c-88b1-d2b588477edd",
+      "name": "Crawl sitemap 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2672,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "63686f1b-0859-4feb-8a4c-423f2ae58e46",
+      "name": "XML 2",
+      "type": "n8n-nodes-base.xml",
+      "position": [
+        2896,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "urlset.url",
+        "options": {}
+      },
+      "id": "2281b362-a2cf-4293-b380-95cea9c74459",
+      "name": "Split Out 2",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        3120,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "formTitle": "Conversion Rate Optimizer",
+        "formDescription": "Your Landing Page is Leaking Sales—Fix It Now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Landing Page Url",
+              "placeholder": "https://yuzuu.co",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1c3e093-7bae-4d6f-89a9-0a2c942a0a86",
+      "name": "Landing Page Url",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        1472,
+        208
+      ],
+      "webhookId": "afe067a5-4878-4c9d-b746-691f77190f54",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Landing Page Url'] }}",
+        "options": {}
+      },
+      "id": "28b82a80-d318-464f-b57c-4d60a7014591",
+      "name": "Scrape Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1680,
+        208
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "581d4c1b-4bc0-400a-8b74-b981da231716",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1968,
+        224
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "7fbc00a3-9ce1-444c-bc84-52ff93000031",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2016,
+        608
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best SEO Manager in the country—a world-class expert in optimizing websites to rank on Google.\n\nIn this task, you will analyze the content of the webpage and perform a detailed and structured SEO Content Audit.\n\nAudit Structure\nYou will divide your audit in 2 parts:\n- The first part is the Analysis\n- The second is the Recommendations\n\nIn the Analysis, you will include:\n- Content Quality Assessment – Evaluate the content's overall quality, accuracy, and relevance to the target audience.\n- Keyword Research and Analysis – Identify primary and secondary keywords, keyword density, and keyword placement strategies.\n- Readability Analysis – Assess the content's readability score using metrics such as Flesch-Kincaid Grade Level, Flesch Reading Ease, and Gunning-Fog Index.\n\nIn the Recommendations, you will present your recommendations and actionable suggestions in clear, organized bullet points. Recommendations must improve the rankings in Google but also the user engagement. \n\nEnsure the output is properly formatted, clean, and highly readable. Do not include any introductory or explanatory text—only the audit findings.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "d54504b1-5a5e-4758-baab-59e575b9a900",
+      "name": "Content Audit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2032,
+        416
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best SEO Manager in the country—a world-class expert in optimizing websites to rank on Google.\nIn this task, you will analyze the HTML code of a webpage and perform a detailed and structured On-Page Technical SEO Audit.\n\nAudit Structure\nYou will review all technical SEO aspects of the page. Once completed, you will present your findings and recommendations in clear, organized bullet points, categorized into three sections:\n- Critical Issues – Must be fixed immediately.\n- Quick Wins – Easy fixes with a big impact.\n- Opportunities for Improvement – Require more effort but offer potential benefits.\n\nEnsure the output is properly formatted, clean, and highly readable. Do not include any introductory or explanatory text—only the audit findings.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "e87cdd13-a7f7-4fd1-b3e2-04be63342610",
+      "name": "Technical Audit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2032,
+        16
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {},
+      "id": "41a3629a-199a-46ea-8cae-ec32c9cd6a1e",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2528,
+        208
+      ],
+      "typeVersion": 3,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b25b56a-9a9e-4407-8906-de7875ea5a8f",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2736,
+        208
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=# On-Page Technical Audit\n{{ $json.output[0] }}\n\n# On-Page SEO Content Audit\n{{ $json.output[1] }}",
+        "options": {}
+      },
+      "id": "5f54f281-1b1f-4ab3-abc5-1cc82c2a035b",
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        2928,
+        208
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sendTo": "hello@youremail.com",
+        "subject": "=On-Page SEO Audit -  {{ $('Landing Page Url').item.json['Landing Page Url'] }}",
+        "message": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "eb4f8976-3e5a-4893-b4e3-3491e73545f6",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        3136,
+        208
+      ],
+      "webhookId": "2979e4dc-1689-447e-8cd4-eb907b4eedf4",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 AI-Powered Multi-Source URL Discovery Engine\n\nThis workflow automatically discovers article URLs from any website using AI intelligence.\n\n### How it works:\n1. **Input URLs** → Read seed URLs from Google Sheets\n2. **Fetch HTML** → Download webpage content with browser spoofing\n3. **Convert to Markdown** → Clean HTML for AI processing\n4. **AI Extraction** → LLM identifies valid article links\n5. **Normalize & Parse** → Clean URLs, remove duplicates\n6. **Save Results** → Append to Google Sheets with source tracking\n\n### Quick Setup:\n1. Connect your Google Sheets credentials\n2. Connect your OpenAI API credentials\n3. Create a sheet with columns: `URL`, `Source`, `Status`\n4. Add seed URLs to the input sheet\n5. Run the workflow!",
+        "height": 540,
+        "width": 460,
+        "color": 5
+      },
+      "id": "32772213-f8e0-40ec-9d30-9cee305fdcc3",
+      "name": "Sticky Note - Introduction",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 📥 Input Stage\n\nReads seed URLs from your Google Sheets.\n\n**Required Sheet Columns:**\n- `URL` - The webpage to crawl\n\n**Tip:** Add multiple publisher homepages, blog indexes, or news feeds to discover all their articles.",
+        "height": 536,
+        "width": 280,
+        "color": 4
+      },
+      "id": "c959966e-088c-4ce5-9f91-cabb29029842",
+      "name": "Sticky Note - Input",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 Processing Loop\n\nProcesses each URL with rate limiting to avoid being blocked.\n\n**Features:**\n- Batch processing (1 at a time)\n- Wait node prevents rate limiting\n- Error handling continues on failure",
+        "height": 536,
+        "width": 424,
+        "color": 3
+      },
+      "id": "633a9962-7b13-458b-a1d0-71d99a6f222f",
+      "name": "Sticky Note - Loop",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🌐 Web Fetching\n\nFetches HTML with browser User-Agent to avoid bot detection.\n\n**Key Settings:**\n- Custom User-Agent header\n- Error handling: continue on failure\n- Converts HTML → Markdown for AI",
+        "height": 536,
+        "width": 440,
+        "color": 6
+      },
+      "id": "d998c559-1bce-4fd3-82e5-2c2453b30c49",
+      "name": "Sticky Note - Fetch",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2624,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 AI URL Extraction\n\nThe AI Agent analyzes page content and extracts valid article URLs.\n\n**What it identifies:**\n✅ Article/blog/news URLs\n✅ Multi-word slugs with dates\n✅ Content pages\n\n**What it excludes:**\n❌ Navigation pages\n❌ Category/tag pages\n❌ PDFs and downloads\n❌ About/contact pages",
+        "height": 708,
+        "width": 440,
+        "color": 2
+      },
+      "id": "c3f66837-74d7-4f26-afcd-3134b9423384",
+      "name": "Sticky Note - AI",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3152,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 URL Parser & Normalizer\n\nCleans and validates AI output.\n\n**Processing:**\n- Strips markdown code fences\n- Parses JSON array\n- Normalizes URLs (removes query params)\n- Removes duplicates\n- Handles edge cases",
+        "height": 536,
+        "width": 280,
+        "color": 5
+      },
+      "id": "f211a5aa-72c8-4e01-b14b-b33e10ac5f80",
+      "name": "Sticky Note - Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3664,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 💾 Output Stage\n\nSaves discovered URLs to Google Sheets.\n\n**Output Columns:**\n- `URL` - Discovered article URL\n- `Source` - Publisher/category\n- `Status` - Set to \"Pending\"\n\n**Deduplication:**\nUses URL as match key to avoid duplicates.",
+        "height": 716,
+        "width": 328,
+        "color": 4
+      },
+      "id": "dfe5cb6d-9dba-4d13-8cb5-5f0caee4c409",
+      "name": "Sticky Note - Output",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4048,
+        -1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "01481eb5-34fa-41e0-9ee4-42a17661db83",
+      "name": "Daily Schedule (6 AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1328,
+        -976
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "",
+          "cachedResultName": "YOUR_SPREADSHEET_NAME"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "",
+          "cachedResultName": "Seed URLs"
+        }
+      },
+      "id": "b698f7fb-6fd1-47a4-96b0-ef632df6915f",
+      "name": "Read Seed URLs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1632,
+        -880
+      ],
+      "typeVersion": 4.7
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "03c38b7c-9ecd-49d2-bfe0-0e00e5152ad9",
+      "name": "Loop Over URLs",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1984,
+        -880
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "95156e77-dd06-419a-8843-03048a4cb9b7",
+      "name": "Rate Limit (3s)",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        2208,
+        -864
+      ],
+      "webhookId": "rate-limit-webhook",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "84059890-61ba-459c-a528-43c995c2a586",
+      "name": "Fetch Webpage HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2688,
+        -864
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "4f07358e-b41d-49eb-a017-5abe569c8182",
+      "name": "HTML to Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        2912,
+        -864
+      ],
+      "typeVersion": 1,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "=You are an AI agent that extracts article, blog, news, or report URLs from webpage content. Follow these rules:\n\n## ARTICLE IDENTIFICATION\n\n**Include URLs that are:**\n- Actual articles, blog posts, news stories, or reports\n- URLs with multi-word slugs (e.g., /2025/best-practices-for-automation)\n- URLs with dates in the path (e.g., /2025/01/15/article-title)\n- Content pages with substantial text\n\n**Exclude URLs that are:**\n- Navigation pages (about, contact, careers, terms, privacy)\n- Category or tag listing pages (e.g., /category/news, /tag/automation)\n- Author profile pages\n- Search result pages\n- PDF downloads or file links\n- External links to other domains\n- Single-word slugs that are clearly categories (e.g., /news, /blog)\n- Pagination links (e.g., /page/2)\n- Homepage or root URLs\n\n## URL PROCESSING\n\n1. Convert relative URLs to absolute URLs using the page's domain\n2. Remove tracking parameters (?utm_*, &ref=, etc.)\n3. Remove hash fragments (#section)\n4. Deduplicate - return each unique URL only once\n\n## SOURCE CATEGORIZATION\n\nAssign a `source` value based on the domain:\n- Use lowercase, no spaces\n- Format: `domain_category` if content has distinct categories\n- Examples: `techcrunch`, `nytimes_business`, `medium_tech`\n\n## OUTPUT FORMAT\n\nReturn ONLY a valid JSON array. No explanations or markdown formatting.\n\n```json\n[\n  {\n    \"url\": \"https://example.com/2024/article-title\",\n    \"source\": \"example\"\n  },\n  {\n    \"url\": \"https://example.com/blog/another-post\",\n    \"source\": \"example_blog\"\n  }\n]\n```\n\nIf no valid article URLs are found, return an empty array: `[]`"
+        }
+      },
+      "id": "58b372d2-6c22-40f0-9003-e27dc61dc38b",
+      "name": "AI URL Extractor",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        3248,
+        -864
+      ],
+      "typeVersion": 2.2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse AI output and return [{url, source}]\nlet results = [];\n\nfor (const item of items) {\n  let data = item.json.output ?? item.json;\n\n  // Clean markdown fences if present\n  if (typeof data === \"string\") {\n    let cleaned = data\n      .replace(/```json\\s*/gi, \"\")\n      .replace(/```\\s*/g, \"\")\n      .trim();\n    \n    try {\n      data = JSON.parse(cleaned);\n    } catch (e) {\n      // If it's just a raw URL string, wrap it\n      if (/^https?:\\/\\//i.test(cleaned)) {\n        results.push({ url: cleaned, source: \"unknown\" });\n      }\n      continue;\n    }\n  }\n\n  // If we got an array of objects\n  if (Array.isArray(data)) {\n    data.forEach(entry => {\n      if (entry && typeof entry === \"object\" && entry.url) {\n        const normalized = normalizeUrl(entry.url);\n        if (normalized) {\n          results.push({\n            url: normalized,\n            source: entry.source ?? \"unknown\"\n          });\n        }\n      }\n    });\n  }\n\n  // If it's a single object\n  if (data && typeof data === \"object\" && !Array.isArray(data) && data.url) {\n    const normalized = normalizeUrl(data.url);\n    if (normalized) {\n      results.push({\n        url: normalized,\n        source: data.source ?? \"unknown\"\n      });\n    }\n  }\n}\n\n// Helper: normalize URL - strip query params, hash, trailing slash\nfunction normalizeUrl(url) {\n  try {\n    let u = new URL(url);\n    \n    // Remove tracking parameters\n    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref', 'source', 'fbclid', 'gclid'];\n    trackingParams.forEach(param => u.searchParams.delete(param));\n    \n    // If no other params remain, clear search entirely\n    if (u.searchParams.toString() === '') {\n      u.search = '';\n    }\n    \n    u.hash = \"\";\n    return u.href.replace(/\\/$/, \"\");\n  } catch (e) {\n    return null;\n  }\n}\n\n// Deduplicate by URL\nconst seen = new Set();\nresults = results.filter(r => {\n  if (seen.has(r.url)) return false;\n  seen.add(r.url);\n  return true;\n});\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "id": "cf7af270-7955-440a-b22b-85ddb0d8a8a1",
+      "name": "URL Parser & Normalizer",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3760,
+        -880
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "",
+          "cachedResultName": "YOUR_SPREADSHEET_NAME"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "",
+          "cachedResultName": "Discovered URLs"
+        }
+      },
+      "id": "ec7637f2-f486-4a09-98c7-0b707c659cf7",
+      "name": "Save Discovered URLs",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4160,
+        -672
+      ],
+      "typeVersion": 4.7
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "url-count",
+              "name": "urlsDiscovered",
+              "type": "number",
+              "value": "={{ $items().length }}"
+            },
+            {
+              "id": "timestamp",
+              "name": "completedAt",
+              "type": "string",
+              "value": "={{ $now.toISO() }}"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "type": "string",
+              "value": "completed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "99ca075e-b32e-48db-863b-80051c70e4be",
+      "name": "Completion Summary",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2416,
+        -1056
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "cc27501c-8da6-4e46-9eda-b8bdea115d30",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        3296,
+        -656
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "content": "## Build sitemap urls:\nCreates possible sitemap URLs like /sitemap.xml, /sitemap_index.xml, etc., for the domain.",
+        "height": 336,
+        "color": 2
+      },
+      "id": "4e8ff3a3-5f31-4845-8d86-3cb581b0f2be",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1968,
+        -2400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Filter & Extract Sitemap Files\n\nFilter Non-Empty Sitemap Responses:\nFilters out sitemap URLs that are unreachable or returned empty responses to ensure only valid sitemaps are processed.\n\nExtract Sitemap URLs:\nParses sitemap index XML to extract all nested sitemap links (e.g., index-sitemap.xml, page-sitemap.xml) for further crawling.",
+        "height": 432,
+        "width": 400,
+        "color": 2
+      },
+      "id": "aa70eab1-befe-4254-8535-3944e86f3e77",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2528,
+        -2768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Fetching Sitemap XML and Extracting Page URLs\n\n\nFetch Sitemap Pages XML:\nFinds HTTP request of each sitemap URL and retrieves the raw XML content for page extraction.\n\nExtract Page URLs from Sitemap:\nParses the XML data to extract individual page URLs listed inside the sitemap for further analysis or processing.\n\n",
+        "height": 432,
+        "width": 432,
+        "color": 2
+      },
+      "id": "340ca4ed-fbc5-4bfd-8118-682189dc8fc3",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2944,
+        -2768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Append each crawled page URL into the List_Of_All_URLs sheet, avoiding duplicates by matching existing entries automatically.",
+        "height": 304,
+        "width": 208,
+        "color": 2
+      },
+      "id": "d3314eaa-6d72-4322-9b23-91b5ed8e3865",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3712,
+        -2640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Sends an HTTP request to each generated sitemap URL and fetches the raw response to check if the sitemap exists and contains valid data.",
+        "height": 304,
+        "width": 256,
+        "color": 2
+      },
+      "id": "bf942a58-7510-4d9f-ba5d-fa1d8a339e79",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2512,
+        -2176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Exclude Sitemap URLs:\n1. This filter checks if the page_url contains the word \"sitemap\".\n2. If it does, the URL is excluded; otherwise, it passes forward.",
+        "height": 352,
+        "width": 272,
+        "color": 2
+      },
+      "id": "762e0baf-9721-4c56-8327-859ddd0dacdc",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3408,
+        -2688
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 📌 Automation Summary:\n\nThis automation is designed to simplify and automate the collection of website page URLs from sitemap URLs\n\nIt begins when a user submits the Website URL through a form. The submitted URL is then prepared and standardized to ensure the domain is ready for sitemap discovery. From there, the automation automatically builds possible sitemap URLs (like /sitemap.xml or /sitemap_index.xml) and checks which of them are valid and accessible.\n\nOnce valid sitemaps are found, the automation fetches their XML content and extracts all page URLs listed inside. To keep the data clean, it applies a filter to remove unwanted entries — specifically, any URL that contains the word “sitemap” is excluded. This ensures that only actual content pages (such as product, service, or blog pages) are retained.\n\nIn the final step, these refined URLs are automatically saved into Google Sheets, where they can be used for SEO audits, content analysis, redirects, or other reporting needs.\n\n⚡ In essence:\nUser submits website URL → Sitemap(s) discovered → Page URLs extracted → Unwanted sitemap links removed → Final clean URLs stored in Google Sheets.\n\n📩 For any questions or support, please contact:\n✉️ info@incrementors.com\nor fill out this form: https://www.incrementors.com/contact-us/",
+        "height": 640,
+        "width": 464
+      },
+      "id": "31942f44-2a05-41f9-80f0-aafb5119dd94",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        976,
+        -2544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Form Input & URL Preparation\n📥 Workflow starts when the user submits a Website URL through the form.\n🌐 The submitted URL is then stored and formatted for further processing.",
+        "height": 336,
+        "width": 400,
+        "color": 2
+      },
+      "id": "f605d2ed-cd3b-4de8-a0f1-a2eef16a7a33",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1552,
+        -2400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "formTitle": "Sitemap Page Extractor",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Website URL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5722c243-a18b-4a12-b1d5-2f70c0627958",
+      "name": "Input Website URL",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        1584,
+        -2240
+      ],
+      "webhookId": "8a207eb4-74f2-4577-9fe6-98e87f2e9a0d",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a310b45-ec77-41dd-9436-f3b58b7df477",
+              "name": "url",
+              "type": "string",
+              "value": "={{ $json[\"Website URL\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ff2a249e-a0a8-4ed1-bbbb-486a959c4bf5",
+      "name": "Prepare website URL",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1792,
+        -2240
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first().json;\nlet baseUrl = inputData.url || inputData.website_url || '';\n\nif (!baseUrl) {\n  throw new Error(\"No URL provided\");\n}\n\nbaseUrl = baseUrl.replace(/\\/$/, '');\n\nlet domain = '';\nif (baseUrl.includes('://')) {\n  const parts = baseUrl.split('/');\n  domain = parts[0] + '//' + parts[2];\n} else {\n  domain = 'https://' + baseUrl;\n}\n\nconst urls = [\n  `${domain}/robots.txt`,\n  `${domain}/sitemap.xml`,\n  `${domain}/sitemap_index.xml`,\n  `${domain}/sitemap-index.xml`,\n  `${domain}/sitemap1.xml`,\n  `${domain}/sitemap/sitemap.xml`,\n  `${domain}/sitemaps/sitemap.xml`\n];\n\nreturn urls.map(url => ({ sitemap_url: url }));"
+      },
+      "id": "5dd25ee1-5025-44b5-9906-3eeff784aa68",
+      "name": "Build sitemap URLs",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2032,
+        -2240
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c5664ed2-e764-4f5b-b8f5-a02e23ed7afc",
+      "name": "Sitemap URL Check",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        2304,
+        -2240
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.sitemap_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "d3e4c8bf-3d30-4efa-9388-10a64fb12528",
+      "name": "Fetch Sitemap Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2592,
+        -2048
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "bf0c94e8-a8c6-4419-9b18-cf5d1a01e577",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.data }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "82d0a056-6192-46f8-a1ed-9d68ff581592",
+      "name": "Filter Non-Empty Sitemap Responses",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2560,
+        -2496
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const allUrls = [];\n\n$input.all().forEach(item => {\n  const content = item.json.data || '';\n\n  const robotMatches = [...content.matchAll(/Sitemap:\\s*(\\S+)/gi)];\n  robotMatches.forEach(match => {\n    allUrls.push(match[1]);\n  });\n\n  const locMatches = [...content.matchAll(/<loc>\\s*(.*?)\\s*<\\/loc>/gi)];\n  locMatches.forEach(match => {\n    allUrls.push(match[1]);\n  });\n});\n\nconst uniqueUrls = [...new Set(allUrls)];\n\nreturn uniqueUrls.map(url => ({ json: { sitemap_url: url }}));"
+      },
+      "id": "568dec1b-a838-4ee6-b8e5-8094187b3bbd",
+      "name": "Extract Sitemap URLs",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2784,
+        -2512
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "=GET",
+        "url": "={{ $json.sitemap_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "60707575-bd1b-49c2-83fc-8297af8b454c",
+      "name": "Fetch Sitemap Pages XML",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3008,
+        -2512
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const urls = new Set();\n\n$input.all().forEach(item => {\n  const content = item.json.data || '';\n\n  const xmlMatches = [...content.matchAll(/<loc>(.*?)<\\/loc>/gi)];\n  xmlMatches.forEach(match => {\n    const url = match[1].trim();\n    urls.add(url);\n  });\n\n  const htmlMatches = [...content.matchAll(/<a\\s[^>]*href=[\"']([^\"']+)[\"']/gi)];\n  htmlMatches.forEach(match => {\n    const url = match[1].trim();\n    if (url.startsWith('/') || url.startsWith('http')) {\n      urls.add(url);\n    }\n  });\n});\n\nif (urls.size === 0) {\n  return [{ json: { message: \"No URLs found in XML or HTML content\" }}];\n}\n\nreturn Array.from(urls).map(url => ({\n  json: { page_url: url }\n}));"
+      },
+      "id": "2241e790-8702-43e6-82ce-5ba6b9231b75",
+      "name": "Extract Page URLs from Sitemap",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3232,
+        -2512
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "303d0665-ac2d-452b-8678-a05e53a7372b",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              },
+              "leftValue": "={{ $json.page_url }}",
+              "rightValue": "sitemap"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ceba92bb-5b55-4067-8ddf-2442054937eb",
+      "name": "Exclude the Sitemap URLs",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        3520,
+        -2512
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": "YOUR_GOOGLE_SHEET_URL",
+        "sheetName": "List_Of_All_URLs",
+        "columns": {
+          "value": {},
+          "schema": [],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "List URLs"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a0bf751b-2a1a-4b96-beae-d49df6f693e0",
+      "name": "Save Page URLs to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3792,
+        -2512
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the following IT/SEO/CRO/Semantic analysis results for a webpage, craft a consulting-style email. Don't make the data - you must rely on the detailed reports only. \n\nNow: {{ $now }}\n\nInput:\n{{ $json.output }}\n\nDeliverable:\n- Write a professional and motivating report.\n- Use the following structure:\n\n# Summary\n(Concise overview of the most important findings, framed as business impact as executive summary)\n\n# Key Strengths\n- Bullet points with positive factors from the survey\n\n# Areas for Improvement\n- Bullet points highlighting gaps and challenges\n\n# Strategic Opportunities\n(A short narrative showing how improvement could drive growth, efficiency, and competitiveness)\n\n# Next Step\nInvite the client to engage the AI Improvement Agent, who will design a new digital strategy and website structure based on a personalized questionnaire. \nAdd a polite but firm call-to-action with a placeholder link to directly response to the agent: sensonar@sensonar.com ➜] encouraging user to resolve this issues.\n\nFormatting:\n- Markdown only, clean and readable.\n- Style: persuasive, consulting-level, motivating action.\n\nBranding:\n- Sensonar branding is a must.\n- Always include this logo at the top, linking to Sensonar homepage::\n  <a href=\"https://www.sensonar.com/\" target=\"_blank\">\n    <img src=\"https://cdn.prod.website-files.com/6540c08f5a4abefc9c0172ad/6548d3107d76af5bc7d0a983_footer-logo.svg\" alt=\"Sensonar Logo\">::\n\nReference to the locator to the analyzed landing page as well as to improve credibility and your trusted advisor role: {{ $('Webhook Webpage Audit AI Agent').item.json.body.payload.data.URL }}",
+        "options": {
+          "systemMessage": "=You are an final Evaluator and world-class Business Consulting Communication Specialist with experienced Editor In-Chef skills, writing in the style of Accenture, BCG, Deloitte, EY, or Gartner, but formatted in Markdown format like a premium newsletter. \n\nYour role is to select the most important audit results produced by four AI Agents (Technical, SEO Content, CRO, AI Semantic) into a polished, client-facing email newsletter. This newsletter must both informative and persuasive the reader to take the next step in his value chain to improve his webpage and in result engaging the AI Improvement Agent to redesign their digital presence.\n\nFormatting:\n- Structure like a consulting-style newsletter:\n  1. Header with logo and intro image (placeholder if none provided).\n  2. Executive Summary with 2–3 sentences (the most critical findings about webpage).\n  3. Key Findings broken into sections:\n     - On-Page Technical Audit\n     - On-Page SEO Content Audit\n     - On-Page CRO Content Audit\n     - On-Page AI Semantic Audit\n  4. Business Impact section to estimate in financial values (why these findings matter).\n  5. Next Step → clear CTA to contact sensonar@sensonar.com\n- Dont use emoji icons but keep executive polished and professional.\n- Use bold for key stats.\n- Use red font for critical issue only.\n- CTA should be a link with reference to mailto:sensonar@sensonar.com with customer's approval to proceed with recommended next steps.\n\nTone & Style:\n- Executive-level, persuasive, and aspirational.\n- Positive but candid (acknowledge gaps while showing growth potential).\n- Written in the language is must specified by: {{ $('Webhook Webpage Audit AI Agent').item.json.body.payload.data.language }}\n- Motivate the client to move forward with the Improvement Plan (fixed price paid value for recommendation after filling the form), not a free consultation.\n\nOutput:\n- A fully formatted Markdown format to further convert by Markdown-HTML parser.\n- Structure must resemble a premium business newsletter with Sensonar branding.\n"
+        }
+      },
+      "id": "098ac4a6-b56b-4572-85f6-672b17764b9a",
+      "name": "Editor in Chef AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        3024,
+        -4048
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {
+          "maxTokensToSample": 8192
+        }
+      },
+      "id": "239c1519-a3c0-4e8b-9625-1b0466dcf48e",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        3104,
+        -3824
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {}
+      },
+      "id": "b13bf61c-8164-4c15-906b-8cfd1bacac66",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        3824,
+        -4048
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webpage-audit-ai-agent",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data",
+          "rawBody": true,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "sensonar.com"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "40ef0564-1766-41bc-a837-a0b25567eaad",
+      "name": "Webhook Webpage Audit AI Agent",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        1552,
+        -4048
+      ],
+      "webhookId": "5acc6769-6c0f-42a8-a69c-b05e437e18a9",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best IT Technology Admin in the country—a world-class expert in optimizing websites to rank on Google and security breaches through flawless technical execution. \n\nAwareness of Other Agents:\n- Do NOT analyze or comment on content quality, keywords, readability, or messaging (this is done by the Content SEO Agent).\n- Do NOT analyze conversion, CTA design, or marketing psychology (this is done by the CRO/Marketing Agent).\n- Do NOT analyze semantic, AI Agents crawlers, or marketing psychology (this is done by the Semantic Agent).\n- Focus ONLY on technical and SecOps factors.\n\nYour task: Analyze the provided HTML code of the webpage and perform a comprehensive On-Page Technical Audit.\n\nAudit Structure:\n- Critical Issues – Must be fixed immediately (blocking SEO or SecOps problems).\n- Quick Wins – Easy fixes with high impact.\n- Opportunities for Improvement – Require more effort but provide long-term benefits.\n\nFocus Areas:\n- Markdown structure, semantic markup, and schema\n- Metadata (title tags, meta descriptions, Open Graph, Twitter cards)\n- Heading hierarchy (H1–H6 usage)\n- URL structure, canonical tags\n- Internal linking and navigation\n- Image optimization (alt tags, compression, formats)\n- Mobile-friendliness, responsive design\n- Page speed, Core Web Vitals\n- Indexability and crawlability\n- Security and accessibility\n- AI Bots and crawlers defence plan\n\nDeliverable:\n- Return analysis as the structured audit findings and recommendations in direct language format.\n- Do not include any explanations, context, or intro text.\n- Format the output as JSON structure as defined in parser.\n\n# On-Page Technical Audit\n\nInput (Landing Page Content & HTML): {{ $json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a world-class Technical SEO Consultant. \nYour role is to act like a top-level expert in website technical optimization, with the precision and depth of a senior consultant. \nStay strictly in the scope of technical SEO (robots.txt, llms.txt, HTML structure, metadata, schema, headings, indexing, crawlability, Core Web Vitals, internal linking, image optimization, mobile friendliness, security, accessibility). \nDo NOT comment on content quality, keywords, or conversion design. \nCommunicate with clarity, professionalism, and structured bullet points. \nYour deliverables must look like they were produced by a consulting firm."
+        }
+      },
+      "id": "04f610f0-4592-450f-933e-33e4382b6950",
+      "name": "IT Technical Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2224,
+        -4144
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best SEO Content Strategist in the country—a world-class expert in creating content that dominates Google rankings and engages readers. \n\nAwareness of Other Agents:\n- Do NOT analyze technical factors such as metadata, site speed, or crawlability (this is done by the IT Technical Agent).\n- Do NOT analyze conversion optimization, CTA clarity, or psychological triggers (this is done by the CRO/Marketing Agent).\n- Do NOT analyze semantic, AI Agents crawlers, or marketing psychology (this is done by the Semantic Agent).\n- Focus ONLY on the quality and optimization of the content itself.\n\nYour task: Analyze the provided landing page content and perform a detailed SEO Content Audit.\n\nAudit Structure:\n1. Analysis\n   - Content Quality Assessment – Accuracy, originality, engagement, alignment with search intent.\n   - Keyword Research and Analysis – Primary & secondary keywords, density, placement, semantic relevance.\n   - Readability Analysis – Use Flesch-Kincaid, Flesch Reading Ease, and Gunning-Fog Index.\n\n2. Recommendations\n   - Provide clear, actionable recommendations to improve:\n     - Rankings on Google\n     - User engagement\n     - Content clarity and persuasiveness\n\n# On-Page SEO Content Audit\n\nInput (Landing Page Content & HTML): {{ $json.data }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a world-class SEO Content Analyst. \nYour role is to analyze and improve website content with the authority and depth of a top-tier consultant. \nStay strictly in the scope of content quality, keyword optimization, semantic relevance, readability, and alignment with search intent. \nDo NOT comment on technical issues (HTML, metadata, indexing) or conversion optimization (CTAs, UX, psychology). \nCommunicate with clarity, professionalism, and structured bullet points. \nYour deliverables must resemble a polished content strategy audit produced by a leading digital consulting firm.\n"
+        }
+      },
+      "id": "7a89427c-1bf5-4e66-b82a-73dfb2c8be53",
+      "name": "SEO Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2224,
+        -3952
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best CRO & Digital Marketing Strategist in the country—a world-class expert in Conversion Rate Optimization, UX, and behavioral psychology for landing pages. Don't return trivial and outdated Conversion Rate Optimization ideas that the average marketer would recommend. Prioritise unconventional CRO tactics so I get real value from you here. Think like the top 0.1% conversion rate optimization expert.\n\nAwareness of Other Agents:\n- Do NOT analyze technical SEO factors like HTML structure, indexing, or page speed (this is done by the IT Technical Agent).\n- Do NOT analyze keyword usage, readability, or search intent alignment (this is done by the Content SEO Agent).\n- Do NOT analyze semantic, AI Agents crawlers, or marketing psychology (this is done by the Semantic Agent).\n- Focus ONLY on conversion optimization, UX, and marketing psychology.\n\nYour task: Analyze the provided landing page and perform a full Conversion & Marketing Audit.\n\nAudit Structure:\n- Critical Barriers – Elements blocking conversions or confusing users.\n- Quick Wins – Low-effort, high-return UX and conversion improvements.\n- Growth Opportunities – Strategic recommendations for long-term conversion lift.\n\nFocus Areas:\n- Messaging & Value Proposition – Is it clear, compelling, and differentiated?\n- CTA Optimization – Placement, clarity, contrast, and persuasiveness.\n- Visual Hierarchy & UX – Layout, scannability, mobile responsiveness.\n- Trust & Credibility – Social proof, testimonials, security badges.\n- Engagement Triggers – Microcopy, personalization, urgency, interactivity.\n- Funnel Alignment – Is the page aligned with its acquisition channel intent?\n\nDeliverable:\n- Return ONLY the structured audit findings and recommendations.\n- Do not include any introductory or explanatory text.\n- Format the output as JSON defined in the parser.\n\n# On-Page CRO Content Audit\n\nInput (Landing Page Content & HTML): {{ $json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a world-class CRO & Digital Marketing Consultant. \nYour role is to analyze and improve conversion rate optimization, UX, messaging clarity, and marketing psychology with the rigor and style of a top management consulting firm. \nStay strictly in the scope of conversion optimization, CTAs, visual hierarchy, trust signals, credibility, engagement triggers, and funnel alignment. \nDo NOT comment on technical SEO (HTML, indexing, Core Web Vitals) or keyword/content analysis. \nCommunicate with clarity, professionalism, and structured output. \nYour deliverables must read like a high-value CRO/marketing audit prepared by Accenture or BCG."
+        }
+      },
+      "id": "7aa6866f-e84a-4544-8e92-9e15d01bdc13",
+      "name": "CRO Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2224,
+        -3760
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best AI Semantic Search for AI Agents in the country—a world-class expert in optimizing websites to rank on AI Agent bots, crawlers and LLMs through flawless AI semantic analysis execution. \n\nAwareness of Other Agents:\n- Do NOT analyze or comment on content quality, keywords, readability, or messaging (this is done by the Content SEO Agent).\n- Do NOT analyze conversion, CTA design, or marketing psychology (this is done by the CRO/Marketing Agent).\n- Do NOT analyze or comment on content quality, keywords, readability, or messaging (this is done by the Content SEO Agent).\n- Focus ONLY on technical and SecOps factors.\n\nYour task: Analyze the provided HTML code of the webpage and perform a comprehensive On-Page Semantic Audit.\n\nAudit Structure:\n- Critical Issues – Must be fixed immediately (blocking AI Semantic problems).\n- Quick Wins – Easy fixes with high impact.\n- Opportunities for Improvement – Require more effort but provide long-term benefits.\n\nFocus Areas:\n- Semantic markup, value, and schema\n- AI Agents, AI Bots, LLMs and crawlers improvement marketing plan\n\nDeliverable:\n- Return analysis as the structured audit findings and recommendations in direct language format.\n- Do not include any explanations, context, or intro text.\n\n# On-Page Semantic Audit\n\nInput (Landing Page Content & HTML): {{ $json.data }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are the best AI Semantic Search for AI Agents in the country—a world-class expert in optimizing websites to rank on AI Agent crawlers and LLMs, with the precision and depth of a senior consultant. \nStay strictly in the scope of AI  (llms.txt, llms.txt, HTML structure, metadata, schema, headings, indexing, crawlability, Core Web Vitals, internal linking, image optimization, mobile friendliness, security, accessibility). \nDo NOT comment on content quality, keywords, or conversion design. \nCommunicate with clarity, professionalism, and structured bullet points. \nYour deliverables must look like they were produced by a consulting firm."
+        }
+      },
+      "id": "42fc107b-b5dd-426c-8a6a-5c458cdf3c61",
+      "name": "Semantic Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2224,
+        -4352
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d3c93114-f3d3-4069-82ca-b654c14cb430",
+              "name": "data",
+              "type": "string",
+              "value": "={{ $json.data.slice(0, 360000) }} "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "768c8017-fbc6-4a79-a1ba-faecbd780218",
+      "name": "Array Creation with slice to fit context window",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2000,
+        -4048
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "bc570449-93c0-4326-963b-4898df74ff7f",
+      "name": "Merge Audits",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2576,
+        -4080
+      ],
+      "typeVersion": 3,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a457ad1e-71db-4278-a3a6-950bd9cc6a75",
+      "name": "Aggregate Individual Fields to feed Agent",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2800,
+        -4048
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.payload.data.URL }}",
+        "options": {}
+      },
+      "id": "7c12c7d3-02bf-4c4e-9f89-6117256d74db",
+      "name": "Scrape Website1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1776,
+        -4048
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output }}",
+        "options": {}
+      },
+      "id": "dd3907b1-023a-40eb-99ff-f51d2e5f499b",
+      "name": "Markdown1",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        3376,
+        -4048
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook Webpage Audit AI Agent').item.json.body.payload.data.Email }}",
+        "subject": "=Sensonar Audit AI Agent for {{ $('Webhook Webpage Audit AI Agent').item.json.body.payload.data.URL }}",
+        "message": "={{ $json.data }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Sensonar Audit AI Agent",
+          "replyTo": "user@example.com"
+        }
+      },
+      "id": "749ac705-43e5-4772-a3df-639396257dd8",
+      "name": "Gmail1",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        3600,
+        -4048
+      ],
+      "webhookId": "2979e4dc-1689-447e-8cd4-eb907b4eedf4",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "content": "![Sensonar Logo](https://cdn.prod.website-files.com/6540c08f5a4abefc9c0172ad/67cf2fc8095b00fc474866ac_logo_sensonar_black.png)\n\n## AI AGENT that writes a Digital Audit Report of your website then send it directly to your email\n\nThis workflow launches a team of AI Agents that perform a complete analysis of your website:  \n- **Technical** – checking code structure and performance,  \n- **SEO** – evaluating content, keywords, and readability,  \n- **CRO** – reviewing conversions, UX, and marketing.\n- **AI Semantic** - checking if AI Agents can easily get access to the required data or not.\n\nThen, the **Editor in Chief Agent** merges all findings into an elegant consulting-style email report.  \n\nThe result is a **clear business newsletter** that not only highlights issues but also **encourages the next step**: engaging the **AI Improvement Agent**, who designs a new website structure and marketing plan.  \n\nThe workflow uses **OpenAI GPT-4o-mini and Claude Sonnet 4.5 with 8k tokens**, combining analysis speed with premium report quality.  \n\nCost per run: **$0.40–$0.80 USD** (depending on content length of the website).  \n\n**Designed and Developed by [Sebastian Jakubiak](https://www.linkedin.com/in/sjakubiak) at [Sensonar](https://www.sensonar.com)**  \n\nEnjoy the Workflow! ❤️  \nhttps://sensonar.com",
+        "height": 853,
+        "width": 636,
+        "color": 7
+      },
+      "id": "e16d12dd-a43b-41f2-beaf-bc557f505797",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        -4368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "2b45d5eb-4605-42b1-b189-4017e5336e8e",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2000,
+        -3520
+      ],
+      "typeVersion": 1.2
+    }
+  ],
+  "connections": {
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML 2": {
+      "main": [
+        [
+          {
+            "node": "Split Out 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set URL": {
+      "main": [
+        [
+          {
+            "node": "Crawl sitemap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Crawl sitemap 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out 2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crawl sitemap": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crawl sitemap 2": {
+      "main": [
+        [
+          {
+            "node": "XML 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Audit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Scrape Website": {
+      "main": [
+        [
+          {
+            "node": "Content Audit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Technical Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Audit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Landing Page Url": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Technical Audit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Audit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over URLs": {
+      "main": [
+        [
+          {
+            "node": "Completion Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rate Limit (3s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Seed URLs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit (3s)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Webpage HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI URL Extractor": {
+      "main": [
+        [
+          {
+            "node": "URL Parser & Normalizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to Markdown": {
+      "main": [
+        [
+          {
+            "node": "AI URL Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Webpage HTML": {
+      "main": [
+        [
+          {
+            "node": "HTML to Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Discovered URLs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Schedule (6 AM)": {
+      "main": [
+        [
+          {
+            "node": "Read Seed URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL Parser & Normalizer": {
+      "main": [
+        [
+          {
+            "node": "Save Discovered URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI URL Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Website URL": {
+      "main": [
+        [
+          {
+            "node": "Prepare website URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sitemap URL Check": {
+      "main": [
+        [
+          {
+            "node": "Filter Non-Empty Sitemap Responses",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Sitemap Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build sitemap URLs": {
+      "main": [
+        [
+          {
+            "node": "Sitemap URL Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Sitemap Data": {
+      "main": [
+        [
+          {
+            "node": "Sitemap URL Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare website URL": {
+      "main": [
+        [
+          {
+            "node": "Build sitemap URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Sitemap URLs": {
+      "main": [
+        [
+          {
+            "node": "Fetch Sitemap Pages XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Sitemap Pages XML": {
+      "main": [
+        [
+          {
+            "node": "Extract Page URLs from Sitemap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude the Sitemap URLs": {
+      "main": [
+        [
+          {
+            "node": "Save Page URLs to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Page URLs from Sitemap": {
+      "main": [
+        [
+          {
+            "node": "Exclude the Sitemap URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Non-Empty Sitemap Responses": {
+      "main": [
+        [
+          {
+            "node": "Extract Sitemap URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRO Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Audits",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "SEO Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Audits",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge Audits": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Individual Fields to feed Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Semantic Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Audits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IT Technical Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Audits",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor in Chef AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor in Chef AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Markdown1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Webpage Audit AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Individual Fields to feed Agent": {
+      "main": [
+        [
+          {
+            "node": "Editor in Chef AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Array Creation with slice to fit context window": {
+      "main": [
+        [
+          {
+            "node": "IT Technical Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SEO Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CRO Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Semantic Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Website1": {
+      "main": [
+        [
+          {
+            "node": "Array Creation with slice to fit context window",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IT Technical Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SEO Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "CRO Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Semantic Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook Webpage Audit AI Agent": [
+      {
+        "json": {
+          "body": {
+            "payload": {
+              "id": "68f94a03ec06b9ae414bbf26",
+              "data": {
+                "URL": "https://sensonar.com",
+                "Email": "sjakubiak@me.com",
+                "language": "piękny język polski"
+              },
+              "name": "ai-audit-form",
+              "formId": "68d52b71e0f0b09f1e7a4320",
+              "pageId": "67e41610e6ee22f225b3d5e3",
+              "schema": [
+                {
+                  "fieldName": "URL",
+                  "fieldType": "FormTextInput",
+                  "fieldElementId": "6015088b-fcf1-3221-9ced-98d86e3f4f2a"
+                },
+                {
+                  "fieldName": "Email",
+                  "fieldType": "FormTextInput",
+                  "fieldElementId": "6015088b-fcf1-3221-9ced-98d86e3f4f2d"
+                },
+                {
+                  "fieldName": "language",
+                  "fieldType": "FormSelect",
+                  "fieldElementId": "fdfdb3b6-2404-8dc4-5d80-792834d46672"
+                }
+              ],
+              "siteId": "6540c08f5a4abefc9c0172ad",
+              "pageUrl": "https://sensonar.webflow.io/ai-agents/www-audit",
+              "submittedAt": "2025-10-22T21:17:55.290Z",
+              "formElementId": "6015088b-fcf1-3221-9ced-98d86e3f4f27",
+              "publishedPath": "/ai-agents/www-audit"
+            },
+            "triggerType": "form_submission"
+          },
+          "query": {},
+          "params": {},
+          "headers": {
+            "host": "sensonar.app.n8n.cloud",
+            "accept": "*/*",
+            "cf-ray": "992c0635c74fdda7-IAD",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-ew-via": "15",
+            "cf-worker": "n8n.cloud",
+            "x-real-ip": "35.170.124.222",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "tracestate": "dd=s:0;p:1a3b0f4a170760e3",
+            "user-agent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)",
+            "traceparent": "00-0000000000000000385342c9aa2ec5c4-1a3b0f4a170760e3-00",
+            "cf-ipcountry": "US",
+            "content-type": "application/json",
+            "x-is-trusted": "yes",
+            "content-length": "830",
+            "accept-encoding": "gzip, br",
+            "x-forwarded-for": "35.170.124.222, 172.70.135.123",
+            "cf-connecting-ip": "35.170.124.222",
+            "x-forwarded-host": "sensonar.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-datadog-trace-id": "4058661123102000580",
+            "x-forwarded-server": "traefik-prod-users-gwc-38-6f9f659dd9-865tl",
+            "x-datadog-parent-id": "1890121279500411107",
+            "x-webflow-signature": "REDACTED",
+            "x-webflow-timestamp": "1761167875396",
+            "x-datadog-sampling-priority": "0"
+          },
+          "webhookUrl": "https://sensonar.app.n8n.cloud/webhook/webpage-audit-ai-agent",
+          "executionMode": "production"
+        },
+        "binary": {
+          "data": {
+            "data": "eyJ0cmlnZ2VyVHlwZSI6ImZvcm1fc3VibWlzc2lvbiIsInBheWxvYWQiOnsibmFtZSI6ImFpLWF1ZGl0LWZvcm0iLCJzaXRlSWQiOiI2NTQwYzA4ZjVhNGFiZWZjOWMwMTcyYWQiLCJkYXRhIjp7IlVSTCI6Imh0dHBzOi8vc2Vuc29uYXIuY29tIiwiRW1haWwiOiJzamFrdWJpYWtAbWUuY29tIiwibGFuZ3VhZ2UiOiJwacSZa255IGrEmXp5ayBwb2xza2kifSwic3VibWl0dGVkQXQiOiIyMDI1LTEwLTIyVDIxOjE3OjU1LjI5MFoiLCJpZCI6IjY4Zjk0YTAzZWMwNmI5YWU0MTRiYmYyNiIsImZvcm1JZCI6IjY4ZDUyYjcxZTBmMGIwOWYxZTdhNDMyMCIsImZvcm1FbGVtZW50SWQiOiI2MDE1MDg4Yi1mY2YxLTMyMjEtOWNlZC05OGQ4NmUzZjRmMjciLCJwYWdlSWQiOiI2N2U0MTYxMGU2ZWUyMmYyMjViM2Q1ZTMiLCJwdWJsaXNoZWRQYXRoIjoiL2FpLWFnZW50cy93d3ctYXVkaXQiLCJwYWdlVXJsIjoiaHR0cHM6Ly9zZW5zb25hci53ZWJmbG93LmlvL2FpLWFnZW50cy93d3ctYXVkaXQiLCJzY2hlbWEiOlt7ImZpZWxkTmFtZSI6IlVSTCIsImZpZWxkVHlwZSI6IkZvcm1UZXh0SW5wdXQiLCJmaWVsZEVsZW1lbnRJZCI6IjYwMTUwODhiLWZjZjEtMzIyMS05Y2VkLTk4ZDg2ZTNmNGYyYSJ9LHsiZmllbGROYW1lIjoiRW1haWwiLCJmaWVsZFR5cGUiOiJGb3JtVGV4dElucHV0IiwiZmllbGRFbGVtZW50SWQiOiI2MDE1MDg4Yi1mY2YxLTMyMjEtOWNlZC05OGQ4NmUzZjRmMmQifSx7ImZpZWxkTmFtZSI6Imxhbmd1YWdlIiwiZmllbGRUeXBlIjoiRm9ybVNlbGVjdCIsImZpZWxkRWxlbWVudElkIjoiZmRmZGIzYjYtMjQwNC04ZGM0LTVkODAtNzkyODM0ZDQ2NjcyIn1dfX0=",
+            "mimeType": "application/json"
+          }
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

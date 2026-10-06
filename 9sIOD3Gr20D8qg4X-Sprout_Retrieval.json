@@ -1,0 +1,1160 @@
+{
+  "name": "Sprout Retrieval",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/timeattendance/api/v1/Leave/{{ $('Split Out2').item.json.requestId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1312,
+        400
+      ],
+      "id": "9466313a-ecff-4fe1-b615-de34b28d9d1a",
+      "name": "retrieve a leave request detail"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1264,
+        576
+      ],
+      "id": "ecf95a7d-ff0d-425a-a951-822b0136f357",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1488,
+        576
+      ],
+      "id": "3ed47221-9059-4c2d-994c-39b75322b9b1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=COA Certificate of Attendance Approval Request\n\nPrompt:\n\nGiven the below request details and activity tracking data, please assist in determining the approval or denial of the COA certificate of attendance request.\n\nRequest Details:\n- Request ID: {{ $('request').item.json.id }}\n- Internal Request ID: {{ $('request').item.json.requestId }}\n- Full Name: {{ $('request').item.json.fullName }}\n- Request Type: {{ $('request').item.json.type }}\n- Reason for Request: \n\nActivTrak Activity Data:\n- User Name: {{ $json.user_name }}\n- Local Date: {{ $json.local_date }}\n- First Activity Time: {{ $json.first_activity_datetime }}\n- Last Activity Time: {{ $json.last_activity_datetime }}\n\nTask:\n1. Verify the user's activity using ActivTrak data as a basis for deciding on the approval of the COA certificate.\n2. Consider whether the recorded activity aligns with the attendance requirements stated in the request.\n3. Based on the analysis, determine if the request should be approved or denied.\n\nOutput:\nPlease provide the decision in the following JSON format:\n\n{\n  \"requestDetail\": {\n    \"requestId\": \"{{ $('request').item.json.requestId }}\",\n    \"fullName\": \"{{ $('request').item.json.fullName }}\",\n    \"type\": \"{{ $('request').item.json.type }}\",\n    \"reason\": \"{{ $('request').item.json.reason }}\"\n  },\n  \"activTrakData\": {\n    \"userName\": \"{{ $json.user_name }}\",\n    \"localDate\": \"{{ $json.local_date }}\",\n    \"firstActivityDatetime\": \"{{ $json.first_activity_datetime }}\",\n    \"lastActivityDatetime\": \"{{ $json.last_activity_datetime }}\"\n  },\n  \"decision\": {\n    \"status\": \"approved/denied\", // choose 'approved' or 'denied' based on your analysis\n    \"reasoning\": \"Provide a detailed reasoning for the decision here including whether the recorded activity supports the request for attendance.\"\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"requestDetail\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"requestId\": {\n          \"type\": \"string\"\n        },\n        \"fullName\": {\n          \"type\": \"string\"\n        },\n        \"type\": {\n          \"type\": \"string\"\n        },\n        \"reason\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\"requestId\", \"fullName\", \"type\", \"reason\"],\n      \"additionalProperties\": false\n    },\n    \"activTrakData\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"userName\": {\n          \"type\": \"string\"\n        },\n        \"localDate\": {\n          \"type\": \"string\",\n          \"format\": \"date\"\n        },\n        \"firstActivityDatetime\": {\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n        },\n        \"lastActivityDatetime\": {\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n        }\n      },\n      \"required\": [\"userName\", \"localDate\", \"firstActivityDatetime\", \"lastActivityDatetime\"],\n      \"additionalProperties\": false\n    },\n    \"decision\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"status\": {\n          \"type\": \"string\",\n          \"enum\": [\"approved\", \"denied\"]\n        },\n        \"reasoning\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\"status\", \"reasoning\"],\n      \"additionalProperties\": false\n    }\n  },\n  \"required\": [\"requestDetail\", \"activTrakData\", \"decision\"],\n  \"additionalProperties\": false\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        944
+      ],
+      "id": "7aef4e34-bd99-4ed3-bffc-4180cd4f5f12",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/empservice/api/v1/Employees/17540/LeaveTypes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        736,
+        192
+      ],
+      "id": "1614e34b-4bf1-4b61-b5e8-a11839190e49",
+      "name": "GEt leave types"
+    },
+    {
+      "parameters": {
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ApproverId",
+              "value": "={{ $json['System ID'] }}"
+            },
+            {
+              "name": "PageNumber",
+              "value": "1"
+            },
+            {
+              "name": "RowsPerPage",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -608,
+        576
+      ],
+      "id": "6a6adb22-0e2e-4e17-979d-3b25a355a514",
+      "name": "HTTP Request3",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1x8_l768wsmFxXz-mPDykwX6JOalEnhdQ7e0FVVONdR8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x8_l768wsmFxXz-mPDykwX6JOalEnhdQ7e0FVVONdR8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1040,
+        576
+      ],
+      "id": "dd38fd6f-208d-4327-b571-b77b768c9b09",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        576
+      ],
+      "id": "fd8bc831-4b5d-4b9e-9642-c6c57fa5e2a8",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        384
+      ],
+      "id": "85b7e26f-192d-4212-a5a5-0c4d50561787",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5cf6e3fe-a4c1-468f-b669-f929f05b5926",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "fdeab7d7-51c7-4a0a-b74a-b4030a0272b2",
+              "name": "requestId",
+              "value": "={{ $json.requestId }}",
+              "type": "number"
+            },
+            {
+              "id": "2b483f93-3f82-4ee9-9e3e-a70672c2a469",
+              "name": "employeeId",
+              "value": "={{ $json.employeeId }}",
+              "type": "number"
+            },
+            {
+              "id": "964c258e-dbcb-4814-ae55-bc60a8e3e0ae",
+              "name": "fullName",
+              "value": "={{ $json.fullName }}",
+              "type": "string"
+            },
+            {
+              "id": "facd71d7-c879-4456-b8c1-cac28483463b",
+              "name": "dateFrom",
+              "value": "={{ $json.dateFrom }}",
+              "type": "string"
+            },
+            {
+              "id": "84752be8-39ed-4695-84c5-c0de422e7308",
+              "name": "orderNo",
+              "value": "={{ $json.orderNo }}",
+              "type": "number"
+            },
+            {
+              "id": "c9a82cdf-9586-45fb-8a9c-014227c51390",
+              "name": "dateTo",
+              "value": "={{ $json.dateTo }}",
+              "type": "string"
+            },
+            {
+              "id": "6986b798-6616-4d5a-90c0-4ce6c1ac25b8",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "918effef-3f6c-4037-9182-5dc0c7e08b5b",
+              "name": "reason",
+              "value": "={{ $json.reason }}",
+              "type": "string"
+            },
+            {
+              "id": "83b5f7ad-284d-4216-bc0c-172b5f5a668e",
+              "name": "dateFiled",
+              "value": "={{ $json.dateFiled }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        224
+      ],
+      "id": "59a7aa6c-6a49-4c5c-95d3-f01410655274",
+      "name": "Edit Fields1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        496,
+        192
+      ],
+      "id": "3725e2c6-5993-44e2-96c0-533339d760e9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        208
+      ],
+      "id": "43cab6ce-50ff-4632-8d97-648463408b2e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d759019d-9e32-4ac7-ad5d-7570803f7314",
+              "name": "data",
+              "value": "={{$json}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        400
+      ],
+      "id": "9e0cc428-705f-4fb4-87f9-5b79d40597c3",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "67749a01-e929-4e0f-8233-14715b9afa62",
+              "leftValue": "={{ $json.attachment.fileName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        400
+      ],
+      "id": "23d94a38-f3d7-432a-90a2-9c044139bcb7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10_F-2TvsTvHRyu4EQLMFMDNOyymN7TjOrromI4SG8Js",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1026330536,
+          "mode": "list",
+          "cachedResultName": "ActivTrak UserAgent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10_F-2TvsTvHRyu4EQLMFMDNOyymN7TjOrromI4SG8Js/edit#gid=1026330536"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json['Doer Email'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        1056
+      ],
+      "id": "e61e1ed2-7a81-4dcd-a9cb-a193e386a0e9",
+      "name": "Get row(s) in sheet2",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Doer Name",
+              "lookupValue": "={{ $json.fullName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        992
+      ],
+      "id": "43927852-ae6e-46f3-8c7a-bfa0a96749e3",
+      "name": "Get row(s) in sheet3",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ca77244e-73d0-43e0-befc-e6aa703db9c2",
+              "leftValue": "={{ $json.dateFiled }}",
+              "rightValue": "={{ $today.minus({days:30}) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        576
+      ],
+      "id": "06d305cf-4339-4528-a152-e7c6e4ca40ae",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        288,
+        880
+      ],
+      "id": "e0f5fd49-4718-45ec-8322-3b35fcda2789",
+      "name": "Loop Over Items1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NqDsFPa7kYFgttSh4NTRQtuQ8aYiqb2zCkOaROlaJLI",
+          "mode": "list",
+          "cachedResultName": "active track",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NqDsFPa7kYFgttSh4NTRQtuQ8aYiqb2zCkOaROlaJLI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 4655981,
+          "mode": "list",
+          "cachedResultName": "Extract 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NqDsFPa7kYFgttSh4NTRQtuQ8aYiqb2zCkOaROlaJLI/edit#gid=4655981"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "user_name",
+              "lookupValue": "={{ $json.User }}"
+            },
+            {
+              "lookupColumn": "local_date",
+              "lookupValue": "={{ $json['date '] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        784
+      ],
+      "id": "5d8cf542-bb28-46b8-9f19-19f106dc0a7d",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e30ece78-658f-4090-94d2-168dfca94582",
+              "name": "User",
+              "value": "={{ $json.Alias }}",
+              "type": "string"
+            },
+            {
+              "id": "c0a86604-3574-478f-b072-3091af189171",
+              "name": "date ",
+              "value": "={{    (() => {     const datePart = $('request').item.json.dateFrom.split('T')[0];     const [year, month, day] = datePart.split('-');     return `${parseInt(month)}/${parseInt(day)}/${year}`;   })() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        784
+      ],
+      "id": "ff66f5bb-c146-4f5e-865e-37119d032683",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "=Leave",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "63c7a719-589e-49d0-ade8-38e9d171e05c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1331e8f4-c08a-44b1-9b8b-151373f92aaf",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "CertificateOfAttendance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        576
+      ],
+      "id": "8d525197-c6dc-43cc-bbe0-34e705cec3b1",
+      "name": "request"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Test data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestId": "={{ $json.output[0].content[0].text.requestDetail.requestId }}",
+            "Name": "={{ $json.output[0].content[0].text.requestDetail.fullName }}",
+            "type": "={{ $json.output[0].content[0].text.requestDetail.type }}",
+            "DateFrom": "={{ $('request').item.json.dateFrom }}",
+            "DateTo": "={{ $('request').item.json.dateTo }}",
+            "DateFiled": "={{ $('request').item.json.dateFiled }}",
+            "Doer Reason": "={{ $('request').item.json.reason }}",
+            "Status": "={{ $json.output[0].content[0].text.decision.status }}",
+            "Reason": "={{ $json.output[0].content[0].text.decision.reasoning }}"
+          },
+          "matchingColumns": [
+            "requestId"
+          ],
+          "schema": [
+            {
+              "id": "requestId",
+              "displayName": "requestId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DateFiled",
+              "displayName": "DateFiled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DateFrom",
+              "displayName": "DateFrom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DateTo",
+              "displayName": "DateTo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Doer Reason",
+              "displayName": "Doer Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LeaveStatus",
+              "displayName": "LeaveStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RejectReason",
+              "displayName": "RejectReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        944
+      ],
+      "id": "ef6f395c-9436-49d9-94d7-08bdfb3b478a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "retrieve a leave request detail": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GEt leave types": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GEt leave types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "retrieve a leave request detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

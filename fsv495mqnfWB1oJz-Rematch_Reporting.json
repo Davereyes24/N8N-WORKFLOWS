@@ -1,0 +1,149 @@
+{
+  "name": "Rematch Reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1wa0TetVKmlL07Di86cX_El9cDzVeR_TQU-GrvSF_z_Y",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 457344979,
+          "mode": "list",
+          "cachedResultName": "Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wa0TetVKmlL07Di86cX_El9cDzVeR_TQU-GrvSF_z_Y/edit#gid=457344979"
+        },
+        "clear": "specificRange",
+        "range": "D:AQ"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "5ed8ac8f-bfae-492e-b72c-34119b18cb9f",
+      "name": "Clear sheet",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1wa0TetVKmlL07Di86cX_El9cDzVeR_TQU-GrvSF_z_Y",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 457344979,
+          "mode": "list",
+          "cachedResultName": "Sample",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wa0TetVKmlL07Di86cX_El9cDzVeR_TQU-GrvSF_z_Y/edit#gid=457344979"
+        },
+        "clear": "specificRange",
+        "range": "D:AQ"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        -48
+      ],
+      "id": "ef674bee-7070-45e1-bbd0-65fcb0d7d7ed",
+      "name": "Clear sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -48
+      ],
+      "id": "39c6cb90-fd18-4d97-a11d-fd89435db3c3",
+      "name": "Split Out",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e409136d-53da-482f-b00c-a30a20a29ded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -48
+      ],
+      "id": "977590d6-4f64-44be-8bd6-45b3b0b49905",
+      "name": "Webhook",
+      "webhookId": "e409136d-53da-482f-b00c-a30a20a29ded"
+    }
+  ],
+  "connections": {
+    "Clear sheet": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,1428 @@
+{
+  "name": "Retrieve Keap Data",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09d255ca-357d-41ad-8512-46fc525d5c58",
+              "name": "sa_json",
+              "value": "{\n  \"type\": \"service_account\",\n  \"project_id\": \"od-bigquery\",\n  \"private_key_id\": \"REDACTED\",\n  \"private_key\": \"-----BEGIN PRIVATE KEY-----REDACTED-----END PRIVATE KEY-----\\n\",\n  \"client_email\": \"n8n-invoker@od-bigquery.iam.gserviceaccount.com\",\n  \"client_id\": \"109645408051380022715\",\n  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/n8n-invoker%40od-bigquery.iam.gserviceaccount.com\",\n  \"universe_domain\": \"googleapis.com\"\n}",
+              "type": "string"
+            },
+            {
+              "id": "e0a41eff-8437-4a83-8006-fa01ead3ebab",
+              "name": "token_audience",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            },
+            {
+              "id": "c901fe00-c40c-44e4-9fd7-325a21747577",
+              "name": "token_endpoint",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        -368
+      ],
+      "id": "011ac4bd-9557-4dff-8435-c7c326333ca2",
+      "name": "GCP Information"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saRaw = $input.first().json.sa_json;\nconst audience = String($input.first().json.token_audience || \"\").trim();\nconst endpoint = String($input.first().json.token_endpoint || \"\").trim();\n\nif (!saRaw) throw new Error(\"Missing input field: sa_json (service account JSON string)\");\nif (!audience) throw new Error(\"Missing input field: token_audience\");\nif (!endpoint) throw new Error(\"Missing input field: token_endpoint\");\n\nlet sa;\ntry {\n  sa = typeof saRaw === \"string\" ? JSON.parse(saRaw) : saRaw;\n} catch (e) {\n  throw new Error(\"sa_json is not valid JSON\");\n}\n\nif (!sa.client_email || !sa.private_key) {\n  throw new Error(\"sa_json must include client_email and private_key\");\n}\n\nconst now = Math.floor(Date.now() / 1000);\n\nconst header = { alg: \"RS256\", typ: \"JWT\" };\nconst claimSet = {\n  iss: sa.client_email,\n  scope: \"https://www.googleapis.com/auth/cloud-platform\",\n  aud: \"https://oauth2.googleapis.com/token\",\n  iat: now,\n  exp: now + 3600,\n};\n\nconst b64url = (obj) =>\n  Buffer.from(JSON.stringify(obj))\n    .toString(\"base64\")\n    .replace(/=/g, \"\")\n    .replace(/\\+/g, \"-\")\n    .replace(/\\//g, \"_\");\n\nconst unsigned = `${b64url(header)}.${b64url(claimSet)}`;\n\nconst crypto = require(\"crypto\");\nconst signer = crypto.createSign(\"RSA-SHA256\");\nsigner.update(unsigned);\nsigner.end();\n\nconst sig = signer\n  .sign(sa.private_key, \"base64\")\n  .replace(/=/g, \"\")\n  .replace(/\\+/g, \"-\")\n  .replace(/\\//g, \"_\");\n\nconst jwt = `${unsigned}.${sig}`;\n\nconst formEncode = (obj) =>\n  Object.entries(obj)\n    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)\n    .join(\"&\");\n\nconst tokenRes = await this.helpers.httpRequest({\n  method: \"POST\",\n  url: \"https://oauth2.googleapis.com/token\",\n  headers: { \"Content-Type\": \"application/x-www-form-urlencoded\" },\n  body: formEncode({\n    grant_type: \"urn:ietf:params:oauth:grant-type:jwt-bearer\",\n    assertion: jwt,\n  }),\n});\n\nif (!tokenRes?.access_token) {\n  throw new Error(\"Failed to mint Google access token. Check service account JSON and permissions.\");\n}\n\nreturn [\n  {\n    json: {\n      gcp_access_token: tokenRes.access_token,\n      sa_email: sa.client_email,\n      audience,\n      endpoint,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -368
+      ],
+      "id": "6a1f0a3b-188e-4f3e-b4af-7ae77f228277",
+      "name": "Get GCP Access Token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{{ $json.sa_email }}:generateIdToken ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audience\": \"{{ $json.audience }}\",\n  \"includeEmail\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        96,
+        -368
+      ],
+      "id": "287d49e2-d3a7-4a01-a916-874f102e4ddd",
+      "name": "Generate OIDC ID Token"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Get GCP Access Token').item.json.endpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        320,
+        -368
+      ],
+      "id": "f97af8ec-7ca5-4f90-86d2-a51deb04588e",
+      "name": "Get Keap Token"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/tags?filter=category_id==11",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2112,
+        -464
+      ],
+      "id": "a0f03375-32fd-471c-9ea4-e86e10d96d4d",
+      "name": "Get Tags",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const PHRASES = [\"months upfront\", \"purchased outsourced doers\"];\nconst needles = PHRASES.map(s => String(s).toLowerCase().trim()).filter(Boolean);\n\nconst tags = Array.isArray($json?.tags) ? $json.tags\n  : Array.isArray($json?.data) ? $json.data\n  : Array.isArray($json) ? $json\n  : [];\n\nconst monthTags = tags.filter(t => {\n  const name = String(t?.name || \"\").toLowerCase();\n  return needles.every(p => name.includes(p));\n});\n\nreturn [{ json: { monthTags } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        -464
+      ],
+      "id": "3c0eec83-4789-4d9d-9b07-f39b20235f4a",
+      "name": "Get Months Subscribed Tags",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "593cf0ba-ece6-498b-876a-37ea58f45cec",
+              "name": "token",
+              "value": "=REDACTED_SECRET",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        -368
+      ],
+      "id": "5330f912-9332-4aef-baaa-6a54722ef888",
+      "name": "Set Token"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        -272
+      ],
+      "id": "d92b64e9-5b3a-461f-8979-7eeb11a5e62e",
+      "name": "Aggregate",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const tagMap = {};\n\n// Build tagMap from monthTags.matches\nconst monthTagsRaw = $input.first().json.monthTags ?? {};\nconst matches = Array.isArray(monthTagsRaw?.matches)\n  ? monthTagsRaw.matches\n  : Array.isArray(monthTagsRaw)\n    ? monthTagsRaw\n    : [];\n\nfor (const t of matches) {\n  if (t?.id != null && t?.name) tagMap[String(t.id)] = String(t.name);\n}\n\n// Type + Shift tag ids\nconst TAG_DMVA_FT = \"14775\";\nconst TAG_DMVA_PT = \"14777\";\nconst TAG_EC_FT   = \"14779\";\nconst TAG_EC_PT   = \"14781\";\n\nconst inputItems = $input.all() || [];\nconst out = [];\n\nfor (const it of inputItems) {\n  const tagIdsRaw = Array.isArray(it.json.tag_ids) ? it.json.tag_ids : [];\n  const tagIds = tagIdsRaw.map(id => String(id)); // normalize to strings\n  const tagNames = tagIds.map(id => tagMap[id]).filter(Boolean);\n\n  // Determine type + shift\n  let type = \"\";\n  let shift = \"\";\n\n  const hasDMVA = tagIds.includes(TAG_DMVA_FT) || tagIds.includes(TAG_DMVA_PT);\n  const hasEC   = tagIds.includes(TAG_EC_FT)   || tagIds.includes(TAG_EC_PT);\n\n  if (hasDMVA) {\n    type = \"DMVA\";\n    if (tagIds.includes(TAG_DMVA_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_DMVA_PT)) shift = \"PT\";\n  } else if (hasEC) {\n    type = \"EC\";\n    if (tagIds.includes(TAG_EC_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_EC_PT)) shift = \"PT\";\n  }\n\n  // Remove tag_ids and monthTags\n  const { tag_ids, monthTags, ...rest } = it.json;\n\n  const next = { ...rest };\n\n  if (tagNames.length) next.tag_names = tagNames;\n  if (type) next.type = type;\n  if (shift) next.shift = shift;\n\n  // drop empty objects\n  if (Object.keys(next).length === 0) continue;\n\n  out.push({ json: next });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2784,
+        -272
+      ],
+      "id": "3411f183-d60d-4b94-b35e-8ef4cece54c1",
+      "name": "Retrieve Month Subscribed"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const pickEmail = (arr) => {\n  if (!Array.isArray(arr)) return \"\";\n\n  const toLower = (e) =>\n    String(e ?? \"\")\n      .replace(/\\u00A0/g, \" \")\n      .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n      .trim()\n      .toLowerCase();\n\n  const email1 = arr.find(e => e?.field === \"EMAIL1\")?.email;\n  if (email1) return toLower(email1);\n\n  const email2 = arr.find(e => e?.field === \"EMAIL2\")?.email;\n  if (email2) return toLower(email2);\n\n  const fallback = arr[0]?.email;\n  return fallback ? toLower(fallback) : \"\";\n};\n\nconst pickCF = (arr, id) => {\n  if (!Array.isArray(arr)) return \"\";\n  const hit = arr.find(cf => String(cf?.id) === String(id));\n  return String(hit?.content ?? \"\").trim();\n};\n\nconst extractMonths = (tagNames) => {\n  const tags = Array.isArray(tagNames) ? tagNames : [];\n  for (const t of tags) {\n    const s = String(t || \"\").toLowerCase();\n    const m = s.match(/purchased\\s+outsourced\\s+doers\\s+(.+?)\\s+upfront/i);\n    if (m && m[1]) {\n      const between = m[1].trim(); // e.g. \"5 Months\"\n      const m2 = between.match(/(\\d+)\\s*Months?/i);\n      if (m2) return `${m2[1]} months`;\n      return between;\n    }\n    // fallback: find just the first \"N Months\" anywhere\n    const m3 = s.match(/(\\d+)\\s*Months?/i);\n    if (m3) return `${m3[1]} months`;\n  }\n  return \"\";\n};\n\nconst fullName = [($json.preferred_name || \"\").trim() || ($json.given_name || \"\").trim(), ($json.family_name || \"\").trim()]\n  .filter(Boolean)\n  .join(\" \")\n  .trim();\n\nreturn {\n  json: {\n    id: $json.id ?? null,\n    fullName,\n    email: pickEmail($json.email_addresses),\n    score: pickCF($json.custom_fields, 708),\n    onboarding: pickCF($json.custom_fields, 315),\n    monthsSubscribed: extractMonths($json.tag_names),\n    founder_type: $json.type,\n    founder_category: $json.category,\n    founder_shift: $json.shift\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        -272
+      ],
+      "id": "7a15daa1-cb08-4bc6-8672-2ebf66471e8a",
+      "name": "Finalize Output"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "enq2xMxJtOtcHcs1",
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "/projects/elfFFVIFWTzfI539/datatables/enq2xMxJtOtcHcs1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ApplicationQualityScore": "={{ $json.score }}",
+            "KeapId": "={{ $json.id }}",
+            "FullName": "={{ $json.fullName }}",
+            "Email": "={{ $json.email }}",
+            "OnboardingDay": "={{ $json.onboarding }}",
+            "MonthsSubscribed": "={{ $json.monthsSubscribed }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "KeapId",
+              "displayName": "KeapId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FullName",
+              "displayName": "FullName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ApplicationQualityScore",
+              "displayName": "ApplicationQualityScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "OnboardingDay",
+              "displayName": "OnboardingDay",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "MonthsSubscribed",
+              "displayName": "MonthsSubscribed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -1440
+      ],
+      "id": "9b1ea563-e3e8-4084-af3d-e5d2900e26d4",
+      "name": "Update Table",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "contacts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -272
+      ],
+      "id": "ae7cf06d-b1c2-42b2-929e-03269223f45e",
+      "name": "Split Contacts"
+    },
+    {
+      "parameters": {
+        "url": "https://api.infusionsoft.com/crm/rest/v2/tags/145/contacts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "custom_fields,tag_ids"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "page_token",
+                    "value": "={{ $response.body[\"next_page_token\"] }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ $response.body[\"next_page_token\"] == \"\" }}",
+              "requestInterval": 5000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        992,
+        -272
+      ],
+      "id": "02da51ca-51a9-4ee7-b134-dcce1b2a78e2",
+      "name": "Get 145 Contacts",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        -272
+      ],
+      "id": "f39589db-1511-459a-b3e3-898571a7825a",
+      "name": "Merge Contacts"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = Array.isArray($json) ? $json : [$json];\n\n// Offboarded contacts array from \"Get Offboarded Contacts\"\nconst offboardedContacts = $('Get Offboarded Contacts').first().json.contacts ?? '';\n\n// Build Set of offboarded IDs\nconst offboardedIds = new Set(\n  (Array.isArray(offboardedContacts) ? offboardedContacts : [])\n    .map(c => c?.id)\n    .filter(id => id !== undefined && id !== null)\n    .map(id => String(id))\n);\n\n// Collect all contacts from all data blocks, filter, dedupe by id\nconst contactsById = new Map();\n\nfor (const item of items) {\n  const dataArr = Array.isArray(item?.data) ? item.data : [];\n  for (const d of dataArr) {\n    const contacts = Array.isArray(d?.contacts) ? d.contacts : [];\n    for (const c of contacts) {\n      const id = c?.id;\n      if (id === undefined || id === null) continue;\n\n      const idStr = String(id);\n\n      // remove if offboarded\n      if (offboardedIds.has(idStr)) continue;\n\n      // keep and dedupe\n      if (!contactsById.has(idStr)) contactsById.set(idStr, c);\n    }\n  }\n}\n\nreturn [\n  {\n    json: {\n      contacts: Array.from(contactsById.values()),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        -272
+      ],
+      "id": "c90da6b4-331e-45eb-9c5b-6553ea1a3d95",
+      "name": "Filter Tagged Contacts"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2560,
+        -288
+      ],
+      "id": "9475f150-6bb8-41b0-b0f7-e46269dc44ce",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $input.first().json.token;\n\nconst tagIds = [\n  18135, 7636, 7634, 6472, 6470, 6468, 6466, 6464, 6462, 6460,\n  6458, 6456, 6452, 6450, 6448, 6446, 6444, 6442, 6440, 6438,\n  6436, 6434, 6432, 6430, 6428, 6426\n];\n\nconst baseUrl = \"https://api.infusionsoft.com/crm/rest/v2\";\n\nconst contactsById = new Map();\n\nasync function fetchContactsForTag(tagId) {\n  let pageToken;\n\n  do {\n    const qs = { limit: 1000 };\n    if (pageToken) qs.page_token = pageToken;\n\n    const res = await this.helpers.httpRequest({\n      method: \"GET\",\n      url: `${baseUrl}/tags/${tagId}/contacts`,\n      qs,\n      headers: {\n        Authorization: `Bearer ${token}`,\n        Accept: \"application/json\",\n      },\n      json: true,\n    });\n\n    const contacts = Array.isArray(res?.contacts) ? res.contacts : [];\n    for (const c of contacts) {\n      if (c?.id !== undefined && c?.id !== null) {\n        contactsById.set(String(c.id), c);\n      }\n    }\n\n    pageToken = res?.next_page_token || undefined;\n  } while (pageToken);\n}\n\nfor (const tagId of tagIds) {\n  await fetchContactsForTag.call(this, tagId);\n}\n\nreturn [\n  {\n    json: {\n      contacts: Array.from(contactsById.values()).map((c) => ({ id: c.id })),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -272
+      ],
+      "id": "05e6fc9a-15f7-4d9e-b074-b73c67c9e719",
+      "name": "Get Offboarded Contacts",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/contacts/{{ $json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,given_name,family_name,preferred_name,email_addresses,tag_ids,custom_fields"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -272
+      ],
+      "id": "b534498b-48d9-4110-ac94-6649cdee50ab",
+      "name": "Get Contacts Batching;Pagination",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/contacts/1033199",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        816,
+        -784
+      ],
+      "id": "1fe535b6-fa55-4050-818d-09aa8e9ad71a",
+      "name": "Get Contacts Batching;Pagination1",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "executeOnce": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 344051658,
+          "mode": "list",
+          "cachedResultName": "Full Time BB 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=344051658"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3424,
+        -416
+      ],
+      "id": "88a8d0bf-9ce3-4be0-96cd-e33099ebfe6f",
+      "name": "Get Row from F Database",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst REVENUE_TO_LEAD_SCORE = {\n  \"Pre Revenue\": \"Hustler\",\n  \"$1K - $2K / month\": \"Hustler\",\n  \"$2K - $5K / month\": \"Hustler\",\n  \"$5K - $8K / month\": \"Hustler\",\n  \"$8K - $10K / month\": \"Builder\",\n  \"$10K - $20K / month\": \"Builder\",\n  \"$20K - $40K / month\": \"Builder\",\n  \"$40K - $60K / month\": \"Builder\",\n  \"$60K - $80K / month\": \"Builder\",\n  \"$80K - $100K / month\": \"Scaler\",\n  \"$100K - $200K / month\": \"Scaler\",\n  \"$200K - $500K / month\": \"Scaler\",\n  \"$500K / month +\": \"Scaler\",\n};\n\nconst PRIORITY_MAP = {\n  \"12 months|5\": \"P2\",\n  \"12 months|4\": \"P3\",\n  \"12 months|3\": \"P4\",\n  \"12 months|2\": \"P5\",\n  \"12 months|1\": \"P6\",\n  \"5 months|Scaler\": \"P7\",\n  \"2 months|Scaler\": \"P8\",\n  \"5 months|Builder\": \"P9\",\n  \"2 months|Builder\": \"P10\",\n  \"5 months|Hustler\": \"P11\",\n  \"2 months|Hustler\": \"P12\",\n};\n\nconst INDUSTRY_FIELDS = [\n  \"*What industry does your business operate in?*\",\n  \"*What niche does your Agency operate in? *\",\n  \"Other\",\n  \"*What niche are you a Coach/Consultant in?*\",\n  \"*What type of Local Service do you operate?*\",\n  \"*What type of Professional Services Business do you operate in?*\",\n  \"*What type of Real Estate Business do you operate?*\",\n  \"*What eCommerce niche do you operate in?*\",\n];\n\nconst TOOL_PREF_FIELDS = [\n  \"*For eCommerce Store Building, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Inventory Management, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*Please select your preferred Landing Page tool below so we can further tailor your Doer's training...*\",\n  \"*For Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n];\n\nconst BLUEPRINT_PRIORITIES_FIELD =\n  \"*Organize the stages of the Doing Blueprint below to let us know your priorities with your Doer...*\";\n\nconst BUSINESS_STATEMENT_FIELD =\n  \"*So that your Doer can understand your business and what/who you serve, please enter your business statement below.*\";\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction norm(s) {\n  return clean(s);\n}\n\nfunction normEmail(s) {\n  return clean(s).toLowerCase();\n}\n\nfunction truthyAnswer(v) {\n  const s = norm(v);\n  if (!s) return false;\n  const low = s.toLowerCase();\n  if (low === \"none\" || low === \"none yet\" || low === \"n/a\") return false;\n  return true;\n}\n\nfunction findKeyLike(row, patterns) {\n  const keys = Object.keys(row || {});\n  const lowerKeys = keys.map(k => [k, String(k).toLowerCase()]);\n  for (const p of patterns) {\n    const hit = lowerKeys.find(([, lk]) => lk.includes(p));\n    if (hit) return hit[0];\n  }\n  return null;\n}\n\nfunction findRevenueValue(row) {\n  const revenueKey = findKeyLike(row, [\"current monthly revenue\", \"monthly revenue\", \"revenue\"]);\n  return revenueKey ? row[revenueKey] : \"\";\n}\n\nfunction combineFields(row, fields) {\n  const parts = fields.map(f => norm(row?.[f])).filter(truthyAnswer);\n\n  const seen = new Set();\n  const unique = [];\n  for (const p of parts) {\n    const key = p.toLowerCase();\n    if (!seen.has(key)) {\n      seen.add(key);\n      unique.push(p);\n    }\n  }\n  return unique.join(\", \");\n}\n\nfunction normalizeMonthsSubscribed(s) {\n  const raw = norm(s);\n  if (!raw) return \"\";\n  const m = raw.match(/(\\d+)\\s*months?/i);\n  return m ? `${m[1]} months` : raw.toLowerCase();\n}\n\nfunction clampScore1to5(x) {\n  const n = Number(String(x ?? \"\").trim());\n  if (!Number.isFinite(n)) return 1;\n  if (n < 1) return 1;\n  if (n > 5) return 5;\n  return n;\n}\n\nfunction revenueTierFromRevenueRaw(revenueRaw) {\n  const tier = REVENUE_TO_LEAD_SCORE[norm(revenueRaw)];\n  return tier || \"Hustler\";\n}\n\nfunction computePriority({ contractLength, applicationQualityScore, revenueRaw }) {\n  const c = normalizeMonthsSubscribed(contractLength);\n  if (!c) return \"P12\";\n\n  if (c === \"12 months\") {\n    const score = clampScore1to5(applicationQualityScore);\n    return PRIORITY_MAP[`${c}|${score}`] || \"P12\";\n  }\n\n  const tier = revenueTierFromRevenueRaw(revenueRaw);\n  return PRIORITY_MAP[`${c}|${tier}`] || \"P12\";\n}\n\n// --------------------\n// 1) Build lookup from PREVIOUS node items by email\n// --------------------\nconst prevItems = $input.all() || [];\nconst prevByEmail = new Map();\n\nfor (const it of prevItems) {\n  const row = it.json || {};\n  const email = normEmail(row.email || row[\"Email\"] || row[\"Doer Email\"]);\n  if (!email) continue;\n\n  // keep first. change to overwrite if you prefer latest\n  if (!prevByEmail.has(email)) prevByEmail.set(email, row);\n}\n\nconst baseItems = $items(\"Finalize Output\") || [];\n\nif (baseItems.length === 0) {\n  return [{ json: { note: 'No items found from node \"Finalize Output\". Check node name.' } }];\n}\n\n// --------------------\n// 3) LEFT JOIN\n// --------------------\nconst out = [];\n\nfor (const it of baseItems) {\n  const base = it.json || {};\n\n  const baseEmail = normEmail(base.email);\n  const baseFullName = norm(base.fullName);\n  const baseId = norm(base.id);\n  const founder_category = norm(base.founder_category);\n  const founder_shift = norm(base.founder_shift);\n\n  const matched = baseEmail ? (prevByEmail.get(baseEmail) || null) : null;\n\n  const monthsSubscribedRaw = norm(base.monthsSubscribed);\n  const contract_length = normalizeMonthsSubscribed(monthsSubscribedRaw);\n  const founder_type = base.founder_type;\n\n  const applicationQualityScore = clampScore1to5(base.score);\n\n  // Revenue only exists on the previous node. If no match, revenueRaw is blank.\n  const revenue_raw = matched ? norm(findRevenueValue(matched)) : \"\";\n\n  let priority;\n  if (founder_category === \"Rematch\") {\n    priority = \"P1\";\n  } else {\n    priority = computePriority({\n      contractLength: contract_length,\n      applicationQualityScore,\n      revenueRaw: revenue_raw,\n    });\n  }\n  \n  // lead_score stays 1..5 from Finalize Output \"score\"\n  const lead_score = applicationQualityScore;\n\n  out.push({\n    json: {\n      full_name: baseFullName,\n      email: baseEmail,\n      KeapId: baseId || null,\n      MonthsSubscribed: monthsSubscribedRaw || null,\n      contract_length,\n      lead_score,\n      priority,\n      founder_category: founder_category || null,\n      founder_type: founder_type || null,\n      OnboardingDay: norm(base.onboarding) || null,\n      founder_shift: founder_shift || null,\n\n      // These come from the previous node only if matched, else blanks\n      revenue_raw: revenue_raw || \"\",\n      business_statement: matched ? norm(matched[BUSINESS_STATEMENT_FIELD]) : \"\",\n      combined_industry_niche: matched ? combineFields(matched, INDUSTRY_FIELDS) : \"\",\n      combined_tools_preferences: matched ? combineFields(matched, TOOL_PREF_FIELDS) : \"\",\n      doing_blueprint_priorities: matched ? norm(matched[BLUEPRINT_PRIORITIES_FIELD]) : \"\",\n    },\n  });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        -288
+      ],
+      "id": "49995fae-2d21-4d65-9fc8-1e914dabfd15",
+      "name": "Summarize Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "function norm(v) {\n  return (v === null || v === undefined) ? \"\" : String(v).trim();\n}\n\nfunction parseIntOrNull(v) {\n  const n = parseInt(String(v), 10);\n  return Number.isFinite(n) ? n : null;\n}\n\nconst foundersWithOverview = $input.all().map((it, idx) => {\n  const j = it.json || {};\n\n  const keapId = norm(j.KeapId);\n  const founder_id = parseIntOrNull(keapId) ?? (idx + 1);\n\n  return {\n    founder_id,\n    \"Founder Name\": norm(j.full_name),\n    \"Contract\": j.contract_length,\n    \"Lead score\": norm(j.priority) || \"P15\",\n    \"Tools Experience Required\": norm(j.combined_tools_preferences),\n    \"Task/Output experience: Blueprint\": norm(j.doing_blueprint_priorities),\n    \"Business Industry Experience\": norm(j.combined_industry_niche),\n    \"Business Overview\": norm(j.business_statement),\n    \"Type\": norm(j.founder_type),\n    \"Category\": norm(j.founder_category),\n    \"Shift Type\": norm(j.founder_shift),\n  };\n});\n\nconst foundersNoOverview = foundersWithOverview.map(f => {\n  const { [\"Business Overview\"]: _drop, ...rest } = f;\n  return rest;\n});\n\nreturn [\n  { json: { founders: foundersWithOverview } },\n  { json: { founders: foundersNoOverview } },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        -288
+      ],
+      "id": "0c18d3a5-570d-460f-b074-6370d6f38229",
+      "name": "Super Finalized Output"
+    },
+    {
+      "parameters": {
+        "path": "940a9ccf-3c5a-4d22-9fa1-5b0dc87cf27b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        -368
+      ],
+      "id": "f3b0d5fc-6933-459e-b5fe-2028cc7d8a49",
+      "name": "Webhook",
+      "webhookId": "940a9ccf-3c5a-4d22-9fa1-5b0dc87cf27b"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -1216
+      ],
+      "id": "33e7061d-a9e9-4088-858b-bdbb10fb7b52",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ieqcurgmjhcmvlpwkosa.supabase.co/functions/v1/retrieve-founders-callback",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($items()[0].json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4384,
+        -384
+      ],
+      "id": "6601ca6e-019b-4d5e-8ec2-e8b2166df899",
+      "name": "Pass to Supabase"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18hb6w_HO09zRPlxs7G3sNZpqFP44v7S26jWVZmfHtPU",
+          "mode": "list",
+          "cachedResultName": "Week Match",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18hb6w_HO09zRPlxs7G3sNZpqFP44v7S26jWVZmfHtPU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18hb6w_HO09zRPlxs7G3sNZpqFP44v7S26jWVZmfHtPU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.founder_id }}",
+            "Name": "={{ $json[\"Founder Name\"] }}",
+            "Priority": "={{ $json[\"Lead score\"] }}",
+            "Tools Required": "={{ $json[\"Tools Experience Required\"] }}",
+            "Task Blueprint": "={{ $json[\"Task/Output experience: Blueprint\"] }}",
+            "Business Industry": "={{ $json[\"Business Industry Experience\"] }}",
+            "Business Overview": "={{ $json[\"Business Overview\"] }}",
+            "Type": "={{ $json.Type }}",
+            "Contract Length": "={{ $json.Contract }}",
+            "Shift": "={{ $json[\"Shift Type\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contract Length",
+              "displayName": "Contract Length",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Shift",
+              "displayName": "Shift",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tools Required",
+              "displayName": "Tools Required",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task Blueprint",
+              "displayName": "Task Blueprint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Industry",
+              "displayName": "Business Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Overview",
+              "displayName": "Business Overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4608,
+        -192
+      ],
+      "id": "271ab550-e5a7-4f1f-a346-9a67e0b797fd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "founders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4384,
+        -192
+      ],
+      "id": "e91784a6-143a-4212-a11d-83109dd28f04",
+      "name": "Split Out",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const contacts =\n  (Array.isArray($json?.data?.data) && $json.data.data) ||\n  (Array.isArray($json?.data) && $json.data) ||\n  [];\n\nconst CF_DATE_ID = 19;\nconst KEEP_CF_IDS = new Set([\"315\", \"708\"]);\n\n// Get Monday (start of day) for the current week in UTC, then format d MMM yyyy\nfunction getUtcMondayFormatted() {\n  const now = new Date();\n\n  // UTC \"today\" at 00:00:00\n  const utcTodayStart = new Date(Date.UTC(\n    now.getUTCFullYear(),\n    now.getUTCMonth(),\n    now.getUTCDate(),\n    0, 0, 0, 0\n  ));\n\n  // 0=Sun..6=Sat in UTC\n  const dow = utcTodayStart.getUTCDay();\n\n  // Monday-based week: Monday=0, Tuesday=1, ..., Sunday=6\n  const diffToMonday = (dow + 6) % 7;\n\n  const utcMondayStart = new Date(utcTodayStart.getTime() - diffToMonday * 24 * 60 * 60 * 1000);\n\n  const day = String(utcMondayStart.getUTCDate()); // no leading 0\n  const month = utcMondayStart.toLocaleString(\"en-GB\", { month: \"short\", timeZone: \"UTC\" });\n  const year = utcMondayStart.getUTCFullYear();\n\n  return `${day} ${month} ${year}`;\n}\n\nconst mondayFormatted = getUtcMondayFormatted();\nconsole.log(\"UTC Monday formatted:\", mondayFormatted);\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction normLower(s) {\n  return clean(s).toLowerCase();\n}\n\n// Filter OUT internal emails containing these substrings\nconst BLOCKED_EMAIL_SUBSTRINGS = [\"outsourceddoer\", \"doneverse\"];\n\nfunction hasBlockedEmail(emailAddresses) {\n  if (!Array.isArray(emailAddresses) || emailAddresses.length === 0) return false;\n\n  for (const e of emailAddresses) {\n    const email = normLower(e?.email || e?.address || e?.value || \"\");\n    if (!email) continue;\n\n    if (BLOCKED_EMAIL_SUBSTRINGS.some(sub => email.includes(sub))) {\n      return true;\n    }\n  }\n  return false;\n}\n\nconst pickCF = (customFields) => {\n  if (!Array.isArray(customFields)) return [];\n  return customFields\n    .filter(cf => KEEP_CF_IDS.has(String(cf?.id)))\n    .map(cf => ({\n      id: cf.id,\n      content: clean(cf?.content),\n    }));\n};\n\nconst getCFContent = (customFields, id) => {\n  if (!Array.isArray(customFields)) return \"\";\n  const hit = customFields.find(cf => String(cf?.id) === String(id));\n  return clean(hit?.content);\n};\n\nconst out = [];\n\nfor (const c of contacts) {\n  const customFields = Array.isArray(c?.custom_fields) ? c.custom_fields : [];\n  const cfDate = getCFContent(customFields, CF_DATE_ID);\n\n  // Compare against dynamic UTC Monday, formatted d MMM yyyy\n  if (cfDate !== mondayFormatted) continue;\n\n  const emailAddresses = Array.isArray(c.email_addresses) ? c.email_addresses : [];\n\n  // NEW FILTER: remove contacts with internal emails\n  if (hasBlockedEmail(emailAddresses)) continue;\n\n  out.push({\n    json: {\n      id: c.id ?? null,\n      given_name: c.given_name ?? \"\",\n      family_name: c.family_name ?? \"\",\n      preferred_name: c.preferred_name ?? \"\",\n      email_addresses: emailAddresses,\n      tag_ids: Array.isArray(c.tag_ids) ? c.tag_ids : [],\n      custom_fields: pickCF(customFields),\n      category: \"New\"\n    }\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        -272
+      ],
+      "id": "f5950a69-7f7f-4ea1-88c0-9417e5345764",
+      "name": "Filter for OnboardingDate and Email"
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $input.first().json.token;\n\nconst tagIds = [\n  21267,\n  21265,\n  21263,\n  21261,\n  21259,\n  21257,\n  21255,\n  21253\n];\n\nconst baseUrl = \"https://api.infusionsoft.com/crm/rest/v2\";\n\nconst contactsById = new Map();\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction normLower(s) {\n  return clean(s).toLowerCase();\n}\n\nfunction pickPrimaryEmail(emailArr) {\n  if (!Array.isArray(emailArr)) return \"\";\n\n  const findByField = (fieldName) =>\n    emailArr.find(e => e?.field === fieldName)?.email;\n\n  const email =\n    findByField(\"EMAIL1\") ||\n    findByField(\"EMAIL2\") ||\n    findByField(\"EMAIL3\") ||\n    emailArr[0]?.email ||\n    \"\";\n\n  return normLower(email);\n}\n\nasync function fetchContactsForTag(tagId) {\n  let pageToken;\n\n  do {\n    const qs = { limit: 1000 };\n    if (pageToken) qs.page_token = pageToken;\n\n    const res = await this.helpers.httpRequest({\n      method: \"GET\",\n      url: `${baseUrl}/tags/${tagId}/contacts`,\n      qs,\n      headers: {\n        Authorization: `Bearer ${token}`,\n        Accept: \"application/json\",\n      },\n      json: true,\n    });\n\n    const contacts = Array.isArray(res?.contacts) ? res.contacts : [];\n\n    for (const c of contacts) {\n      const id = c?.id;\n      if (id === undefined || id === null) continue;\n\n      if (!contactsById.has(String(id))) {\n        //const email = pickPrimaryEmail(c?.email_addresses);\n\n        contactsById.set(String(id), {\n          id: id ?? null,\n          given_name: c?.given_name ?? \"\",\n          family_name: c?.family_name ?? \"\",\n          preferred_name: c?.preferred_name ?? \"\",\n          email: c?.email ?? \"\",\n          category: \"Rematch\",\n        });\n      }\n    }\n\n    pageToken = res?.next_page_token || undefined;\n  } while (pageToken);\n}\n\nfor (const tagId of tagIds) {\n  await fetchContactsForTag.call(this, tagId);\n}\n\nreturn [\n  {\n    json: {\n      contacts: Array.from(contactsById.values()),\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        -80
+      ],
+      "id": "d59366db-2ebf-408b-a172-d52cdd69c136",
+      "name": "Get Rematch Contacts",
+      "alwaysOutputData": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        -80
+      ],
+      "id": "8ec58943-8204-4bf9-b2b2-29a7bbcd08c2",
+      "name": "Aggregate1",
+      "executeOnce": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "contacts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -80
+      ],
+      "id": "c3b8038e-ed61-4764-ae4a-8bf8b8a4797b",
+      "name": "Split Contacts1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/contacts/{{ $json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,given_name,family_name,preferred_name,email_addresses,tag_ids,custom_fields"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1888,
+        -80
+      ],
+      "id": "328b3425-d5e4-4a32-9d4a-22db618427c5",
+      "name": "Get Contacts Batching;Pagination2",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "executeOnce": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const contacts =\n  (Array.isArray($json?.data?.data) && $json.data.data) ||\n  (Array.isArray($json?.data) && $json.data) ||\n  [];\n\nconst KEEP_CF_IDS = new Set([\"315\", \"708\"]);\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction normLower(s) {\n  return clean(s).toLowerCase();\n}\n\n// Filter OUT internal emails containing these substrings\nconst BLOCKED_EMAIL_SUBSTRINGS = [\"outsourceddoer\", \"doneverse\"];\n\nfunction hasBlockedEmail(emailAddresses) {\n  if (!Array.isArray(emailAddresses) || emailAddresses.length === 0) return false;\n\n  for (const e of emailAddresses) {\n    const email = normLower(e?.email || e?.address || e?.value || \"\");\n    if (!email) continue;\n\n    if (BLOCKED_EMAIL_SUBSTRINGS.some(sub => email.includes(sub))) {\n      return true;\n    }\n  }\n  return false;\n}\n\nconst pickCF = (customFields) => {\n  if (!Array.isArray(customFields)) return [];\n  return customFields\n    .filter(cf => KEEP_CF_IDS.has(String(cf?.id)))\n    .map(cf => ({\n      id: cf.id,\n      content: clean(cf?.content),\n    }));\n};\n\nconst out = [];\n\nfor (const c of contacts) {\n  const customFields = Array.isArray(c?.custom_fields) ? c.custom_fields : [];\n\n  const emailAddresses = Array.isArray(c?.email_addresses) ? c.email_addresses : [];\n\n  // Keep the email filter. remove contacts with internal emails\n  if (hasBlockedEmail(emailAddresses)) continue;\n\n  out.push({\n    json: {\n      id: c.id ?? null,\n      given_name: c.given_name ?? \"\",\n      family_name: c.family_name ?? \"\",\n      preferred_name: c.preferred_name ?? \"\",\n      email_addresses: emailAddresses,\n      tag_ids: Array.isArray(c?.tag_ids) ? c.tag_ids : [],\n      custom_fields: pickCF(customFields),\n      category: \"Rematch\"\n    }\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        -80
+      ],
+      "id": "1868bb01-1c73-4a10-9555-02150d0ae8cf",
+      "name": "Filter for Email Only",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 965578431,
+          "mode": "list",
+          "cachedResultName": "Part Time BB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=965578431"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3424,
+        -144
+      ],
+      "id": "12515e47-44a9-464b-83c0-98c79540b0ce",
+      "name": "Get Row from F Database1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "22d7381d-f137-4cfd-b8f0-9f4c358639e0",
+              "leftValue": "={{ $json.founder_shift }}",
+              "rightValue": "FT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3184,
+        -272
+      ],
+      "id": "c2fac8ef-61dc-4efc-b6bb-ef9b6cf5c5d5",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3696,
+        -288
+      ],
+      "id": "52a03cf0-4b15-485d-b560-2806da9e9c11",
+      "name": "Merge1"
+    }
+  ],
+  "connections": {
+    "GCP Information": {
+      "main": [
+        [
+          {
+            "node": "Get GCP Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GCP Access Token": {
+      "main": [
+        [
+          {
+            "node": "Generate OIDC ID Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OIDC ID Token": {
+      "main": [
+        [
+          {
+            "node": "Get Keap Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keap Token": {
+      "main": [
+        [
+          {
+            "node": "Set Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Tags": {
+      "main": [
+        [
+          {
+            "node": "Get Months Subscribed Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Months Subscribed Tags": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token": {
+      "main": [
+        [
+          {
+            "node": "Get Tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Offboarded Contacts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Contacts Batching;Pagination1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Rematch Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Filter for OnboardingDate and Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Month Subscribed": {
+      "main": [
+        [
+          {
+            "node": "Finalize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Output": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Contacts": {
+      "main": [
+        [
+          {
+            "node": "Get Contacts Batching;Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get 145 Contacts": {
+      "main": [
+        [
+          {
+            "node": "Merge Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Contacts": {
+      "main": [
+        [
+          {
+            "node": "Filter Tagged Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Tagged Contacts": {
+      "main": [
+        [
+          {
+            "node": "Split Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Month Subscribed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Offboarded Contacts": {
+      "main": [
+        [
+          {
+            "node": "Get 145 Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts Batching;Pagination": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Output": {
+      "main": [
+        [
+          {
+            "node": "Super Finalized Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "GCP Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Super Finalized Output": {
+      "main": [
+        [
+          {
+            "node": "Pass to Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter for OnboardingDate and Email": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Rematch Contacts": {
+      "main": [
+        [
+          {
+            "node": "Split Contacts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Filter for Email Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Contacts1": {
+      "main": [
+        [
+          {
+            "node": "Get Contacts Batching;Pagination2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts Batching;Pagination2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter for Email Only": {
+      "main": [
+        []
+      ]
+    },
+    "Get Row from F Database1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Row from F Database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "doneverse.app.n8n.cloud",
+            "user-agent": "Deno/2.1.4 (variant; SupabaseEdgeRuntime/1.70.1)",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "*",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2406:da14:c9a:6409:802:22c5:aa6d:acc",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "JP",
+            "cf-ray": "9cc71eb4d478aff1-NRT",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "x-forwarded-for": "2406:da14:c9a:6409:802:22c5:aa6d:acc, 172.70.223.203",
+            "x-forwarded-host": "doneverse.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-7b6dc7c86c-96shf",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2406:da14:c9a:6409:802:22c5:aa6d:acc"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://doneverse.app.n8n.cloud/webhook/940a9ccf-3c5a-4d22-9fa1-5b0dc87cf27b",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

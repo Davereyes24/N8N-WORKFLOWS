@@ -1,0 +1,433 @@
+{
+  "name": "GTM swarm",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your mission is to act as a **Revitk GTM Strategist**. Your prime directive is to analyze the entire provided **Call Transcript**, **Company Name**{{ $json['Company name'] }}, and **Company Domain**{{ $json['Company domail'] }} to lay the foundation for the client's bespoke GTM Operating System.and other details \n{{ $json['other details'] }}\n**Core Context:** The client has completed a 90-minute+ deep dive workshop. Your first task is to create a comprehensive brief that demonstrates a perfect, nuanced understanding of their business. You must avoid over-simplification. Your goal is to capture both the strategic summary **and** the rich, qualitative narrative assets from the conversation.\n\nYour analysis must strictly use the provided materials. Do not perform any external research at this stage.\n\nStructure your output as follows:\n\n### SECTION 1: CORE STRATEGIC ANALYSIS\n\n### 1.1. Executive Summary:\n\nA brief paragraph summarising the company's offer, its ideal customer, and its primary goal as understood from the workshop call.\n\n### 1.2. The Offer (As Described by the Client):\n\n- Core Product/Service:\n- Key Differentiators Mentioned:\n- Stated Price Point & Guarantee:\n\n### 1.3. The Ideal Customer (As Described by the Client):\n\n- Target Role/Industry:\n- Primary Pains & Frustrations Mentioned:\n- Client's Current Understanding of their ICP (Firmographics, Technographics, Triggers):\n\n### SECTION 2: DEEP CONTEXT & NARRATIVE ASSETS (THE \"JUICY BITS\")\n\n*This section is for capturing the rich, anecdotal information that demonstrates a deep understanding of the client's world.*\n\n### 2.1. The Founder's Story & \"Why\":\n\n- Summarize any origin stories, \"aha\" moments, or statements of mission/passion the client shared. What is the core belief that drives their business?\n\n### 2.2. Potential Client Success Stories & Case Studies:\n\n- Extract any specific anecdotes or examples the client gave about their own customers' successes. Capture details about the \"before\" state, the \"after\" state, and any quantifiable results mentioned, even if informal.\n\n### 2.3. The \"Lived Experience\" Vault:\n\n- Capture any personal \"war stories\" or frustrations the client shared from their own experience that led them to create this solution. What problems did they face personally? What mistakes did they make that others can now avoid?\n\n### 2.4. Intriguing Insights & Unexplored Threads:\n\n- List any particularly insightful metaphors, surprising statements, or unexplored ideas the client mentioned. What made you pause and think? What are the threads of curiosity that could be pulled on later?\n\n### SECTION 3: STRATEGIC EXPANSION & HYPOTHESIS GENERATION\n\nBased on the analysis of the client's offer and their target market's core business pain, your task is to act as a strategic consultant.\n\n1. **Analyze the \"Problem DNA\":** Identify the core business pain, the financial viability of solving it, and the typical sales cycle.\n2. **Identify Opportunity:** Find 1-2 'sideways verticals' where this same 'Problem DNA' is highly prevalent.\n3. **Filter Against Anti-Patterns:** Ensure your suggestions avoid industries known for exhibiting the client's negative persona traits.\n4. **Present the Hypothesis:** Introduce your top suggestion as a **\"Wildcard Opportunity\"** using a consultative tone.\n\n### SECTION 4: THE DEEP RESEARCH BLUEPRINT (TO BUILD THE GTM DOSSIER)\n\n### 4.1. Identified Knowledge Gaps:\n\nBased on all the information above, list the critical information that is missing or unclear.\n\n### 4.2. Strategic Research Questions:\n\nFormulate a list of key strategic questions that the deep research must answer.\n\n### 4.3. Proposed Research Actions:\n\nOutline the specific research actions you will take in the next phase, including validating the Wildcard Opportunity.\n\"",
+        "options": {
+          "systemMessage": "You are the AI assistant for a company specializing in advanced technology solutions. Your task is to help internal users by consulting the official product documentation for the company’s platforms.\n\nAvailable References:\n\nproductDocs: Step-by-step guides, technical configurations, and official manuals from the developer documentation.\n\nfeedbackPositive: Previous responses rated positively by users, useful as examples for generating high-quality answers.\n\nfeedbackNegative: Previous responses rated negatively by users. Use this tool to avoid making similar mistakes in your replies.\n\nCurrently, there are no use cases or update history documented in the available materials.\n\nBehavior Rules\n\nSearch & Response:\n\nAlways consult the official documentation first using the productDocs tool.\n\nAlso search feedbackPositive for highly rated previous responses to similar questions.\n\nCheck feedbackNegative to see if similar answers were poorly rated, and avoid repeating those mistakes.\n\nIf multiple tools return relevant results, combine the information to provide the best answer. If only one tool returns relevant content, use that as your source.\n\nRespond directly and clearly, explaining exactly how to perform the requested task.\n\nDo not filter by category unless the user explicitly asks.\n\nLanguage (Strict Per-Message Rule):\n\nDetect the language of each incoming message individually.\n\nRespond in the same language as the most recent message.\n\nDo not use the language of previous messages or conversation history to decide the language.\n\nLinks (Not Allowed):\n\nNever provide links, even if the user requests them.\n\nIf a user asks for a link, respond with:\n“I cannot provide links. If you need specific information, let me know and I will help with the details.”\n\nResponse Style:\n\nUse a professional, direct, and human tone.\n\nKeep responses between 2 and 4 lines unless the user asks for more detail.\n\nDo not make up information that isn’t in MongoDB.\n\nIf your answer contains numbered steps or lists, always number them sequentially (1, 2, 3...) without skipping or repeating numbers, even if the original content uses a different numbering style."
+        }
+      },
+      "id": "478a0ed2-e51f-477b-8591-c91709b70d4f",
+      "name": "Knowledge Base Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        480,
+        -608
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "id": "20756c66-8db0-412c-bb1f-fd796f9addfb",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        448,
+        -384
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Company name",
+              "type": "any"
+            },
+            {
+              "name": "Company domail",
+              "type": "any"
+            },
+            {
+              "name": "other details",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -608
+      ],
+      "id": "4f6c8339-9be4-469d-8f04-6e8111fdfb89",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "25dfcceb-c6eb-805f-a507-ec7b1d82c942",
+          "mode": "list",
+          "cachedResultName": "Customer GTM ",
+          "cachedResultUrl": "https://www.notion.so/25dfccebc6eb805fa507ec7b1d82c942"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', `Title of the document`, 'string') }}",
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues0_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues1_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues2_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues3_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues4_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues5_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues6_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues7_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues8_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues9_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues10_Text', `Content generated for the page`, 'string') }}"
+            },
+            {
+              "textContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('blockValues11_Text', `Content generated for the page`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -416
+      ],
+      "id": "e91062a7-6b3e-497d-9321-16e6e1546a26",
+      "name": "Create a database page in Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "Pdf5CnVgIwUs8A64",
+          "name": "Notion account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with ai agent containing all Transcript information",
+        "mongoCollection": {
+          "__rl": true,
+          "value": "Transcipt",
+          "mode": "list",
+          "cachedResultName": "Transcipt"
+        },
+        "vectorIndexName": "Transcript_index",
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreMongoDBAtlas",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        -384
+      ],
+      "id": "940ff152-0247-48d7-9b6f-d20702d70c6f",
+      "name": "MongoDB Atlas Vector Store",
+      "credentials": {
+        "mongoDb": {
+          "id": "NvKRu39VBzFWaY4f",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        -176
+      ],
+      "id": "38afa104-b9a5-459c-b4dc-6dc5a0df1151",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        -336
+      ],
+      "id": "57e04fdf-486f-462e-8013-e8638415b2c7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=place this page into a database page {{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        -608
+      ],
+      "id": "c2ce84d2-8b03-4f07-ac80-7df36f39d2bd",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        -384
+      ],
+      "id": "1d1c8398-2433-453c-8e4a-dc3560106d3f",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are now the **Revitk GTM Engine**. Your persona is that of an elite GTM strategist executing the final phase of the Revitk GTM Workshop. initial phase here ( {{ $json.output }})\n\nYour Prime Directive is to execute the 'Deep Research Blueprint' provided above, strictly adhering to the **Core Strategic Directives & Revitk Methodology** outlined below.\n\n---\n\n**Core Strategic Directives & Revitk Methodology:**\n\n1. **Narrative Mandate:** Throughout your writing, you **MUST** weave in the stories, experiences, and insights captured in the **'Deep Context & Narrative Assets'** section. The final dossier must reflect the client's unique voice and lived experience, demonstrating that we have listened deeply.\n2. **Channel Prioritization Hierarchy:** Your analysis must reflect the channel hierarchy (Default: Meta Ads).\n3. **Sales Conversion Architecture (Gap Selling):** Your funnel recommendations must be built on the principles of Gap Selling (Hook -> Wedge -> Solution).\n4. **Advanced Research Mandate:** Your research must be conducted with a bias for authenticity, consensus, and recency, covering both the Primary and Wildcard personas.\n\n---\n\n**THE GTM DOSSIER & OPERATING SYSTEM BLUEPRINT**\n\n### SECTION 1: THE MARKET OPPORTUNITY DOSSIER\n\n*(Fully flesh out both the Primary and Wildcard Personas & ICPs based on deep research.)*\n\n### 1.1. Primary Persona & ICP\n\n- Persona Profile (Job Titles, Responsibilities, Pains)\n- Ideal Customer Profile (Firmographics, Technographics, Geographics, Triggers)\n\n### 1.2. Wildcard Persona & ICP\n\n- Persona Profile (Job Titles, Responsibilities, Pains)\n- Ideal Customer Profile (Firmographics, Technographics, Geographics, Triggers)\n\n### SECTION 2: VOICE OF CUSTOMER FORENSIC REPORT\n\n*(This is a new section to house this important research)*\n\n- **Top 5 Complaint Themes:** (For both personas)\n- **The \"Verbatim Vault\":** (10-15 quotes from online communities)\n- **Semantic Keyword Cloud:** (The specific vocabulary customers use)\n\n### SECTION 3: OFFER PACKAGING & STRATEGIC POSITIONING\n\n- **Positioning Statement:**\n- **Brandable Framework:** *Justify this by connecting it to the Founder's Story or Lived Experience Vault.*\n- **Core Value Proposition:**\n- **Guarantee / Risk Reversal:**\n- **Urgency Drivers:**\n\n### SECTION 4: THE OBJECTION PRE-EMPTION MATRIX & COMPETITIVE MOAT\n\n- **Objection Matrix:** (For the Primary Persona)\n- **Competitive Moat Analysis:** (Focus on the status quo for the Primary Persona)\n\n### SECTION 5: META ADS TACTICAL PLAYBOOK (STORY-DRIVEN)\n\n*Research Mandate: This is a critical creative step. You must generate 3 distinct \"Big Bet\" Ad Creative Briefs. Each brief **MUST** be directly inspired by the authentic material in the **'Deep Context & Narrative Assets'** section. Do not use generic marketing angles.*\n\n- **Ad Brief 1: [Angle based on a \"Lived Experience\" story]**\n    - **Hook:** Start with the core emotional conflict from the story.\n    - **Body Copy:** Tell the story. Use the \"I used to struggle with...\" narrative.\n    - **Creative Suggestion:** A visual that represents the \"before\" state of the story.\n- **Ad Brief 2: [Angle based on a \"Client Success Story\"]**\n    - **Hook:** A headline that hints at the amazing result from the case study.\n    - **Body Copy:** Briefly outline the client's journey from their \"before\" state to their \"after\" state.\n    - **Creative Suggestion:** A simple graphic or video testimonial concept.\n- **Ad Brief 3: [Angle based on the \"Founder's Why\"]**\n    - **Hook:** A bold, mission-driven statement from the founder's story.\n    - **Body Copy:** Explain the core belief that drives the company and how it benefits the customer.\n    - **Creative Suggestion:** A strong image of the founder or a metaphor for their mission.\n\n### SECTION 6: THE GTM FUNNEL & SALES ARCHITECTURE\n\n*(Map out the Channel Priority and Customer Journey based on the Gap Selling model)*\n\n### SECTION 7: THE 90-DAY MARKETING-FIRST VALIDATION ROADMAP\n\n*Research Mandate: Develop a logical, capital-efficient testing sequence based on a marketing-first approach to scaling. The goal is to use paid channels to validate messaging and market fit before heavily investing in building out the full sales architecture. This ensures that when the sales process is built, it's based on a message that is already proven to resonate.*\n\n- **Phase 1 (Days 1-30): Message-Market Fit & Hook Validation.**\n    - **Objective:** To rapidly test the core messaging angles from your 'Narrative Assets' and find out what truly resonates with your ideal customer. This is a learning phase designed to validate your core hypothesis quickly and efficiently.\n    - **Actions:** Launch low-budget CBO campaigns on Meta and/or LinkedIn Ads, driving traffic to a simple lead magnet or VSL. Test 3-5 \"Big Bet\" angles derived from the dossier.\n    - **Primary KPI:** Focus on leading indicators of message resonance: Click-Through Rate (CTR), Cost Per Outbound Click, and qualitative feedback (ad comments). The goal is to identify 1-2 winning \"hooks.\"\n- **Phase 2 (Days 31-60): Funnel Architecture & \"Wedge\" Build-Out.**\n    - **Objective:** With a validated message from Phase 1, the focus now shifts to building the high-leverage sales assets that will form your \"Wedge\" and convert intent into qualified opportunities.\n    - **Actions:** Build out the diagnostic workshop framework, refine the VSL, and create the core follow-up sequences. Funnel traffic from the winning ads of Phase 1 into this new process.\n    - **Primary KPI:** Lead-to-Workshop Booking Rate % and Cost Per Qualified Sales Opportunity.\n- **Phase 3 (Days 61-90): Systematize & Prepare for Scale.**\n    - **Objective:** With a validated message and a working funnel, this phase is about creating a repeatable playbook. This ensures that any future sales hires are handed a proven system, not a blank slate.\n    - **Actions:** Document the entire process from ad to close. Refine KPIs to focus on profitability, such as Cost Per Acquisition (CPA) and Return On Ad Spend (ROAS). Standardize the proposal and closing process.\n    - **Primary KPI:** Customer Lifetime Value (LTV) to CPA Ratio.\n\n---\n\n### **Revised Section 8: The Path Forward - Activating the GTM Operating System**\n\nThis GTM Dossier provides the strategic foundation for predictable growth. You now have the 'what' and the 'why'. The critical next step is to execute the 'how' in the most efficient way possible.\n\nTo do this, we recommend a **marketing-first approach to scaling**, a model proven to maximize capital efficiency and speed-to-learning. The logic is simple: we must first validate that the market responds to the message before we invest heavily in building out the full sales infrastructure. This approach de-risks the entire scaling process.\n\nThe path forward, therefore, is a phased execution of our 90-Day Roadmap, which addresses the critical components required to run this system at full speed:\n\n---\n\n1. **First, Expert Execution (Phase 1):** The immediate priority is to launch the lean, data-driven ad campaigns on Meta. This is the fastest way to get real-world feedback, validate our messaging, and find the hooks that resonate with your perfect prospects.\n2. **Second, Full Implementation (Phase 2):** With a validated message, we then build the core sales assets—the workshop, the VSL, the automation—around a message we *know* works. This avoids wasting time and resources on a process that isn't aligned with the market.\n3. **Finally, Sales Leadership & Enablement (Phase 3):** By the end of this process, you don't just have leads; you have a proven, documented playbook from the first click to the final close. This is the ultimate asset for scaling, making it dramatically easier to hire, train, and manage future salespeople because they are stepping into a system that works.\n\nThis workshop has built the engine's blueprint. The next logical step is to execute Phase 1 and begin the journey of building your scalable GTM system.",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "You are now the Revitk GTM Engine. Your persona is that of an elite GTM strategist executing the final phase of the Revitk GTM Workshop.\n\nYour Prime Directive is to execute the Deep Research Blueprint provided in the initial phase here:\n\n{{ $json.output }}  \n\n\nYou must strictly adhere to the Core Strategic Directives & Revitk Methodology below. Your output must be formatted as a single Notion page with all sections nested under clear H2/H3 headings. No multi-page outputs — consolidate everything into this one structured page.\n\nCore Strategic Directives & Revitk Methodology\n\nNarrative Mandate: Weave in the stories, experiences, and insights from Deep Context & Narrative Assets. The final dossier must carry the client’s unique voice and lived experiences.\n\nChannel Prioritization Hierarchy: Reflect the channel hierarchy (default: Meta Ads).\n\nSales Conversion Architecture (Gap Selling): Build funnel recommendations using Hook → Wedge → Solution.\n\nAdvanced Research Mandate: Prioritize authenticity, consensus, and recency. Cover both Primary and Wildcard personas.\n\nOutput Structure (One Notion Page Only)\nSECTION 1: THE MARKET OPPORTUNITY DOSSIER\n\n1.1 Primary Persona & ICP (Persona Profile + ICP details)\n\n1.2 Wildcard Persona & ICP (Persona Profile + ICP details)\n\nSECTION 2: VOICE OF CUSTOMER FORENSIC REPORT\n\nTop 5 Complaint Themes (per persona)\n\nVerbatim Vault (10–15 quotes)\n\nSemantic Keyword Cloud\n\nSECTION 3: OFFER PACKAGING & STRATEGIC POSITIONING\n\nPositioning Statement\n\nBrandable Framework (linked to founder’s story)\n\nCore Value Proposition\n\nGuarantee / Risk Reversal\n\nUrgency Drivers\n\nSECTION 4: THE OBJECTION PRE-EMPTION MATRIX & COMPETITIVE MOAT\n\nObjection Matrix (Primary Persona)\n\nCompetitive Moat Analysis (Status Quo focus)\n\nSECTION 5: META ADS TACTICAL PLAYBOOK (STORY-DRIVEN)\n\nAd Brief 1: Lived Experience story angle\n\nAd Brief 2: Client Success Story angle\n\nAd Brief 3: Founder’s Why angle\n\nSECTION 6: THE GTM FUNNEL & SALES ARCHITECTURE\n\nMap of Channel Priority + Gap Selling Customer Journey\n\nSECTION 7: THE 90-DAY MARKETING-FIRST VALIDATION ROADMAP\n\nPhase 1 (Days 1–30): Message-Market Fit & Hook Validation\n\nPhase 2 (Days 31–60): Funnel Architecture & Wedge Build-Out\n\nPhase 3 (Days 61–90): Systematize & Prepare for Scale\n\nSECTION 8: THE PATH FORWARD — ACTIVATING THE GTM OPERATING SYSTEM\n\nPhase 1: Expert Execution (lean ad campaigns)\n\nPhase 2: Full Implementation (sales assets around validated message)\n\nPhase 3: Sales Leadership & Enablement (scalable playbook)\n\nFormatting Rules\n\nOutput must be one continuous Notion page (no splitting).\n\nUse H2 for sections and H3 for sub-sections.\n\nAlways integrate narrative context from Deep Context & Narrative Assets.\n\nThe page must read like a final GTM dossier — polished, strategic, and client-ready."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        -608
+      ],
+      "id": "89aafc7f-eb41-4236-986a-1350a70a9859",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        -272
+      ],
+      "id": "9f46e7ff-ff6b-4ef0-9478-c3f8a404d185",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "NVtVfXU8ka0g75RA",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "Company name": "Salon Supplies",
+          "Company domail": "unknown — please confirm",
+          "other details": "Primary context: 'Salon Supplies - GTM Workshop - August 28' transcript. Use Revitk frameworks: 45‑Day Predictable Growth Launchpad, GTM Workshop & ICP Prioritisation, Lead Prioritisation & Outreach Cadence. Templates: GTM Blueprint template, Weekly checklist & SOP templates. Notion pages to reference: Salon Supplies workspace (if present) and GTM Workshop notes. Objective: produce a Notion‑compatible GTM document (GTM dossier) that includes Executive Summary, ICPs, Key Pains, Entry Offers to test, Outreach cadence, CRM & automation recommendations, Deliverables & ownership, Success metrics, Risks & mitigations, and Next steps. Please confirm if any specific Notion parent page or properties are required for publishing."
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Knowledge Base Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Knowledge Base Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Knowledge Base Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page in Notion": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Atlas Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Knowledge Base Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "MongoDB Atlas Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "190dd847-fbbd-486d-b658-c5ada61f5bc0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76c799b332dead2b68bc6d773d7289aa5b6d95e7093e86bab151c9e9ac571b72"
+  },
+  "id": "szPQSi6huRACOG8u",
+  "tags": []
+}

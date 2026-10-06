@@ -1,0 +1,302 @@
+{
+  "name": "Keap onboarding date sync - production",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "keap-onboarding-date-sync-production",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "22ce3e25-0a99-4556-a9ca-2cea61f9661b",
+      "name": "Webhook",
+      "webhookId": "ec2b3384-85d6-4af2-9291-40a45549e4db"
+    },
+    {
+      "parameters": {
+        "jsCode": "const contact = $input.first().json;\nconst customFields = Array.isArray(contact.custom_fields) ? contact.custom_fields : [];\nconst dateField = customFields.find((field) => String(field?.id) === '315');\nconst onboardingDate = String(dateField?.content ?? '').trim();\nconst emails = Array.isArray(contact.email_addresses) ? contact.email_addresses : [];\nconst email = String(emails.find((entry) => entry?.field === 'EMAIL1')?.email ?? emails[0]?.email ?? '').trim().toLowerCase();\nconst externalId = String(contact.id ?? '').trim();\nlet skipReason = null;\nif (!externalId) skipReason = 'missing_contact_id';\nelse if (!onboardingDate) skipReason = 'missing_onboarding_date';\nelse if (email.includes('@outsourceddoers.com') || email.includes('@doneverse.com') || email.startsWith('test')) skipReason = 'excluded_contact';\nreturn [{ json: { external_id: externalId, onboarding_date: onboardingDate || null, skip_reason: skipReason } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        16
+      ],
+      "id": "ffaa9f29-cf53-4d9d-82f7-84e5225f3b95",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ccd8111f-1886-40ce-868a-a41b7c596d18",
+              "leftValue": "={{ $json.skip_reason || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        768,
+        16
+      ],
+      "id": "d14a243c-6e3a-4ccf-bf6c-c6c16ab94732",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "founders",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "external_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.external_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        976,
+        -80
+      ],
+      "id": "9e617b38-d975-4558-aa60-eada5c012eef",
+      "name": "Get many rows",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "h1ei4JdzPTCzBZfZ",
+          "name": "Allocation production Supabase - Creatives Agent"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const founder = $input.first().json;\nconst source = $('Code in JavaScript').item.json;\nlet skipReason = '';\nif (!founder?.id) skipReason = 'missing_founder';\nelse if (founder.onboarding_day_1st_doer_date) skipReason = 'date_already_set';\nreturn [{ json: { founder_id: founder?.id ?? null, external_id: source.external_id, onboarding_date: source.onboarding_date, skip_reason: skipReason } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -80
+      ],
+      "id": "84e2e2cb-9c5e-44a5-aab2-2c3c891734ab",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7aed7692-037e-48c7-ba4c-03252974e5a4",
+              "leftValue": "={{ $json.skip_reason || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1392,
+        -80
+      ],
+      "id": "a749acf7-55c5-4a55-b002-893d73f42cb0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "founders",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.founder_id }}"
+            },
+            {
+              "keyName": "onboarding_day_1st_doer_date",
+              "condition": "is",
+              "keyValue": "null"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "onboarding_day_1st_doer_date",
+              "fieldValue": "={{ $json.onboarding_date }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -176
+      ],
+      "id": "4bd30946-54c5-4507-b51a-1360442238f1",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "h1ei4JdzPTCzBZfZ",
+          "name": "Allocation production Supabase - Creatives Agent"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.infusionsoft.com/crm/rest/v1/contacts/' + $('Webhook').item.json.body.id + '?optional_properties=custom_fields,email_addresses' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        352,
+        16
+      ],
+      "id": "d7331160-caee-4ee1-ba16-cfafb7e034cc",
+      "name": "Get Keap contact",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "hz8g3wuYrPBZnQST",
+          "name": "Bearer Auth account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Keap contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keap contact": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Keap Trigger": {}
+  },
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

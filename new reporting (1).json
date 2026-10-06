@@ -1,0 +1,806 @@
+{
+  "name": "new reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/locations/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        224,
+        528
+      ],
+      "id": "223198ad-490d-4424-8a7d-531d3bc47ad7",
+      "name": "Get all Locations"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "locations",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        448,
+        528
+      ],
+      "id": "8a83d416-be4d-4c8b-8c17-2498e3865a3c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/oauth/locationToken",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "highLevelOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "companyId",
+              "value": "3TXgZPrGFns5CxNTzeKu"
+            },
+            {
+              "name": "locationId",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1120,
+        528
+      ],
+      "id": "9da0c314-67f4-42cc-8334-f7f9248caefd",
+      "name": "Geth auth 1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "wXehQOLLyNwUGRkW",
+          "name": "GHL oauth"
+        },
+        "highLevelOAuth2Api": {
+          "id": "VrfE85LjZeO0dkLZ",
+          "name": "HighLevel account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        528
+      ],
+      "id": "23df115f-7df2-4b71-bd06-8ded1fc3afd5",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "18846dd3-1909-4110-9b09-d120cb1e8996",
+              "leftValue": "=Revival Roofing and Exteriors\nBNH Builders & Roofing\nHiner Roofing\nDripco\n4 Corners Contracting\nMaze Roofing\n Five Star Roofing and Property Services\nArauz roofing\nCR3 American Exteriors\nBroadview Roofing \nSierra Exteriors LLC\nPriority Roofing",
+              "rightValue": "={{ $json.name }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "aaa107fe-f92c-4377-805c-c155c7240015",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Arauz Roofing",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        528
+      ],
+      "id": "e1918928-4004-4e68-86c9-2dd44f4a3d9a",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "iHEfmXcMMzgbmqM7",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/iHEfmXcMMzgbmqM7",
+          "cachedResultName": "reporting loop"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "access_token": "=REDACTED_SECRET",
+            "locationId": "={{ $json.locationId }}",
+            "Location": "={{ $json.name }}",
+            "Pipeline name": "={{ $json['Pipeline name'] }}",
+            "Pipeline ID": "={{ $json['pipeline id'] }}",
+            "Pipeline  stages": "={{ $json.stages }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "access_token",
+              "displayName": "access_token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "locationId",
+              "displayName": "locationId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Pipeline name",
+              "displayName": "Pipeline name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Pipeline ID",
+              "displayName": "Pipeline ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Pipeline  stages",
+              "displayName": "Pipeline  stages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2240,
+        432
+      ],
+      "name": "Call My Sub-workflow",
+      "id": "589664f2-637c-46a0-bb5a-891999efe3bc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da90d2b0-1784-4501-9d43-caede61d48e9",
+              "name": "access_token",
+              "value": "=REDACTED_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "fa7b4a2d-2689-4a03-8a9e-6eccffd14e28",
+              "name": "locationId",
+              "value": "={{ $json.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "27ce5ddb-0187-435c-9812-870604cfc58d",
+              "name": "name",
+              "value": "={{ $json['Location name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "51ede1cf-2c25-46b7-89d8-58ee50e2dbfb",
+              "name": "pipeline id",
+              "value": "={{ $json['Pipeline id '] }}",
+              "type": "string"
+            },
+            {
+              "id": "51401a75-a0fc-4b7f-ba70-445727e5104b",
+              "name": "Pipeline name",
+              "value": "={{ $json['Pipeline name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "62d80d68-a4a9-41fc-bd27-b5bce4cc5f83",
+              "name": "stages",
+              "value": "={{ $json.stages }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        528
+      ],
+      "id": "f36c4585-d72c-46a6-9f4d-5634fa23c335",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "914fe12a-5aa8-469b-b599-d3fb64c93283",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "da6c27ed-27c2-4aa9-97f9-e8ce7a1175af",
+              "name": "companyId",
+              "value": "={{ $json.companyId }}",
+              "type": "string"
+            },
+            {
+              "id": "4c2cb932-c5e6-46ec-8932-46d5268a3985",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        528
+      ],
+      "id": "24ee32af-e793-49db-8610-a35fdad4aeef",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jaoG5f-KgPZsk9iVnNAQMlLEZ6-JTLkl36Iaeyo4ais",
+          "mode": "list",
+          "cachedResultName": "Pipeline filter",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jaoG5f-KgPZsk9iVnNAQMlLEZ6-JTLkl36Iaeyo4ais/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jaoG5f-KgPZsk9iVnNAQMlLEZ6-JTLkl36Iaeyo4ais/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1328,
+        656
+      ],
+      "id": "27853be6-e993-49dc-bdb5-ecd0032e95e9",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yRUYvvt44CdSekwx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "locationId",
+              "field2": "Location Id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1568,
+        528
+      ],
+      "id": "44a455c2-5910-456b-9025-70e19fcaaee8",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2032,
+        448
+      ],
+      "id": "de2f2063-4ada-4706-91c6-e564957d4614",
+      "name": "Loop Over Items",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1oUEE7WephdDJoUFqz9Wm5xodbycRZKfdDzupwyE61Ds",
+          "mode": "list",
+          "cachedResultName": "CCM raw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oUEE7WephdDJoUFqz9Wm5xodbycRZKfdDzupwyE61Ds/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 386453047,
+          "mode": "list",
+          "cachedResultName": "Summary",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oUEE7WephdDJoUFqz9Wm5xodbycRZKfdDzupwyE61Ds/edit#gid=386453047"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2240,
+        624
+      ],
+      "id": "6c740fb0-1e8d-4e56-b65d-ecc75762a563",
+      "name": "Get row(s) in sheet7",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zIMequ2OinpKejEK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1mdOQhlHpCh2ZONOmbY3qswsstsS04K4w5tx7xVsZ2LY",
+          "mode": "list",
+          "cachedResultName": "Daily Updated Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mdOQhlHpCh2ZONOmbY3qswsstsS04K4w5tx7xVsZ2LY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mdOQhlHpCh2ZONOmbY3qswsstsS04K4w5tx7xVsZ2LY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row": "={{ $json.ROW }}",
+            "Date": "={{ $json.Date }}",
+            "Sub-account": "={{ $json['Sub-account'] }}",
+            "New Leads": "={{ $json['New Leads'] }}",
+            "Booked Appointments": "={{ $json['Booked Appointments'] }}",
+            "DQ": "={{ $json.DQ }}",
+            "OOSA": "={{ $json.OOSA }}",
+            "Remarks": "={{ $json.Remarks }}"
+          },
+          "matchingColumns": [
+            "row"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sub-account",
+              "displayName": "Sub-account",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "New Leads",
+              "displayName": "New Leads",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Booked Appointments",
+              "displayName": "Booked Appointments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DQ",
+              "displayName": "DQ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OOSA",
+              "displayName": "OOSA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ad Spend",
+              "displayName": "Ad Spend",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row",
+              "displayName": "row",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        624
+      ],
+      "id": "2473d936-813b-4020-a1b0-2403f538fb39",
+      "name": "Append or update row in sheet75",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zIMequ2OinpKejEK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        624
+      ],
+      "id": "b05ff6c7-7827-4815-9466-5710411dcbbe",
+      "name": "Wait",
+      "webhookId": "f36e9c1e-1876-4986-8229-7726cc90dc85"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get all Locations": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geth auth 1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get all Locations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Geth auth 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Call My Sub-workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Call My Sub-workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet7": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet75",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "9dcd90be-1d52-4a7a-bfe0-d142ceef7062",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fce82b4b6a4d03b7a0b1863a4b13d4aafb912f17e3eb260af456542bc92983eb"
+  },
+  "id": "BzPehIJzTUd6nBPSt0D-s",
+  "tags": []
+}

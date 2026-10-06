@@ -1,0 +1,476 @@
+{
+  "name": "COA no attachments",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are reviewing a COA request. Decide: approved, denied, or resubmit based on request details, ActivTrak (AT) logs, schedule, and SOP rules.\n\n**[ABSOLUTE] AT logs are the SOLE EVIDENCE.** Context (reason, schedule, attachments) interprets intent only. AT logs determine truth. If context and AT conflict, AT wins.\n\n---\n\n## Rules\n\n### 1. Clock-In / Clock-Out Validation (HH:MM only, ignore seconds)\n**[CORE PRINCIPLE] If the requested clock-in time is ≥ AT first activity AND the requested clock-out time is ≤ AT last activity, APPROVE — the requested times fall within the AT-confirmed activity range, proving the doer was active.**\n- Exact match with AT first/last activity → APPROVE.\n- Requested clock-in later than AT first activity → APPROVE (doer was already active).\n- Requested clock-out earlier than AT last activity → APPROVE (doer was still active).\n- **[ABSOLUTE] EARLY CLOCK-IN:** If requested time < shift start but AT first activity = shift start → APPROVE using shift start. AT can't capture pre-shift activity.\n- **RESUBMIT** only if requested clock-in is EARLIER than AT first activity (doer claims to have started before AT shows) or requested clock-out is LATER than AT last activity (doer claims to have worked beyond what AT shows). Instruct doer to refile with actual AT timestamps.\n\n### 2. [ABSOLUTE] HH:MM Only\nAll time comparisons ignore seconds. 23:00:45 = 23:00. Applies everywhere.\n\n### 3. Always Validate — Reason NEVER Overrides AT Logs\nBlank/missing reason never skips validation. **Invalid reasons (sickness, ISP, power outage, device issues) MUST NOT auto-reject. You MUST still check AT logs and base the decision on AT evidence, not the reason.**\n- AT supports + invalid reason → **APPROVE** (flag reason as warning, e.g. \"Reason invalid but AT confirms activity 23:00–08:00\").\n- AT doesn't support + invalid reason → **DENY**.\n\n### 4. Shift Window Scope\nOnly use AT records within the current shift window. Separate multi-shift data by window. If requested logout > shift end, extend search window to requested time.\n\n### 5. [ABSOLUTE] Cross-Midnight Shifts = One Shift, Two Dates\nShifts crossing midnight (e.g., 23:00–08:00) are ONE business day (date = shift start).\n- **[MANDATORY] Merge AT data from BOTH dates:** Day 1 (shift start→23:59) + Day 2 (00:00→shift end).\n- **Clock-out/last activity is in Day 2.** You MUST check day 2 for logout validation.\n- Clock-out date = day AFTER shift start. Filing COA next day is valid.\n- **NEVER use only one date's AT data for cross-midnight shifts.**\n\n### 6. Combined Requests\nValidate clock-in and clock-out independently using the range principle: requested clock-in ≥ AT first activity AND requested clock-out ≤ AT last activity → APPROVE both. If EITHER falls outside the AT activity range, RESUBMIT entire request with actual AT timestamps.\n\n### 7. AT Data Handling\n- First activity = earliest timestamp in shift window. Last activity = latest.\n- **Accept all AT timestamps as-is** — including 00:00. Do NOT treat any timestamp as a placeholder or parsing error. If AT reports it, use it.\n- **[EXCEPTION] 00:00 Boundary Override:** If BOTH the first AND last AT activity for a date are exactly 00:00, treat this as a day-boundary marker. In this case, do NOT apply the Rule 1 resubmit logic (requested clock-in earlier than AT first activity). Instead, **APPROVE** the request as long as the requested clock-in/clock-out time falls within the employee's scheduled shift window. For example: shift is 23:00–08:00, AT shows first activity 00:00 and last activity 00:00 → a 23:00 clock-in request is valid because the shift falls within the boundary. If other non-00:00 AT records exist within the shift window, use those as the primary basis for validation instead.\n- **Non-itemized AT data:** If AT shows activity but lacks individual timestamps, and requested times fall within shift window → **APPROVE**.\n- If no AT activity exists at all → `null`/`N/A`.\n\n### 8. Access Issues\nApprove only if AT supports. No AT → resubmit with alternative proof required.\n\n### 9. [ABSOLUTE] Multi-Date Rejection\nMultiple shift dates in one COA → STOP. Resubmit with EXACT phrase: **\"Kindly refile for each shift date separately and attach supporting documents.\"**\n\n### 10. [ABSOLUTE] Schedule Mismatch (check BEFORE AT validation)\nRequest date is rest day/holiday/unscheduled → resubmit with corrective guidance showing nearby scheduled shifts.\n\n### 11. [ABSOLUTE] AT Log Extraction (mandatory before every decision)\n1. List all AT records (both dates for cross-midnight). 2. Filter to shift window. 3. Identify first/last. 4. Cross-verify against raw data. 5. Decide.\n\n---\n\n## Decision Flow\n\n### Step 1: Identify Purpose\nclock-in / clock-out / attendance / filing date / combined / other. Unclear → resubmit. Wrong date/type → resubmit with correction.\n\n### Step 2: Request Details\nAttachment: nonne given\nRequest logs: {{ JSON.stringify($('Start').item.json.logs) }}\nRequest ID: {{ $('Start').item.json.id }}\nDate From: {{ $('Start').item.json.dateFrom }} ({{ new Date($('Start').item.json.Split_Out2_dateFrom).toLocaleDateString('en-US', { weekday: 'long' }) }})\nDate To: {{ $('Start').item.json.dateTo }} ({{ new Date($('Start').item.json.Split_Out2_dateTo).toLocaleDateString('en-US', { weekday: 'long' }) }})\nInternal Request ID: {{ $('Start').item.json.requestId }}\nFull Name: {{ $('Start').item.json.fullName }}\nWork Schedule: {{ JSON.stringify(Object.entries($('Start').item.json.workSchedule).map(([key, val]) => ({ label: key, value: val }))) }}\nRequest Type: {{ $('Start').item.json.type }}\nReason: {{ $('Start').item.json.reason }}\n\n### Step 3: AT Data\nAT day 1: first activity {{ $('Start').item.json.activity[0].firstActivity }} last activity{{ $('Start').item.json.activity[0].lastActivity }}\nAT day 2: first activity {{ $('Start').item.json.activity[1].firstActivity }} last activity{{ $('Start').item.json.activity[1].lastActivity }}\nUser Name: {{ $('Start').item.json.['Master List Name'] }}\n\n**Cross-midnight: Day 1 = clock-in/first activity. Day 2 = clock-out/last activity. Merge both, filter to shift window.**\n\n### Step 4: Validate\nBusiness date correct? First activity supports clock-in? Last activity supports clock-out? Within shift window? Combined → both sides. Weekend/holiday → check schedule.\n\n### Step 5: Decide\n**Approve:** AT supports, times match (HH:MM), date correct, no conflicts.\n**Deny:** AT contradicts, no attendance evidence, or invalid reason + no AT support.\n**Resubmit:** Ambiguous data, missing schedule, insufficient evidence, access issue without AT, or multi-date (Rule 9 exact phrase).\n\nKeep reasoning brief. Output valid JSON only.\n\n---\n\n## Output\n{\n  \"requestDetail\": {\n    \"requestId\": \"{{ $('Start').item.json.requestId }}\",\n    \"id\": \"{{ $('Start').item.json.id }}\",\n    \"fullName\": \"{{ $('Start').item.json.fullName }}\",\n    \"type\": \"{{ $('Start').item.json.type }}\",\n    \"dateFrom\": \"{{ $('Start').item.json.dateFrom }}\",\n    \"dateTo\": \"{{ $('Start').item.json.dateTo }}\",\n    \"reason\": \"{{ $('Start').item.json.reason }}\",\n    \"requestPurpose\": \"clock-in/clock-out/attendance verification/correct filing date/partial attendance/combined clock-in + clock-out/other\"\n  },\n  \"activTrakData\": {\n    \"userName\": \"\",\n    \"shiftWindow\": {\n      \"start\": \"\",\n      \"end\": \"\",\n      \"crossMidnight\": true\n    },\n    \"activityRecords\": {{ JSON.stringify($('Start').item.json.activity) }},\n    \"evaluatedFirstActivity\": \"\",\n    \"evaluatedLastActivity\": \"\",\n    \"businessDateUsed\": \"\",\n    \"crossMidnightConsidered\": true,\n    \"scheduledShiftStart\": \"\",\n    \"scheduledShiftEnd\": \"\",\n    \"clockOutDateAdjusted\": \"\",\n    \"supportedRequestedTime\": \"\",\n    \"alternativeProofNeeded\": false\n  },\n  \"decision\": {\n    \"status\": \"approved/denied/resubmit\",\n    \"reasoning\": \"Brief specific reason only.\",\n    \"clockInRemark\": \"\",\n    \"clockOutRemark\": \"\",\n    \"recommendedSupportedTime\": \"\",\n    \"checks\": {\n      \"requestPurposeClear\": true,\n      \"activityAligned\": true,\n      \"startOfShiftAligned\": true,\n      \"clockOutAligned\": true,\n      \"dateAligned\": true,\n      \"scheduleDateValid\": true,\n      \"criticalWorkingDayChecked\": true,\n      \"crossMidnightHandled\": true,\n      \"clockOutDateAdjusted\": true,\n      \"accessIssueHandled\": true,\n      \"shiftWindowEnforced\": true,\n      \"atLogExtractionVerified\": true,\n      \"sufficientEvidence\": true\n    }\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoning": {
+            "reasoningOptions": {
+              "summary": "none"
+            }
+          },
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"requestDetail\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"requestId\": {\n          \"type\": \"string\"\n        },\n        \"fullName\": {\n          \"type\": \"string\"\n        },\n        \"type\": {\n          \"type\": \"string\"\n        },\n        \"reason\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\"requestId\", \"fullName\", \"type\", \"reason\"],\n      \"additionalProperties\": false\n    },\n    \"activTrakData\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"userName\": {\n          \"type\": \"string\"\n        },\n        \"localDate\": {\n          \"type\": \"string\",\n          \"format\": \"date\"\n        },\n        \"firstActivityDatetime\": {\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n        },\n        \"lastActivityDatetime\": {\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n        }\n      },\n      \"required\": [\"userName\", \"localDate\", \"firstActivityDatetime\", \"lastActivityDatetime\"],\n      \"additionalProperties\": false\n    },\n    \"decision\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"status\": {\n          \"type\": \"string\",\n          \"enum\": [\"approved\" ,\"Resubmit\", \"denied\"]\n        },\n        \"reasoning\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\"status\", \"reasoning\"],\n      \"additionalProperties\": false\n    }\n  },\n  \"required\": [\"requestDetail\", \"activTrakData\", \"decision\"],\n  \"additionalProperties\": false\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2208,
+        -1792
+      ],
+      "id": "78e0974b-7f90-4cf3-9506-70f9e9f9fa6d",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestId": "={{ $('Start').item.json.Split_Out2_requestId }}",
+            "Name": "={{ $json.output[0].content[0].text.requestDetail.fullName }}",
+            "type": "={{ $('Start').item.json.type }}",
+            "DateFrom": "={{ $('Start').item.json.dateFrom }}",
+            "DateTo": "={{ $('Start').item.json.dateTo }}",
+            "DateFiled": "={{ $('Start').item.json.dateFiled }}",
+            "Doer Reason": "={{ $('Start').item.json.reason }}",
+            "Reason": "={{ $json.output[0].content[0].text.decision.reasoning }}",
+            "transactionId": "={{ $('Start').item.json.id }}",
+            "requestType": "={{ $('Start').item.json.type }}",
+            "employeeId": "={{ $('Start').item.json.['Employee ID'] }}",
+            "Order number": "=1",
+            "cancelType": "=",
+            "approverId": "={{ $('Start').item.json.Get_rows_in_sheet1_['System ID'] }}",
+            "AI recomendation": "={{ $json.output[0].content[0].text.decision.status }}",
+            " actionType": "={{ JSON.stringify($json.logs) }}",
+            "COA request": "={{ JSON.stringify($('Start').item.json.logs) }}"
+          },
+          "matchingColumns": [
+            "requestId"
+          ],
+          "schema": [
+            {
+              "id": "requestId",
+              "displayName": "requestId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DateFiled",
+              "displayName": "DateFiled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DateFrom",
+              "displayName": "DateFrom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DateTo",
+              "displayName": "DateTo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Doer Reason",
+              "displayName": "Doer Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI recomendation",
+              "displayName": "AI recomendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LeaveStatus",
+              "displayName": "LeaveStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RejectReason",
+              "displayName": "RejectReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order number",
+              "displayName": "Order number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cancelType",
+              "displayName": "cancelType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "employeeId",
+              "displayName": "employeeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "requestType",
+              "displayName": "requestType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "transactionId",
+              "displayName": "transactionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " actionType",
+              "displayName": " actionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "approverId",
+              "displayName": "approverId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR notes",
+              "displayName": "HR notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR descision",
+              "displayName": "HR descision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR user",
+              "displayName": "HR user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Overiden?",
+              "displayName": "Overiden?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "attachments",
+              "displayName": "attachments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "assigned to ",
+              "displayName": "assigned to ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "COA request",
+              "displayName": "COA request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2624,
+        -1792
+      ],
+      "id": "8bdea38e-467e-4f59-b31f-b1a766fff0c8",
+      "name": "Append or update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "workSchedule",
+              "type": "any"
+            },
+            {
+              "name": "logs",
+              "type": "any"
+            },
+            {
+              "name": "activity",
+              "type": "any"
+            },
+            {
+              "name": "676",
+              "type": "any"
+            },
+            {
+              "name": "Split_Out2_dateFrom",
+              "type": "any"
+            },
+            {
+              "name": "Split_Out2_dateTo",
+              "type": "any"
+            },
+            {
+              "name": "requestId",
+              "type": "any"
+            },
+            {
+              "name": "dateFrom",
+              "type": "any"
+            },
+            {
+              "name": "fullName",
+              "type": "any"
+            },
+            {
+              "name": "dateTo",
+              "type": "any"
+            },
+            {
+              "name": "reason",
+              "type": "any"
+            },
+            {
+              "name": "type",
+              "type": "any"
+            },
+            {
+              "name": "id",
+              "type": "any"
+            },
+            {
+              "name": "Split_Out2_requestId",
+              "type": "any"
+            },
+            {
+              "name": "dateFiled",
+              "type": "any"
+            },
+            {
+              "name": "Get_rows_in_sheet1_",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "cd656d2e-cdcd-4635-aada-a72b51d74f6c",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        2000,
+        -1792
+      ]
+    }
+  ],
+  "connections": {
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet3": {
+      "main": [
+        []
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

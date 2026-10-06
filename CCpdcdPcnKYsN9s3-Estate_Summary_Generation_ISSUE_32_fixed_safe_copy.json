@@ -1,0 +1,1593 @@
+{
+  "name": "Estate Summary Generation - ISSUE-32 fixed safe copy",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dc294a4a-2de1-49d0-8501-e2ac56b1f304",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1648,
+        96
+      ],
+      "id": "abcd3609-453f-4101-9d39-30d75f3afde8",
+      "name": "Webhook",
+      "webhookId": "dc294a4a-2de1-49d0-8501-e2ac56b1f304"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM",
+          "mode": "list",
+          "cachedResultName": "Estate Summary Dump",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Raw",
+          "mode": "name",
+          "cachedResultName": "Raw"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Week": "={{ $json.Date }}",
+            "Doer": "={{ $json.Name }}",
+            "Category": "={{ $json.Category }}",
+            "Matching Status": "={{ $json[\"Matching Status\"] }}",
+            "Section": "={{ $json.Section }}",
+            "Label": "={{ $json.Label }}",
+            "Email": "={{  $json.Email ?? '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Week",
+              "displayName": "Week",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Doer",
+              "displayName": "Doer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Matching Status",
+              "displayName": "Matching Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Section",
+              "displayName": "Section",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Label",
+              "displayName": "Label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "exists?",
+              "displayName": "exists?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7f8a45f5-0177-4914-b782-b7f78ab5b7d2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32ef0d5d-cb97-4fc8-8fae-68b73458bc61",
+              "name": "json",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1440,
+        96
+      ],
+      "id": "cfea9312-3db4-4282-bd41-617176f79273",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "54c23c94-a9b9-4ac5-8148-33bfe5ce135e",
+      "name": "Split Out",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"execution_id\": \"{{ $execution.id }}\",\n  \"rows_written\": {{ $json.rows_written }},\n  \"updated_range\": \"{{ $json.updated_range }}\",\n  \"source_range\": \"{{ $json.source_range }}\",\n  \"downstream_range\": \"{{ $json.downstream_range }}\",\n  \"target_was_existing\": {{ $json.target_was_existing }},\n  \"formula_repairs\": {{ $json.formula_repairs }},\n  \"formula_rows_verified\": {{ $json.formula_rows_verified }},\n  \"totals\": {{ JSON.stringify($json.totals) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        4160,
+        96
+      ],
+      "id": "c7a686d6-5cb3-4da8-a46e-c146a615b5b7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json;\nconst payload = input?.json;\nconst doers = payload?.doers;\n\nif (!Array.isArray(doers) || doers.length === 0) {\n  throw new Error('Estate Summary payload has no doers');\n}\n\nconst dates = new Set();\nfor (const [index, doer] of doers.entries()) {\n  const reportDate = doer?.Date;\n  if (typeof reportDate !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(reportDate)) {\n    throw new Error('Estate Summary doer ' + (index + 1) + ' has an invalid ISO Date');\n  }\n  const parsed = new Date(reportDate + 'T00:00:00Z');\n  if (Number.isNaN(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== reportDate) {\n    throw new Error('Estate Summary doer ' + (index + 1) + ' has an invalid calendar Date');\n  }\n  if (typeof doer.Label !== 'string' || doer.Label.trim() === '') {\n    throw new Error('Estate Summary doer ' + (index + 1) + ' has no mapped Label');\n  }\n  dates.add(reportDate);\n}\n\nif (dates.size !== 1) {\n  throw new Error('Estate Summary payload contains mixed report dates');\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        96
+      ],
+      "id": "2e94c0a7-5890-4ecc-9530-92742204eb93",
+      "name": "Validate Estate Payload",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rAwAuH0XptwZhDvU",
+          "mode": "id"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "locked",
+              "condition": "isFalse"
+            },
+            {
+              "keyName": "locked_until",
+              "condition": "lt",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "locked": true,
+            "locked_until": "={{ $now.plus({ minutes: 5 }).toISO() }}",
+            "token": "={{ String($execution.id) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "locked",
+              "displayName": "locked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "locked_until",
+              "displayName": "locked_until",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1040,
+        96
+      ],
+      "id": "6f857c6b-ddf5-4b1e-bb3f-20959e7bc91b",
+      "name": "Acquire Estate Lock",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first()?.json;\nconst executionId = String($execution.id);\nconst lockAcquired = row?.locked === true && String(row?.token ?? '') === executionId;\nreturn [{\n  json: {\n    lockAcquired,\n    status: 409,\n    body: lockAcquired ? null : {\n      error: {\n        code: 'ESTATE_SUMMARY_BUSY',\n        message: 'Estate Summary generation is already in progress. Wait for it to finish before retrying.',\n      },\n      execution_id: executionId,\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        96
+      ],
+      "id": "c9d793cd-2721-44b4-a8bf-a94e124139c5",
+      "name": "Evaluate Estate Lock"
+    },
+    {
+      "parameters": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM/values/Raw!A:F?majorDimension=ROWS&valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -624,
+        96
+      ],
+      "id": "92bc1329-a399-4aa3-948a-1600fefb2768",
+      "name": "Read Existing Raw Rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const doers = $('Validate Estate Payload').first().json?.json?.doers;\nif (!Array.isArray(doers) || doers.length === 0) throw new Error('Validated Estate payload is unavailable');\n\nconst reportDate = doers[0].Date;\nconst existingValues = $input.first().json?.values ?? [];\n\nfunction normalizeDate(value) {\n  if (typeof value === 'number' && Number.isFinite(value)) {\n    return new Date(Math.round((value - 25569) * 86400000)).toISOString().slice(0, 10);\n  }\n  if (typeof value !== 'string' || value.trim() === '') return null;\n  const text = value.trim();\n  if (/^\\d{4}-\\d{2}-\\d{2}$/.test(text)) return text;\n  const parsed = new Date(text + ' UTC');\n  return Number.isNaN(parsed.valueOf()) ? null : parsed.toISOString().slice(0, 10);\n}\n\nfunction text(value) {\n  const normalized = value === null || value === undefined ? '' : String(value).trim();\n  return /^'[=+\\-@]/.test(normalized) ? normalized.slice(1) : normalized;\n}\n\nfunction payloadKey(doer) {\n  return [\n    reportDate,\n    text(doer.Name),\n    text(doer.Category),\n    text(doer['Matching Status']),\n    text(doer.Section),\n    text(doer.Label),\n  ].join('\\u001f');\n}\n\nfunction rawKey(row) {\n  return [normalizeDate(row[0]), ...row.slice(1, 6).map(text)].join('\\u001f');\n}\n\nfunction counts(keys) {\n  const result = new Map();\n  for (const key of keys) result.set(key, (result.get(key) ?? 0) + 1);\n  return result;\n}\n\nconst existingWeekRows = existingValues.slice(1).filter((row) => normalizeDate(row?.[0]) === reportDate);\nif (existingWeekRows.length > 0) {\n  const expected = counts(doers.map(payloadKey));\n  const actual = counts(existingWeekRows.map(rawKey));\n  const identical = expected.size === actual.size\n    && [...expected].every(([key, count]) => actual.get(key) === count);\n  if (!identical) {\n    throw new Error('Raw already contains a conflicting Estate batch for ' + reportDate);\n  }\n}\n\nreturn [{\n  json: {\n    rows: doers,\n    reportDate,\n    rowsWritten: doers.length,\n    shouldAppend: existingWeekRows.length === 0,\n    reusedExistingBatch: existingWeekRows.length > 0,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        96
+      ],
+      "id": "816966d6-f33a-4013-a6bc-3fb29049872c",
+      "name": "Plan Raw Write",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e167cde1-1b75-41db-af4a-8aa2f1c8a044",
+              "leftValue": "={{ $json.shouldAppend ? 1 : 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        96
+      ],
+      "id": "c2741c7a-7e2d-4c5b-9598-e6110b3473b4",
+      "name": "If Raw Append Needed",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const plan = $input.first().json;\nreturn plan.rows.map((doer) => ({\n  json: {\n    Week: doer.Date,\n    Doer: doer.Name,\n    Category: doer.Category,\n    'Matching Status': doer['Matching Status'],\n    Section: doer.Section,\n    Label: doer.Label,\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        256
+      ],
+      "id": "fbae4bca-7caa-448f-94ff-4b306f2ef14c",
+      "name": "Use Existing Raw Batch",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map((item) => item.json);\nif (rows.length === 0) throw new Error('No Raw rows were written');\n\nconst validatedDoers = $('Validate Estate Payload').first().json?.json?.doers ?? [];\nif (rows.length !== validatedDoers.length) {\n  throw new Error('Raw row count does not match the validated Estate payload');\n}\n\nconst dates = new Set(rows.map((row) => row.Week));\nif (dates.size !== 1) throw new Error('Appended Raw rows contain mixed report dates');\nconst reportDate = [...dates][0];\nif (typeof reportDate !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(reportDate)) {\n  throw new Error('Appended Raw rows contain an invalid report date');\n}\n\nreturn [{\n  json: {\n    reportDate,\n    rowsWritten: rows.length,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        96
+      ],
+      "id": "e94b261d-c9be-4241-b5fb-c6cfc31002cc",
+      "name": "Prepare Summary Update",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM?includeGridData=true&ranges=Summary%211%3A66",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        832,
+        96
+      ],
+      "id": "a9402fde-a342-4c7d-8140-71868e5d9fbe",
+      "name": "Read Summary Grid",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1hoiz5drxIFTvaHoKucHG0XxNVG5USP0kyM4H8cQt9Jg?includeGridData=false&fields=sheets(properties(sheetId,title,gridProperties(columnCount)))",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        96
+      ],
+      "id": "1b36ea59-ac70-48ff-9af9-7678ee17e685",
+      "name": "Read Downstream Grid",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const context = $('Prepare Summary Update').first().json;\nconst grid = $('Read Summary Grid').first().json;\nconst downstreamGrid = $input.first().json;\nconst SUMMARY_SHEET_ID = 1820943754;\nconst DOWNSTREAM_SHEET_ID = 1141614680;\nconst MIN_REPORT_COLUMN = 1;\nconst MAX_TEMPLATE_LOOKBACK = 12;\nconst REQUIRED_FORMULA_ROWS = [3, 4, 5, 6, 12, 15, 17, 64];\n\nconst sourceSheet = grid?.sheets?.find((sheet) => sheet?.properties?.sheetId === SUMMARY_SHEET_ID);\nconst downstreamSheet = downstreamGrid?.sheets?.find((sheet) => sheet?.properties?.sheetId === DOWNSTREAM_SHEET_ID);\nif (sourceSheet?.properties?.title !== 'Summary') {\n  throw new Error('Source Summary sheet ID/title pairing is invalid');\n}\nif (downstreamSheet?.properties?.title !== '2026 Weekly Doer Estate') {\n  throw new Error('Downstream Estate sheet ID/title pairing is invalid');\n}\nconst rowData = sourceSheet?.data?.[0]?.rowData ?? [];\n\nfunction cellAt(rowNumber, columnIndex) {\n  return rowData[rowNumber - 1]?.values?.[columnIndex] ?? {};\n}\n\nfunction isoFromCell(cell) {\n  const serial = cell?.effectiveValue?.numberValue ?? cell?.userEnteredValue?.numberValue;\n  if (Number.isFinite(serial)) {\n    return new Date(Math.round((serial - 25569) * 86400000)).toISOString().slice(0, 10);\n  }\n  const text = cell?.formattedValue ?? cell?.userEnteredValue?.stringValue;\n  if (typeof text !== 'string' || text.trim() === '') return null;\n  const trimmed = text.trim();\n  if (/^\\d{4}-\\d{2}-\\d{2}$/.test(trimmed)) return trimmed;\n  const parsed = new Date(trimmed + ' UTC');\n  return Number.isNaN(parsed.valueOf()) ? null : parsed.toISOString().slice(0, 10);\n}\n\nfunction effectiveNumber(rowNumber, columnIndex) {\n  const value = cellAt(rowNumber, columnIndex)?.effectiveValue?.numberValue;\n  return Number.isFinite(value) ? value : null;\n}\n\nfunction hasFormula(rowNumber, columnIndex) {\n  const formula = cellAt(rowNumber, columnIndex)?.userEnteredValue?.formulaValue;\n  return typeof formula === 'string' && formula.startsWith('=');\n}\n\nfunction hasUserValue(rowNumber, columnIndex) {\n  const cell = cellAt(rowNumber, columnIndex);\n  return Boolean(cell?.userEnteredValue && Object.keys(cell.userEnteredValue).length > 0);\n}\n\nfunction columnLetter(zeroBasedIndex) {\n  let number = zeroBasedIndex + 1;\n  let result = '';\n  while (number > 0) {\n    number -= 1;\n    result = String.fromCharCode(65 + (number % 26)) + result;\n    number = Math.floor(number / 26);\n  }\n  return result;\n}\n\nconst headerCells = rowData[0]?.values ?? [];\nlet existingColumn = null;\nlet lastReportColumn = null;\nfor (let column = MIN_REPORT_COLUMN; column < headerCells.length; column += 1) {\n  const isoDate = isoFromCell(headerCells[column]);\n  if (!isoDate) continue;\n  lastReportColumn = column;\n  if (isoDate === context.reportDate) existingColumn = column;\n}\n\nif (lastReportColumn === null) throw new Error('Summary has no report-date columns');\nconst targetColumn = existingColumn ?? lastReportColumn + 1;\nif (existingColumn === null && Array.from({ length: 66 }, (_, index) => index + 1).some((row) => hasUserValue(row, targetColumn))) {\n  throw new Error('The next Summary report column is not blank');\n}\n\nconst downstreamColumn = targetColumn + 12;\nconst downstreamColumnCount = downstreamSheet?.properties?.gridProperties?.columnCount;\nconst sourceColumnCount = sourceSheet?.properties?.gridProperties?.columnCount;\nif (!Number.isInteger(sourceColumnCount)) {\n  throw new Error('Could not read the source Summary sheet column count');\n}\nif (!Number.isInteger(downstreamColumnCount)) {\n  throw new Error('Could not read the downstream Estate sheet column count');\n}\n\nfunction buildResult({ templateColumn, requiredFormulaRows, requests, formulaRepairs, shouldApplySummaryUpdate }) {\n  const sourceColumnsToAppend = Math.max(0, targetColumn + 1 - sourceColumnCount);\n  const downstreamColumnsToAppend = Math.max(0, downstreamColumn + 1 - downstreamColumnCount);\n  return [{\n    json: {\n      ...context,\n      targetColumnLetter: columnLetter(targetColumn),\n      downstreamColumnLetter: columnLetter(downstreamColumn),\n      targetWasExisting: existingColumn !== null,\n      templateColumnLetter: templateColumn === null ? null : columnLetter(templateColumn),\n      formulaRepairs,\n      shouldApplySummaryUpdate,\n      batchUpdateBody: { requests },\n      downstreamCapacityBody: {\n        requests: [{\n          appendDimension: {\n            sheetId: DOWNSTREAM_SHEET_ID,\n            dimension: 'COLUMNS',\n            length: downstreamColumnsToAppend,\n          },\n        }],\n      },\n      downstreamColumnsToAppend,\n      sourceCapacityBody: {\n        requests: [{\n          appendDimension: {\n            sheetId: SUMMARY_SHEET_ID,\n            dimension: 'COLUMNS',\n            length: sourceColumnsToAppend,\n          },\n        }],\n      },\n      sourceColumnsToAppend,\n      requiredFormulaRows,\n    },\n  }];\n}\n\nif (existingColumn !== null) {\n  const existingFormulaRows = [];\n  for (let row = 3; row <= 66; row += 1) {\n    if (hasFormula(row, existingColumn)) existingFormulaRows.push(row);\n  }\n  const formulasAreValid = REQUIRED_FORMULA_ROWS.every((row) => hasFormula(row, existingColumn));\n  const doers = effectiveNumber(3, existingColumn);\n  const billed = effectiveNumber(4, existingColumn);\n  const unbilled = effectiveNumber(15, existingColumn);\n  const totalsAreValid = doers !== null\n    && billed !== null\n    && unbilled !== null\n    && doers === billed + unbilled;\n  if (formulasAreValid && totalsAreValid) {\n    return buildResult({\n      templateColumn: null,\n      requiredFormulaRows: existingFormulaRows,\n      requests: [],\n      formulaRepairs: 0,\n      shouldApplySummaryUpdate: false,\n    });\n  }\n}\n\nlet templateColumn = null;\nconst templateStart = Math.min(targetColumn - 1, lastReportColumn);\nconst templateEnd = Math.max(MIN_REPORT_COLUMN, templateStart - MAX_TEMPLATE_LOOKBACK + 1);\nfor (let column = templateStart; column >= templateEnd; column -= 1) {\n  const formulasAreValid = REQUIRED_FORMULA_ROWS.every((row) => hasFormula(row, column));\n  const doers = effectiveNumber(3, column);\n  const billed = effectiveNumber(4, column);\n  const unbilled = effectiveNumber(15, column);\n  if (\n    formulasAreValid\n    && doers !== null\n    && billed !== null\n    && unbilled !== null\n    && doers === billed + unbilled\n  ) {\n    templateColumn = column;\n    break;\n  }\n}\nif (templateColumn === null) throw new Error('No valid Summary formula template column was found');\n\nconst requiredFormulaRows = [];\nfor (let row = 3; row <= 66; row += 1) {\n  if (hasFormula(row, templateColumn)) requiredFormulaRows.push(row);\n}\n\nconst serial = (Date.parse(context.reportDate + 'T00:00:00Z') / 86400000) + 25569;\nconst requests = [{\n  updateCells: {\n    range: {\n      sheetId: SUMMARY_SHEET_ID,\n      startRowIndex: 0,\n      endRowIndex: 1,\n      startColumnIndex: targetColumn,\n      endColumnIndex: targetColumn + 1,\n    },\n    rows: [{\n      values: [{\n        userEnteredValue: { numberValue: serial },\n        userEnteredFormat: { numberFormat: { type: 'DATE', pattern: 'd-mmm-yyyy' } },\n      }],\n    }],\n    fields: 'userEnteredValue,userEnteredFormat.numberFormat',\n  },\n}];\n\nif (existingColumn === null) {\n  requests.push({\n    copyPaste: {\n      source: {\n        sheetId: SUMMARY_SHEET_ID,\n        startRowIndex: 2,\n        endRowIndex: 66,\n        startColumnIndex: templateColumn,\n        endColumnIndex: templateColumn + 1,\n      },\n      destination: {\n        sheetId: SUMMARY_SHEET_ID,\n        startRowIndex: 2,\n        endRowIndex: 66,\n        startColumnIndex: targetColumn,\n        endColumnIndex: targetColumn + 1,\n      },\n      pasteType: 'PASTE_FORMULA',\n      pasteOrientation: 'NORMAL',\n    },\n  });\n} else {\n  for (const row of requiredFormulaRows) {\n    requests.push({\n      copyPaste: {\n        source: {\n          sheetId: SUMMARY_SHEET_ID,\n          startRowIndex: row - 1,\n          endRowIndex: row,\n          startColumnIndex: templateColumn,\n          endColumnIndex: templateColumn + 1,\n        },\n        destination: {\n          sheetId: SUMMARY_SHEET_ID,\n          startRowIndex: row - 1,\n          endRowIndex: row,\n          startColumnIndex: targetColumn,\n          endColumnIndex: targetColumn + 1,\n        },\n        pasteType: 'PASTE_FORMULA',\n        pasteOrientation: 'NORMAL',\n      },\n    });\n  }\n}\n\nreturn buildResult({\n  templateColumn,\n  requiredFormulaRows,\n  requests,\n  formulaRepairs: requests.length - 1,\n  shouldApplySummaryUpdate: true,\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        96
+      ],
+      "id": "1232405d-1cbf-4b22-8776-2c998423902f",
+      "name": "Build Summary Update",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a4e8f6b3-d7df-4561-8025-b4b23d4760c6",
+              "leftValue": "={{ $json.downstreamColumnsToAppend }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1456,
+        96
+      ],
+      "id": "bc17a2b1-995d-4682-ae5b-b49f5bb80d96",
+      "name": "If Downstream Capacity Needed",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1hoiz5drxIFTvaHoKucHG0XxNVG5USP0kyM4H8cQt9Jg:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.downstreamCapacityBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1664,
+        0
+      ],
+      "id": "64d6c765-8451-496f-a3ed-02518ff1e18f",
+      "name": "Ensure Downstream Capacity",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4dcd0cfb-4deb-4fc7-8a29-68135c133a44",
+              "leftValue": "={{ $node[\"Build Summary Update\"].json.sourceColumnsToAppend }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1872,
+        96
+      ],
+      "id": "d7f5f195-4e99-406c-a056-1ed0ef0ba061",
+      "name": "If Source Capacity Needed",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $node[\"Build Summary Update\"].json.sourceCapacityBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        0
+      ],
+      "id": "2fb6728c-08f1-42ce-b2fa-12a5d64495e0",
+      "name": "Ensure Source Capacity",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $node[\"Build Summary Update\"].json.batchUpdateBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2496,
+        32
+      ],
+      "id": "782ea523-41ad-40ea-bdd3-86302844eb9f",
+      "name": "Apply Summary Update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "await new Promise((resolve) => setTimeout(resolve, 10000));\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2704,
+        32
+      ],
+      "id": "2da2ab1d-8f11-4fca-8d43-9ff0d0db799d",
+      "name": "Allow Sheet Recalculation",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM/values/' + encodeURIComponent('Summary!' + $node[\"Build Summary Update\"].json.targetColumnLetter + '1:' + $node[\"Build Summary Update\"].json.targetColumnLetter + '66') + '?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2912,
+        96
+      ],
+      "id": "3710dc94-40b2-4059-8a8d-a161daa1251e",
+      "name": "Read Source Results",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/1JH7K_kap9jYS_EPWF4-YxffA6PNepkUpSsOeKPxjCYM/values/' + encodeURIComponent('Summary!' + $node[\"Build Summary Update\"].json.targetColumnLetter + '1:' + $node[\"Build Summary Update\"].json.targetColumnLetter + '66') + '?valueRenderOption=FORMULA&dateTimeRenderOption=SERIAL_NUMBER' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3120,
+        96
+      ],
+      "id": "67dbff6b-6c28-4053-a059-f396bb29bc0b",
+      "name": "Read Source Formulas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/1hoiz5drxIFTvaHoKucHG0XxNVG5USP0kyM4H8cQt9Jg/values/' + encodeURIComponent(\"'2026 Weekly Doer Estate'!\" + $node[\"Build Summary Update\"].json.downstreamColumnLetter + '3:' + $node[\"Build Summary Update\"].json.downstreamColumnLetter + '68') + '?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3328,
+        96
+      ],
+      "id": "23cd155d-d3ca-416a-a7b0-0e539c83c9c0",
+      "name": "Read Downstream Results",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aXauVRQmG3tZEfHl",
+          "name": "Joseph for Allocation"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const context = $('Build Summary Update').first().json;\nconst sourceValues = $('Read Source Results').first().json?.values ?? [];\nconst sourceFormulaValues = $('Read Source Formulas').first().json?.values ?? [];\nconst downstreamValues = $('Read Downstream Results').first().json?.values ?? [];\n\nfunction normalizeDate(value) {\n  if (typeof value === 'number' && Number.isFinite(value)) {\n    return new Date(Math.round((value - 25569) * 86400000)).toISOString().slice(0, 10);\n  }\n  if (typeof value !== 'string' || value.trim() === '') return null;\n  const text = value.trim();\n  if (/^\\d{4}-\\d{2}-\\d{2}$/.test(text)) return text;\n  const parsed = new Date(text + ' UTC');\n  return Number.isNaN(parsed.valueOf()) ? null : parsed.toISOString().slice(0, 10);\n}\n\nfunction numberAt(values, rowNumber, startingRow) {\n  const raw = values[rowNumber - startingRow]?.[0];\n  if (typeof raw === 'number' && Number.isFinite(raw)) return raw;\n  if (typeof raw === 'string' && raw.trim() !== '') {\n    const parsed = Number(raw.replace(/,/g, ''));\n    if (Number.isFinite(parsed)) return parsed;\n  }\n  return null;\n}\n\nfunction valueAt(values, rowNumber, startingRow) {\n  const value = values[rowNumber - startingRow]?.[0];\n  if (value === null || value === undefined || value === '') return null;\n  return typeof value === 'string' ? value.trim() : value;\n}\n\nfunction assertNoSheetErrors(values, name) {\n  for (const row of values) {\n    for (const value of row) {\n      if (typeof value === 'string' && /^#(?:REF!|N\\/A|VALUE!|ERROR!|NAME\\?|DIV\\/0!|NUM!|NULL!|GETTING_DATA)/i.test(value)) {\n        throw new Error(name + ' contains spreadsheet error ' + value);\n      }\n    }\n  }\n}\n\nassertNoSheetErrors(sourceValues, 'Source Summary');\nassertNoSheetErrors(downstreamValues, 'Downstream Estate workbook');\n\nconst source = {\n  date: normalizeDate(sourceValues[0]?.[0]),\n  doers: numberAt(sourceValues, 3, 1),\n  billed: numberAt(sourceValues, 4, 1),\n  unbilled: numberAt(sourceValues, 15, 1),\n};\nconst downstream = {\n  date: normalizeDate(downstreamValues[0]?.[0]),\n  doers: numberAt(downstreamValues, 5, 3),\n  billed: numberAt(downstreamValues, 6, 3),\n  unbilled: numberAt(downstreamValues, 17, 3),\n};\n\nfor (const [name, result] of [['Source Summary', source], ['Downstream Estate workbook', downstream]]) {\n  if (result.date !== context.reportDate) {\n    throw new Error(name + ' did not expose report date ' + context.reportDate);\n  }\n  if (![result.doers, result.billed, result.unbilled].every(Number.isFinite)) {\n    throw new Error(name + ' headline totals are not ready');\n  }\n  if (result.doers !== result.billed + result.unbilled) {\n    throw new Error(name + ' totals are internally inconsistent');\n  }\n}\n\nif (\n  source.doers !== downstream.doers\n  || source.billed !== downstream.billed\n  || source.unbilled !== downstream.unbilled\n) {\n  throw new Error('Downstream Estate workbook totals do not match Source Summary');\n}\n\nfor (const row of context.requiredFormulaRows ?? []) {\n  const formula = sourceFormulaValues[row - 1]?.[0];\n  if (typeof formula !== 'string' || !formula.startsWith('=')) {\n    throw new Error('Source Summary formula row ' + row + ' does not contain a formula');\n  }\n  const sourceValue = valueAt(sourceValues, row, 1);\n  const downstreamValue = valueAt(downstreamValues, row + 2, 3);\n  if (JSON.stringify(sourceValue) !== JSON.stringify(downstreamValue)) {\n    throw new Error('Downstream Estate workbook differs from Source Summary at formula row ' + row);\n  }\n}\n\nreturn [{\n  json: {\n    rows_written: context.rowsWritten,\n    updated_range: 'Raw!A:F',\n    source_range: 'Summary!' + context.targetColumnLetter + '1:' + context.targetColumnLetter + '66',\n    downstream_range: \"'2026 Weekly Doer Estate'!\" + context.downstreamColumnLetter + '3:' + context.downstreamColumnLetter + '68',\n    totals: source,\n    target_was_existing: context.targetWasExisting,\n    formula_repairs: context.formulaRepairs,\n    formula_rows_verified: (context.requiredFormulaRows ?? []).length,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3536,
+        96
+      ],
+      "id": "027e2ec9-cea1-4363-990d-e9cf8b120327",
+      "name": "Verify Estate Summary",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rAwAuH0XptwZhDvU",
+          "mode": "id"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "token",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "locked": false,
+            "locked_until": "={{ $now.toISO() }}",
+            "token": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "locked",
+              "displayName": "locked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "locked_until",
+              "displayName": "locked_until",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3744,
+        96
+      ],
+      "id": "1dbddd66-b42b-4544-b6ad-5c084b0ea99a",
+      "name": "Release Estate Lock",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $input.first()?.json;\nif (row?.locked !== false) {\n  throw new Error('Estate Summary result was verified, but its execution lock was not released');\n}\nreturn [{ json: $('Verify Estate Summary').first().json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        96
+      ],
+      "id": "8d95d22b-9eea-4331-befb-43a561d1a8d0",
+      "name": "Finalize Estate Success",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7b4d19d1-2f6a-4e34-9d2a-54801348c4cc",
+              "leftValue": "={{ $json.lockAcquired }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -624,
+        96
+      ],
+      "id": "8e44d012-ad58-4f51-bef0-fcc4576bcf18",
+      "name": "If Estate Lock Acquired"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": "={{ $json.status }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -416,
+        320
+      ],
+      "id": "e0b83329-6251-42e5-ae56-66d607ccce44",
+      "name": "Respond Estate Busy"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3d07314e-a0ee-4e42-9e56-6149ce952bc0",
+              "leftValue": "={{ $node[\"Build Summary Update\"].json.shouldApplySummaryUpdate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        96
+      ],
+      "id": "96556691-3117-45fc-8aa5-0d0b5ed6b63f",
+      "name": "If Summary Update Needed",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\nconst rawError = input.error && typeof input.error === 'object' ? input.error : input;\nconst rawMessage = typeof input.error === 'string'\n  ? input.error\n  : typeof rawError.message === 'string'\n    ? rawError.message\n    : typeof input.message === 'string'\n      ? input.message\n      : 'Unknown workflow failure';\nconst normalizedMessage = rawMessage.replace(/[\\r\\n\\t]+/g, ' ').trim().slice(0, 180);\nconst conflict = normalizedMessage.startsWith('Raw already contains a conflicting Estate batch');\nreturn [{\n  json: {\n    status: conflict ? 409 : 500,\n    body: {\n      error: {\n        code: conflict ? 'ESTATE_SUMMARY_CONFLICT' : 'ESTATE_SUMMARY_WORKFLOW_FAILED',\n        message: conflict\n          ? 'An Estate Summary already exists for this date with different data. Investigate it before retrying.'\n          : 'Estate Summary workflow failed' + (normalizedMessage ? ': ' + normalizedMessage : ''),\n      },\n      execution_id: String($execution.id),\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        416
+      ],
+      "id": "5bc766d3-b267-4a6f-9372-1381699ee4da",
+      "name": "Build Estate Failure Response"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "rAwAuH0XptwZhDvU",
+          "mode": "id"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "token",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "locked": false,
+            "locked_until": "={{ $now.toISO() }}",
+            "token": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "locked",
+              "displayName": "locked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "locked_until",
+              "displayName": "locked_until",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3536,
+        416
+      ],
+      "id": "fcbf510b-d9be-487e-8fa2-218541a284b3",
+      "name": "Release Estate Lock on Failure",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Build Estate Failure Response\"].json.body }}",
+        "options": {
+          "responseCode": "={{ $node[\"Build Estate Failure Response\"].json.status }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3744,
+        416
+      ],
+      "id": "e9c38237-eb29-428b-8cba-85f31e6d9ee1",
+      "name": "Respond Estate Failure"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first()?.json ?? {};\nconst rawError = input.error && typeof input.error === 'object' ? input.error : input;\nconst rawMessage = typeof rawError.message === 'string' ? rawError.message : 'Invalid Estate Summary request';\nconst safeMessage = rawMessage.replace(/[\\r\\n\\t]+/g, ' ').trim().slice(0, 180);\nreturn [{\n  json: {\n    status: 422,\n    body: {\n      error: {\n        code: 'ESTATE_SUMMARY_INVALID_PAYLOAD',\n        message: safeMessage || 'Invalid Estate Summary request',\n      },\n      execution_id: String($execution.id),\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        416
+      ],
+      "id": "5055fbc6-2d3b-404f-ae82-c88dc51c40e6",
+      "name": "Build Estate Validation Failure"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": "={{ $json.status }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -832,
+        416
+      ],
+      "id": "400454e3-d6af-427d-8397-364fe148325b",
+      "name": "Respond Estate Validation Failure"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "Validate Estate Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Estate Payload": {
+      "main": [
+        [
+          {
+            "node": "Acquire Estate Lock",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Validation Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acquire Estate Lock": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Estate Lock",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing Raw Rows": {
+      "main": [
+        [
+          {
+            "node": "Plan Raw Write",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Raw Write": {
+      "main": [
+        [
+          {
+            "node": "If Raw Append Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Raw Append Needed": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Use Existing Raw Batch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Prepare Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use Existing Raw Batch": {
+      "main": [
+        [
+          {
+            "node": "Prepare Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Summary Update": {
+      "main": [
+        [
+          {
+            "node": "Read Summary Grid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Summary Grid": {
+      "main": [
+        [
+          {
+            "node": "Read Downstream Grid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Downstream Grid": {
+      "main": [
+        [
+          {
+            "node": "Build Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Summary Update": {
+      "main": [
+        [
+          {
+            "node": "If Downstream Capacity Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Downstream Capacity Needed": {
+      "main": [
+        [
+          {
+            "node": "Ensure Downstream Capacity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Source Capacity Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure Downstream Capacity": {
+      "main": [
+        [
+          {
+            "node": "If Source Capacity Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Source Capacity Needed": {
+      "main": [
+        [
+          {
+            "node": "Ensure Source Capacity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Summary Update Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure Source Capacity": {
+      "main": [
+        [
+          {
+            "node": "If Summary Update Needed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Summary Update": {
+      "main": [
+        [
+          {
+            "node": "Allow Sheet Recalculation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allow Sheet Recalculation": {
+      "main": [
+        [
+          {
+            "node": "Read Source Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Source Results": {
+      "main": [
+        [
+          {
+            "node": "Read Source Formulas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Source Formulas": {
+      "main": [
+        [
+          {
+            "node": "Read Downstream Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Downstream Results": {
+      "main": [
+        [
+          {
+            "node": "Verify Estate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Estate Summary": {
+      "main": [
+        [
+          {
+            "node": "Release Estate Lock",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Release Estate Lock": {
+      "main": [
+        [
+          {
+            "node": "Finalize Estate Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Estate Success": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Estate Lock": {
+      "main": [
+        [
+          {
+            "node": "If Estate Lock Acquired",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Estate Lock Acquired": {
+      "main": [
+        [
+          {
+            "node": "Read Existing Raw Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Estate Busy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Summary Update Needed": {
+      "main": [
+        [
+          {
+            "node": "Apply Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read Source Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Estate Failure Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Estate Failure Response": {
+      "main": [
+        [
+          {
+            "node": "Release Estate Lock on Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Release Estate Lock on Failure": {
+      "main": [
+        [
+          {
+            "node": "Respond Estate Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Estate Validation Failure": {
+      "main": [
+        [
+          {
+            "node": "Respond Estate Validation Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 240
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": null
+}

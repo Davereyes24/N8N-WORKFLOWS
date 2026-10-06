@@ -1,0 +1,2442 @@
+{
+  "name": "Skin Base",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ec6d65c4-23fb-4892-a181-05cbd9d53807",
+              "leftValue": "={{ $('Verify interested/ non interested').item.json.output }}",
+              "rightValue": "Interested",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        464
+      ],
+      "id": "a8627c19-1226-43d6-85cc-c9845e6e21eb",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1UcxR_1PSVZfeTvJGPFeN3yuqRe8HvvYpPuIFwC7Xegw/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750212611,
+          "mode": "list",
+          "cachedResultName": "Skin base",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UcxR_1PSVZfeTvJGPFeN3yuqRe8HvvYpPuIFwC7Xegw/edit#gid=1750212611"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "= {{ $('Webhook').item.json.body.data.lead.first_name }} {{ $('Webhook').item.json.body.data.lead.last_name }}",
+            "Email": "={{ $('Webhook').item.json.body.data.lead.email }}",
+            "Date": "={{ $('Webhook').item.json.body.data.reply.created_at }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1696,
+        368
+      ],
+      "id": "e51cb77d-6042-48db-b6ed-ac3d13f64ff6",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "sendTo": "richard@skinbase.co.uk",
+        "subject": "Skinbase(Interested)-Client's details",
+        "emailType": "text",
+        "message": "=Client's email:{{ $('Webhook').item.json.body.data.lead.email }} Workspace:{{ $('Webhook').item.json.body.event.workspace_name }}Email reply:{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3904,
+        1152
+      ],
+      "id": "204f54ca-582f-4508-80ee-52d9394ff362",
+      "name": "Send a message3",
+      "webhookId": "232e3d0e-ce45-4344-b90a-f9a3ffffc90f"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1712,
+        1088
+      ],
+      "id": "0a1c04c1-d1d5-4ce2-8bde-6fa28a0b0e6d",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        688
+      ],
+      "id": "02b675ac-1d88-4b8c-a451-f2056c14fb96",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        688
+      ],
+      "id": "8fa1418a-f489-423b-9312-d68c17283dcd",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "efd794f6-6267-4786-af41-02697881493b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        464
+      ],
+      "id": "a968ed3e-ddef-49c0-ad9e-577ebb0215ed",
+      "name": "Webhook",
+      "webhookId": "efd794f6-6267-4786-af41-02697881493b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://send.revitk.com/api/tags/attach-to-leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tag_ids\": [\n    229\n  ],\n  \"lead_ids\": [\n    {{ $('Webhook').item.json.body.data.lead.id }}\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        128
+      ],
+      "id": "5cadfcc9-2854-45b4-a66b-9d632338cc33",
+      "name": "Attach to leads",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://send.revitk.com/api/campaigns/63/leads/attach-leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "JSON",
+        "body": "={\n  \"lead_ids\": [{{ $('Webhook').item.json.body.data.lead.id }}]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        576
+      ],
+      "id": "8c7a5fec-e0c1-47fe-9b56-ad6aeebef1d6",
+      "name": "Attach lead to Campaign"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Check if the given reply expresses an intent to schedule a call, book a meeting, or suggests that the client wants you to call them (e.g. \"let's book a call\", \"can we schedule a call?\", \"call me\", \"when are you free?\", \"let's chat\", or similar phrases).\nIf the reply indicates this intent, output Yes. Otherwise, output No.\n\nExample replies and expected outputs:\n\n\"Can we schedule a call?\" → Yes\n\n\"Please call me tomorrow.\" → Yes\n\n\"When are you free for a quick chat?\" → Yes\n\n\"Send me more details first.\" → No\n\n\"Not interested.\" → No\n\n\"Looks good, let's book a call.\" → Yes\n\nReply: {{ $('Webhook').item.json.body.data.reply.text_body }}\nOutput: Yes/No",
+        "options": {
+          "systemMessage": "If the reply indicates a clear intent to schedule a call, book a meeting, or have a conversation over the phone, your output must be Yes.\n\nIf the reply does not indicate this intent, your output must be No.\n\nExamples\nReply: \"Can we schedule a call?\"\nOutput: Yes\n\nReply: \"Please call me tomorrow.\"\nOutput: Yes\n\nReply: \"When are you free for a quick chat?\"\nOutput: Yes\n\nReply: \"Send me more details first.\"\nOutput: No\n\nReply: \"Not interested.\"\nOutput: No\n\nReply: \"Looks good, let's book a call.\"\nOutput: Yes\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1632,
+        848
+      ],
+      "id": "368f8cc2-fa11-4192-959d-951e820280ed",
+      "name": "Book call identifier"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            },
+            {
+              "name": "query",
+              "value": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "value": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2208,
+        1040
+      ],
+      "id": "1f13f983-8f5c-48a0-8c0b-47968c2bb1f1",
+      "name": "Get contact Id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"title\": \"New task\",\n  \"body\": \"\",\n  \"dueDate\": \"2025-08-10T00:00:00Z\",\n  \"completed\": false,\n  \"assignedTo\": \"rLqSewd7aqkn8LYDp9jh\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2784,
+        1248
+      ],
+      "id": "8ca81630-1a80-4aa6-a01c-2cde5b44f232",
+      "name": "Add new Task Highlevel"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/mark-as-interested",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3232,
+        1248
+      ],
+      "id": "d2d93ea5-7369-40d4-b1b0-20108f8794f6",
+      "name": "Add interested tag in contact"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}\",\n  \"lastName\": \"{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"name\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"phone\": \"{{ $json.phone }}\",\n  \"email\": \"{{ $('Webhook').item.json.body.data.lead.email }}\",\n  \"locationId\": \"li7J4sbCf5ffE11A2opH\",\n  \"tags\": [\"Skinbase\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3680,
+        1248
+      ],
+      "id": "c106c38f-0b72-4f71-a13b-850fae524195",
+      "name": "Upset contact in GHL"
+    },
+    {
+      "parameters": {
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/conversation-thread",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4128,
+        1152
+      ],
+      "id": "aad7ed1b-53d5-4fb6-8e7d-2239113d0261",
+      "name": "Get email thread"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "= https://services.leadconnectorhq.com/contacts/{{ $('Get contact Id').item.json.contacts[0].id }}/notes ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "=\"{{ $('Get contact Id').item.json.contacts[0].id }}\""
+            },
+            {
+              "name": "body",
+              "value": "={{ $('Webhook').item.json.body.data.reply.text_body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4352,
+        1152
+      ],
+      "id": "ccf521ef-ea7a-4a0b-b7ce-8c87b360c530",
+      "name": "Add note to contact"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Persona\nYou are a highly specialized AI assistant named \"Lead Qualifier\". Your sole function is to perform a pragmatic, binary classification of inbound email replies for a sales team. You are not a sentiment analyzer; you are a pattern-detection and rule-following engine. Your goal is to identify any email that is not an explicit rejection or an automated response.\n\n# Primary Directive\nAnalyze the user-provided email reply and classify it into one of two rigid categories: `Interested` or `Not Interested`.\n\n# Call-to-Action Context\nFor context, the email these users are replying to has a soft call-to-action, typically asking a direct question like: **\"Do you want me to send some info over?\"** or **\"Would you be open to me sending over some information?\"**. Therefore, replies should be interpreted as a direct answer to that question.\n\n# Deliberation Process (Follow these steps in order)\n1.  **Auto-Responder Check:** First, analyze the email's structure and content for common patterns of automated responses (e.g., Out of Office, submission confirmations, delayed reply notifications). If signs of an auto-responder are present, **immediately classify as `Not Interested` and cease further analysis.**\n2.  **Explicit Rejection Check:** If it is NOT an auto-responder, scan the text for clear, unambiguous rejection language or requests to be removed. If found, classify as `Not Interested`.\n3.  **Default to Interested:** If the email is NOT an auto-responder and contains NO explicit rejection, you **MUST** classify it as `Interested`. Ambiguity, brevity, or neutral acknowledgement all fall into the `Interested` category.\n\n# Detailed Classification Rules\n\n## Classify as \"Not Interested\" if:\n1.  **(Highest Priority) It is an automated response.** Look for keywords and patterns like:\n    * \"out of office\" / \"OOO\"\n    * \"automated reply\" / \"automatic response\"\n    * Mentions of specific response times (e.g., \"48-72 hour response time\", \"will respond within 24 hours\")\n    * Mentions of specific working hours (e.g., \"I check my email daily Monday-Friday between 8 am - 5:30 pm\")\n    * \"Thank you for your message/submission\" followed by a statement about when a real person will reply.\n    * \"Your message has been received\"\n2.  It contains an explicit statement of non-interest (e.g., \"not interested\", \"we have no need\", \"not a good fit\").\n3.  It states a decision has been made to use another provider (e.g., \"we've gone with another solution\", \"we have chosen a different vendor\").\n4.  It includes a request to be removed from a list (e.g., \"please remove me\", \"unsubscribe\").\n5.  It uses \"not at this time\" or \"not right now\" phrasing, as this indicates no immediate opportunity.\n\n## Classify as \"Interested\" if:\n1.  **It is not an auto-responder AND does not contain a clear rejection.** This is the default.\n2.  It directly affirms the call-to-action with brief, positive language (e.g., \"Send it over\", \"For sure\", \"Yes please\", \"sure\", \"ok\").\n3.  They ask any question at all.\n4.  They request any information (e.g., pricing, details, demo, quote).\n5.  They acknowledge the message without declining (e.g., \"Thanks for the information.\").\n6.  They leave the door open for the future (e.g., \"check back next quarter\", \"we've saved your details\").\n\n# Output Format\nYour output must be EXACTLY one of the following two words, with no other text, explanation, or punctuation.\n\n`Interested`\n`Not Interested`\n\n# Examples\n\n**--- START OF EXAMPLES ---**\n\n**Email:** \"Send it over\"\n**Output:** `Interested`\n\n**Email:** \"For sure\"\n**Output:** `Interested`\n\n**Email:** \"sure\"\n**Output:** `Interested`\n\n**Email:** \"Thank you for your email and interest in working with Andrea Bounds Beauty! All emails have a 48-72 response time. In the meantime take a look at our website andreaboundsbeauty.com!\"\n**Output:** `Not Interested`\n\n**Email:** \"Thank you so much for reaching out! I check my email daily Monday-Friday between 8 am - 5:30 pm and will respond back to you by email as soon as possible.\"\n**Output:** `Not Interested`\n\n**Email:** \"Thanks for the information. I'd like to schedule a demo next week. What times are available?\"\n**Output:** `Interested`\n\n**Email:** \"Thank you for reaching out. We're not looking to make any changes right now. Maybe check back next quarter.\"\n**Output:** `Interested`\n\n**Email:** \"Thanks for your email. We don't need these services at the moment.\"\n**Output:** `Not Interested`\n\n**--- END OF EXAMPLES ---**\n\nClient Email:\n{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {
+          "systemMessage": "Our ONLY task is to determine whether the client is \"Interested\" or \"Not Interested\" based on their reply.\nYou must verify whether the response is surely an interested response or not — be precise but always lean toward opportunity detection.\n\nClassification Rules\n\nDEFAULT TO \"INTERESTED\" unless there is a clear rejection or an explicit close of opportunity.\n\nClassify as \"Interested\" if ANY of the following apply:\n\nThey ask any question, of any kind.\n\nThey mention saving your contact details for future reference.\n\nThey indicate they sometimes use similar services, even if not now.\n\nThey request any information, materials, quotes, pricing, or demos.\n\nThey acknowledge your message without explicitly declining.\n\nThey mention potential future needs or openness to follow-up.\n\nThey respond positively in any way, even minimally (e.g. polite, friendly, neutral tone).\n\nThey share any information about their situation, company, or needs.\n\nThey leave the door open for future communication (implicitly or explicitly).\n\nThey are ambiguous but not explicitly negative.\n\nClassify as \"Not Interested\" ONLY if ANY of the following apply:\n\nThey explicitly state they are not interested or decline your offer.\n\nThey say “not interested at this time”, “not at the moment”, or similar wording that indicates no interest right now.\n\nThey clearly state they have no need for your services now or in the future.\n\nThey request to be removed from your contact list / mailing list.\n\nIt is an automated response (out of office, bounce, autoresponder).\n\nThey say they have chosen another provider and explicitly close the conversation.\n\nOutput Format\n\nYour output must be a single word:\nInterested\nOR\nNot Interested\n\nNo other text, explanations, or analysis should be included in your response.\n\nExamples\n\nEmail: \"Thanks for the information. I'd like to schedule a demo next week. What times are available?\"\nOutput: Interested\n\nEmail: \"Thank you for reaching out. We're not looking to make any changes right now. Maybe check back next quarter.\"\nOutput: Interested\n\nEmail: \"This looks interesting. Can you send me more details about pricing?\"\nOutput: Interested\n\nEmail: \"I appreciate the follow-up but we've decided to go with another solution.\"\nOutput: Not Interested\n\nEmail: \"Hi John, we do sometimes get quotes for deliveries but not that often. We've saved your details on file should the need arise.\"\nOutput: Interested\n\nEmail: \"Thanks for your email. We don't need these services at the moment.\"\nOutput: Not Interested\n\nEmail: \"Please remove me from your mailing list. We have no need for these services.\"\nOutput: Not Interested\n\nEmail: \"Thanks for the information.\"\nOutput: Interested\n\nEmail: \"Not interested at this time, but thank you for reaching out.\"\nOutput: Not Interested\n\nEmail: \"Not at the moment, maybe later.\"\nOutput: Not Interested"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        464
+      ],
+      "id": "3326a900-276f-4bac-8c0e-9706998c4b0a",
+      "name": "Verify interested/ non interested"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI specialized in analyzing client email responses for sales opportunities. Your only task is to determine if a client is \"Interested\" or \"Not Interested\" based on their reply.\n\nGiven this client email:\n{{ $json.body.data.reply.text_body }}\n\nClassification Rules:\n\nDEFAULT TO \"INTERESTED\" unless there is a clear rejection.\n\nClassify as \"Interested\" if:\n\nThey ask ANY question whatsoever\n\nThey mention saving contact details for future reference\n\nThey indicate they sometimes use similar services, even if not now\n\nThey request any information, materials, quotes, or demos\n\nThey acknowledge your message without explicitly declining\n\nThey mention potential future needs\n\nThey respond positively in any way, however minimal\n\nThey share any information about their situation or needs\n\nThey leave the door open for future communication\n\nThey are ambiguous but not explicitly negative\n\nClassify as \"Not Interested\" if:\n\nThey explicitly state they are not interested or decline\n\nThey say “not interested at this time”, “not at the moment”, or similar wording that indicates no interest right now\n\nThey clearly state they have no need for your services now or in the future\n\nThey request to be removed from your contact list\n\nIt's an automated response (out of office, etc.)\n\nThey’ve chosen another provider and explicitly close the door\n\nOutput format must be EXACTLY:\nInterested\nOR\nNot Interested\n\nExamples:\n\nEmail: \"Thanks for the information. I'd like to schedule a demo next week. What times are available?\"\nOutput: \"Interested\"\n\nEmail: \"Thank you for reaching out. We're not looking to make any changes right now. Maybe check back next quarter.\"\nOutput: \"Interested\"\n\nEmail: \"This looks interesting. Can you send me more details about pricing?\"\nOutput: \"Interested\"\n\nEmail: \"I appreciate the follow-up but we've decided to go with another solution.\"\nOutput: \"Not Interested\"\n\nEmail: \"Hi John, we do sometimes get quotes for deliveries but not that often. We've saved your details on file should the need arise.\"\nOutput: \"Interested\"\n\nEmail: \"Thanks for your email. We don't need these services at the moment.\"\nOutput: \"Not Interested\"\n\nEmail: \"Please remove me from your mailing list. We have no need for these services.\"\nOutput: \"Not Interested\"\n\nEmail: \"Thanks for the information.\"\nOutput: \"Interested\"",
+        "options": {
+          "systemMessage": "You are an AI specialized in analyzing client email responses for sales opportunities. Your only task is to determine if a client is \"Interested\" or \"Not Interested\" based on their reply.\n\nGiven a client email, you must follow these classification rules:\n\nDEFAULT TO \"INTERESTED\" unless there is a clear rejection.\n\nClassify as \"Interested\" if:\n\nThey ask ANY question whatsoever\n\nThey mention saving contact details for future reference\n\nThey indicate they sometimes use similar services, even if not now\n\nThey request any information, materials, quotes, or demos\n\nThey acknowledge your message without explicitly declining\n\nThey mention potential future needs\n\nThey respond positively in any way, however minimal\n\nThey share any information about their situation or needs\n\nThey leave the door open for future communication\n\nThey are ambiguous but not explicitly negative\n\nClassify as \"Not Interested\" if:\n\nThey explicitly state they are not interested or decline\n\nThey say “not interested at this time”, “not at the moment”, or similar wording that indicates no interest right now\n\nThey clearly state they have no need for your services now or in the future\n\nThey request to be removed from your contact list\n\nIt's an automated response (out of office, etc.)\n\nThey’ve chosen another provider and explicitly close the door\n\nYour output format must be EXACTLY one of the following, with no other text, explanations, or analysis included:\nInterested\nOR\nNot Interested"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        464
+      ],
+      "id": "84976560-6aa4-490a-8112-9a99c3e26b45",
+      "name": "Email Classifier"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "65aac397-0df8-4f96-9e81-7556e223e05d",
+              "leftValue": "={{ $json.meta.total }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        1040
+      ],
+      "id": "7419c578-7f52-4989-afd8-555ea32a9d47",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "firstName",
+              "value": "={{ $('Webhook').item.json.body.data.lead.first_name }}"
+            },
+            {
+              "name": "lastName",
+              "value": "={{ $('Webhook').item.json.body.data.lead.last_name }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $('Webhook').item.json.body.data.lead.first_name }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            },
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2784,
+        848
+      ],
+      "id": "2d2d38fc-2388-408a-94c8-0d5bff4db855",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            },
+            {
+              "name": "query",
+              "value": "="
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "value": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3008,
+        848
+      ],
+      "id": "2f2abc1e-d544-44b6-81a0-86b82e072932",
+      "name": "Get contact Id1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}/tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"title\": \"New Lead call\",\n  \"body\": \"\",\n  \"dueDate\": \"2025-08-10T00:00:00Z\",\n  \"completed\": false,\n  \"assignedTo\": \"rLqSewd7aqkn8LYDp9jh\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3232,
+        848
+      ],
+      "id": "8a6ed7a4-31ce-4f31-b34a-c6f738897b85",
+      "name": "Add new Task Highlevel1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "= https://services.leadconnectorhq.com/contacts/{{ $('Get contact Id1').item.json.contacts[0].id }}/notes ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "=\"{{ $('Get contact Id1').item.json.contacts[0].id }}\""
+            },
+            {
+              "name": "body",
+              "value": "={{ $('Webhook').item.json.body.data.reply.text_body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        944
+      ],
+      "id": "235e88d4-edaf-494d-9bce-992528f88954",
+      "name": "Add note to contact1"
+    },
+    {
+      "parameters": {
+        "sendTo": "richard@skinbase.co.uk",
+        "subject": "Skinbase(Interested)-Client's details",
+        "emailType": "text",
+        "message": "=Client's email:{{ $('Webhook').item.json.body.data.lead.email }} Workspace:{{ $('Webhook').item.json.body.event.workspace_name }}Email reply:{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4128,
+        944
+      ],
+      "id": "7187d7f0-376e-41a5-8756-ddc83cb9cf0c",
+      "name": "Send a message",
+      "webhookId": "232e3d0e-ce45-4344-b90a-f9a3ffffc90f"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/mark-as-interested",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3456,
+        848
+      ],
+      "id": "f7d812bd-c067-4f96-90b2-09f404b073d7",
+      "name": "Add interested tag in contact1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}\",\n  \"lastName\": \"{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"name\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"phone\": \"{{ $json.phone }}\",\n  \"email\": \"{{ $('Webhook').item.json.body.data.lead.email }}\",\n  \"locationId\": \"li7J4sbCf5ffE11A2opH\",\n  \"tags\": [\"Skinbase\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3904,
+        848
+      ],
+      "id": "43cf165c-422f-4bd9-a249-dd734f6bcf6f",
+      "name": "Upset contact in GHL1"
+    },
+    {
+      "parameters": {
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/conversation-thread",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4352,
+        944
+      ],
+      "id": "2fc5d2f9-ab46-4984-b762-23b983a16141",
+      "name": "Get email thread1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/opportunities/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pipelineId\": \"a4bg6zcr9C0ngEWkDRpn\",\n  \"locationId\": \"{{ $json.contact.locationId }}\",\n  \"name\": \"{{ $json.contact.firstName }}{{ $json.contact.lastName }}\",\n  \"pipelineStageId\": \"d5c808a4-0842-4dfa-9432-6cc17d37f2c9\",\n  \"status\": \"open\",\n  \"contactId\": \"{{ $json.contact.id }}\",\n  \"assignedTo\": \"rLqSewd7aqkn8LYDp9jh\",\n  \"customFields\": [\n    {\n      \"id\": \"6dvNaf7VhkQ9snc5vnjJ\",\n      \"key\": \"my_custom_field\",\n      \"field_value\": \"9039160788\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3904,
+        1344
+      ],
+      "id": "4ff5e540-c9ef-44a0-b9d4-b291c815add7",
+      "name": "Create oportunity"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/opportunities/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pipelineId\": \"a4bg6zcr9C0ngEWkDRpn\",\n  \"locationId\": \"{{ $json.contact.locationId }}\",\n  \"name\": \"{{ $json.contact.firstName }}\",\n  \"pipelineStageId\": \"d5c808a4-0842-4dfa-9432-6cc17d37f2c9\",\n  \"status\": \"open\",\n  \"contactId\": \"{{ $json.contact.id }}\",\n  \"assignedTo\": \"rLqSewd7aqkn8LYDp9jh\",\n  \"customFields\": [\n    {\n      \"id\": \"6dvNaf7VhkQ9snc5vnjJ\",\n      \"key\": \"my_custom_field\",\n      \"field_value\": \"9039160788\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4128,
+        752
+      ],
+      "id": "98e1e059-58d7-4ddc-ae34-459b473bae4d",
+      "name": "Create oportunity1"
+    },
+    {
+      "parameters": {
+        "sendTo": "richard@skinbase.co.uk",
+        "subject": "Skinbase( Interested lead for CALL )",
+        "emailType": "text",
+        "message": "=Client's email:{{ $('Webhook').item.json.body.data.lead.email }} Workspace:{{ $('Webhook').item.json.body.event.workspace_name }}Email reply: {{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3008,
+        1248
+      ],
+      "id": "a43c367f-b6a8-4b46-88db-eb6fd5b746e8",
+      "name": "Send email  notification new task",
+      "webhookId": "232e3d0e-ce45-4344-b90a-f9a3ffffc90f"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C090YUELZA6",
+          "mode": "list",
+          "cachedResultName": "skinbase-replies"
+        },
+        "text": "=New Lead 🎉 {{ $('Email Classifier').item.json.output }}\nTag Workspace :{{ $('Webhook').item.json.body.event.workspace_name }} \nClient's name:{{ $('Webhook').item.json.body.data.lead.first_name }} {{ $('Webhook').item.json.body.data.lead.last_name }}\nEmail:{{ $('Webhook').item.json.body.data.lead.email }}\nEmail reply:{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        464
+      ],
+      "id": "cd8c0343-5f3d-4894-a611-2e2d993a04b6",
+      "name": "Send notif to slack",
+      "webhookId": "3711aab0-9b6d-4224-889e-decfadd35efc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ec6d65c4-23fb-4892-a181-05cbd9d53807",
+              "leftValue": "={{ $('Verify interested/ non interested').item.json.output }}",
+              "rightValue": "Interested",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        464
+      ],
+      "id": "07bdb878-c588-41be-8532-7734d4fc8a94",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit?gid=267814532#gid=267814532",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 267814532,
+          "mode": "list",
+          "cachedResultName": "Skin-base-or-Adjacent-States-To-Georgia-In-same-time-zone-Default-View-export-1749208907273",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit#gid=267814532"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email_1",
+              "lookupValue": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3680,
+        848
+      ],
+      "id": "55fb1583-92e9-4c58-bcb8-0c1b48086ecd",
+      "name": "Get row(s) in sheet",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit?gid=267814532#gid=267814532",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 267814532,
+          "mode": "list",
+          "cachedResultName": "Skin-base-or-Adjacent-States-To-Georgia-In-same-time-zone-Default-View-export-1749208907273",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit#gid=267814532"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email_1",
+              "lookupValue": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3456,
+        1248
+      ],
+      "id": "42453b2a-d1de-412a-ae06-5c9d272774e3",
+      "name": "Get row(s) in sheet1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            },
+            {
+              "name": "query",
+              "value": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "value": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3008,
+        464
+      ],
+      "id": "f90793ce-9e39-4f47-a919-b971f5c73363",
+      "name": "Get contact Id2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "= https://services.leadconnectorhq.com/contacts/{{ $('Get contact Id3').item.json.contacts[0].id }}/notes ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "=\"{{ $('Get contact Id3').item.json.contacts[0].id }}\""
+            },
+            {
+              "name": "body",
+              "value": "={{ $('Webhook').item.json.body.data.reply.text_body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4800,
+        368
+      ],
+      "id": "611f46a8-a63a-4618-bc7b-9a85aa988276",
+      "name": "Add note to contact2"
+    },
+    {
+      "parameters": {
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/conversation-thread",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4576,
+        368
+      ],
+      "id": "710c2d3b-e88a-4d97-9ac1-89b47b81a6e0",
+      "name": "Get email thread2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "65aac397-0df8-4f96-9e81-7556e223e05d",
+              "leftValue": "={{ $json.meta.total }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3232,
+        464
+      ],
+      "id": "2b98d51d-2fa5-4b3e-b813-c437c07d1875",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "firstName",
+              "value": "={{ $('Webhook').item.json.body.data.lead.first_name }}"
+            },
+            {
+              "name": "lastName",
+              "value": "={{ $('Webhook').item.json.body.data.lead.last_name }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $('Webhook').item.json.body.data.lead.first_name }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            },
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3456,
+        368
+      ],
+      "id": "f2cb40e4-1a2f-4a91-bc9d-8de31e46e83a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "li7J4sbCf5ffE11A2opH"
+            },
+            {
+              "name": "query",
+              "value": "="
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "value": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3680,
+        368
+      ],
+      "id": "064ef248-ac1c-4e04-a834-6d9a6dbabb55",
+      "name": "Get contact Id3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "= https://services.leadconnectorhq.com/contacts/{{ $('Get contact Id2').item.json.contacts[0].id }}/notes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "=\"{{ $('Get contact Id2').item.json.contacts[0].id }}\""
+            },
+            {
+              "name": "body",
+              "value": "={{ $('Webhook').item.json.body.data.reply.text_body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4352,
+        560
+      ],
+      "id": "09a6261e-6151-4cb5-a7ab-738c686daec5",
+      "name": "Add note to contact3"
+    },
+    {
+      "parameters": {
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/conversation-thread",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4128,
+        560
+      ],
+      "id": "353d06d0-51aa-4b75-86b6-03b98f1bf34f",
+      "name": "Get email thread3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=check if this is just a reply of a previous email communication {{ $('Webhook').item.json.body.data.reply.text_body }} \noutput \nYES/NO",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2432,
+        464
+      ],
+      "id": "4c2fb509-f7cb-4c1f-bc97-e0487ffac129",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "06a3ffb8-0ee3-4f58-a9ee-35afa5319234",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "YES",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2784,
+        464
+      ],
+      "id": "ffb2e385-7914-471e-90ea-9819a1a18c4f",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2512,
+        688
+      ],
+      "id": "7f7393f9-55c4-4d21-b611-c576f7dc51e1",
+      "name": "OpenAI Chat Model3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9021e467-cd9e-4f14-a336-bf31cd224d9a",
+              "leftValue": "={{ $json.body.data.reply.text_body }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        464
+      ],
+      "id": "595c96f0-b1a0-4117-97f7-76763c89af7d",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "sendTo": "richard@skinbase.co.uk",
+        "subject": "Skinbase(Interested)-Client's details",
+        "emailType": "text",
+        "message": "=Client's email:{{ $('Webhook').item.json.body.data.lead.email }} Workspace:{{ $('Webhook').item.json.body.event.workspace_name }}Email reply:{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3904,
+        560
+      ],
+      "id": "98595ea8-6ea6-4a52-b617-fddde8bb0531",
+      "name": "Send a message1",
+      "webhookId": "232e3d0e-ce45-4344-b90a-f9a3ffffc90f"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/mark-as-interested",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3456,
+        560
+      ],
+      "id": "d51ab16b-c71c-4022-99a4-e8841427418c",
+      "name": "Add interested tag in contact2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}\",\n  \"lastName\": \"{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"name\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"phone\": \"{{ $json.phone }}\",\n  \"email\": \"{{ $('Webhook').item.json.body.data.lead.email }}\",\n  \"locationId\": \"li7J4sbCf5ffE11A2opH\",\n  \"tags\": [\"Skinbase\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2208,
+        464
+      ],
+      "id": "e3517bcd-cf85-46d8-bd6f-ae438642ffeb",
+      "name": "Upset contact in GHL2"
+    },
+    {
+      "parameters": {
+        "sendTo": "richard@skinbase.co.uk",
+        "subject": "Skinbase(Interested)-Client's details",
+        "emailType": "text",
+        "message": "=Client's email:{{ $('Webhook').item.json.body.data.lead.email }} Workspace:{{ $('Webhook').item.json.body.event.workspace_name }}Email reply:{{ $('Webhook').item.json.body.data.reply.text_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4352,
+        368
+      ],
+      "id": "6c9785fc-1805-4051-8a2a-56a34a99938a",
+      "name": "Send a message2",
+      "webhookId": "232e3d0e-ce45-4344-b90a-f9a3ffffc90f"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://send.revitk.com/api/replies/{{ $('Webhook').item.json.body.data.reply.id }}/mark-as-interested",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3904,
+        368
+      ],
+      "id": "252ed6a3-5c65-458d-a109-b6c2b55b93d8",
+      "name": "Add interested tag in contact3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}\",\n  \"lastName\": \"{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"name\": \"{{ $('Webhook').item.json.body.data.lead.first_name }}{{ $('Webhook').item.json.body.data.lead.last_name }}\",\n  \"phone\": \"{{ $json.phone }}\",\n  \"email\": \"{{ $('Webhook').item.json.body.data.lead.email }}\",\n  \"locationId\": \"li7J4sbCf5ffE11A2opH\",\n  \"tags\": [\"Skinbase\"]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "9c811c96-ac4a-463e-a6d0-0d1331222247",
+      "name": "Upset contact in GHL3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit?gid=267814532#gid=267814532",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 267814532,
+          "mode": "list",
+          "cachedResultName": "Skin-base-or-Adjacent-States-To-Georgia-In-same-time-zone-Default-View-export-1749208907273",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9LQlV0uSQM7OheqVgPsxwlsgJzKiuUIm7DDnZ7bKjI/edit#gid=267814532"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email_1",
+              "lookupValue": "={{ $('Webhook').item.json.body.data.lead.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        4128,
+        368
+      ],
+      "id": "23e634e3-3aa4-4c58-b8ea-33ce344054fd",
+      "name": "Get row(s) in sheet5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "contactId": "={{ $('Get contact Id2').item.json.contacts[0].id }}",
+        "updateFields": {
+          "email": "={{ $('Get contact Id2').item.json.contacts[0].email }}",
+          "firstName": "={{ $('Get contact Id2').item.json.contacts[0].firstName }}",
+          "lastName": "={{ $('Get contact Id2').item.json.contacts[0].lastName }}",
+          "phone": "={{ $('Webhook').item.json.body.data.lead.custom_variables[0].value }}",
+          "tags": "={{ $('Get contact Id2').item.json.contacts[0].tags }}"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        3680,
+        560
+      ],
+      "id": "48f161a3-946f-4e0c-9be2-b124481f92b7",
+      "name": "Update a contact"
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "pipelineId": "a4bg6zcr9C0ngEWkDRpn",
+        "contactId": "={{ $('Update a contact').item.json.id }}",
+        "name": "={{ $('Get email thread3').item.json.data.current_reply.from_name }}",
+        "additionalFields": {
+          "assignedTo": "=rLqSewd7aqkn8LYDp9jh",
+          "stageId": "d5c808a4-0842-4dfa-9432-6cc17d37f2c9"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        4576,
+        560
+      ],
+      "id": "18cf9c2e-154c-45f9-8cc2-5de4a919afaf",
+      "name": "Create an opportunity"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "40377236-2bc7-4575-9470-e841b2f0a119",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "NO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1984,
+        848
+      ],
+      "id": "2ba9681b-9d2b-404c-9a13-021fed48c358",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "pipelineId": "a4bg6zcr9C0ngEWkDRpn",
+        "contactId": "={{ $('Update a contact').item.json.id }}",
+        "name": "={{ $('Get email thread3').item.json.data.current_reply.from_name }}",
+        "additionalFields": {
+          "assignedTo": "=rLqSewd7aqkn8LYDp9jh",
+          "stageId": "d5c808a4-0842-4dfa-9432-6cc17d37f2c9"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        4992,
+        368
+      ],
+      "id": "5ff833d1-fe85-4d58-85c9-02d0a6c5090b",
+      "name": "Create an opportunity1"
+    }
+  ],
+  "connections": {
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Attach lead to Campaign",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Book call identifier",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Attach to leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Get email thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Book call identifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Verify interested/ non interested",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Book call identifier": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get contact Id": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add new Task Highlevel": {
+      "main": [
+        [
+          {
+            "node": "Send email  notification new task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add interested tag in contact": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upset contact in GHL": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create oportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email thread": {
+      "main": [
+        [
+          {
+            "node": "Add note to contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify interested/ non interested": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Classifier": {
+      "main": [
+        [
+          {
+            "node": "Verify interested/ non interested",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add new Task Highlevel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get contact Id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get contact Id1": {
+      "main": [
+        [
+          {
+            "node": "Add new Task Highlevel1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add new Task Highlevel1": {
+      "main": [
+        [
+          {
+            "node": "Add interested tag in contact1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Get email thread1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add interested tag in contact1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upset contact in GHL1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create oportunity1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email thread1": {
+      "main": [
+        [
+          {
+            "node": "Add note to contact1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email  notification new task": {
+      "main": [
+        [
+          {
+            "node": "Add interested tag in contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send notif to slack": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Send notif to slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Upset contact in GHL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Upset contact in GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get contact Id2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email thread2": {
+      "main": [
+        [
+          {
+            "node": "Add note to contact2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add interested tag in contact2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Get contact Id3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get contact Id3": {
+      "main": [
+        [
+          {
+            "node": "Add interested tag in contact3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email thread3": {
+      "main": [
+        [
+          {
+            "node": "Add note to contact3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "Get contact Id2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "Email Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Get email thread3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add interested tag in contact2": {
+      "main": [
+        [
+          {
+            "node": "Update a contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upset contact in GHL2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add note to contact3": {
+      "main": [
+        [
+          {
+            "node": "Create an opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Get email thread2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add interested tag in contact3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet5": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a contact": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Upset contact in GHL2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get contact Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add note to contact2": {
+      "main": [
+        [
+          {
+            "node": "Create an opportunity1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "revitk.app.n8n.cloud",
+            "user-agent": "GuzzleHttp/7",
+            "content-length": "4841",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "65.108.67.116",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "FI",
+            "cf-ray": "974b325e95bbe9c1-ARN",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "65.108.67.116, 104.23.221.60",
+            "x-forwarded-host": "revitk.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-39-c65d8f959-2zgmc",
+            "x-is-trusted": "yes",
+            "x-real-ip": "65.108.67.116"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": {
+              "type": "LEAD_REPLIED",
+              "name": "Lead Replied",
+              "instance_url": "https://send.revitk.com",
+              "workspace_id": 14,
+              "workspace_name": "Skinbase"
+            },
+            "data": {
+              "reply": {
+                "id": 74503,
+                "uuid": "9fb7fed1-aa8b-4f79-9d65-982f4fbea2b9",
+                "email_subject": "Re: Appointment Slots?",
+                "interested": false,
+                "automated_reply": false,
+                "html_body": "<div style=\"overflow: auto;\"><div dir=\"ltr\"><div>Not at this time, thanks.</div><div>I will reach out if interested.</div><div><br></div><div>Best regards,</div><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><font size=\"4\" face=\"georgia, serif\" style=\"background-color:rgb(255,255,255)\" color=\"#45818e\">Andrea Musa, MSN, APRN, FNP-BC</font></div></div></div><br></div><br><div class=\"gmail_quote gmail_quote_container\"><div dir=\"ltr\" class=\"gmail_attr\">On Fri, Aug 22, 2025 at 1:34 PM Richard Faulkner &lt;<a href=\"mailto:r.faulkner@skinbaseus.com\" target=\"_blank\">r.faulkner@skinbaseus.com</a>&gt; wrote:<br></div><blockquote class=\"gmail_quote\" style=\"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex\">Hey,<br>\n<br>\nWe're working with some beauty businesses in Mayfield who want to provide the latest treatments without having to invest in expensive equipment or qualifications.<br>\n<br>\nThere’s a new 2in1 skincare system available which can triple your takings and get your clients results they’ll not believe.<br>\n<br>\nYou don’t have to pay for the equipment and training is included.<br>\n<br>\nYou can even try it for 2 weeks. (And if your clients don't LOVE it, we'll just pick it back up).<br>\n<br>\nWould you like some more info?<br>\n<br>\nRichard Faulkner<br>\nOwner<br>\nSkinBase<br>\n<br>\nIf you don't want to receive any more emails from me, just reply 'No thanks'<br>\n<br>\n</blockquote></div></div>",
+                "text_body": "Not at this time, thanks.\nI will reach out if interested.\n\nBest regards,\nAndrea Musa, MSN, APRN, FNP-BC\n\n\nOn Fri, Aug 22, 2025 at 1:34 PM Richard Faulkner <r.faulkner@skinbaseus.com>\nwrote:\n\n> Hey,\n>\n> We're working with some beauty businesses in Mayfield who want to provide\n> the latest treatments without having to invest in expensive equipment or\n> qualifications.\n>\n> There’s a new 2in1 skincare system available which can triple your takings\n> and get your clients results they’ll not believe.\n>\n> You don’t have to pay for the equipment and training is included.\n>\n> You can even try it for 2 weeks. (And if your clients don't LOVE it, we'll\n> just pick it back up).\n>\n> Would you like some more info?\n>\n> Richard Faulkner\n> Owner\n> SkinBase\n>\n> If you don't want to receive any more emails from me, just reply 'No\n> thanks'\n>\n>",
+                "raw_body": null,
+                "headers": null,
+                "date_received": "2025-08-25T12:47:07.000000Z",
+                "type": "Tracked Reply",
+                "folder": "Inbox",
+                "raw_message_id": "<CACD0QB5JOoJZ6sc7h9COLavB6tOg1Lk1nN7OaaMMdd0vXNwYUw@mail.gmail.com>",
+                "from_name": "Andrea Musa",
+                "from_email_address": "info@drea-maesthetics.com",
+                "primary_to_email_address": "r.faulkner@skinbaseus.com",
+                "to": [
+                  {
+                    "name": null,
+                    "address": "r.faulkner@skinbaseus.com"
+                  }
+                ],
+                "cc": null,
+                "bcc": null,
+                "parent_id": null,
+                "created_at": "2025-08-25T12:47:09.000000Z",
+                "updated_at": "2025-08-25T12:47:11.000000Z",
+                "attachments": []
+              },
+              "campaign_event": {
+                "id": 327443,
+                "type": "replied",
+                "created_at_local": "2025-08-25T12:47:11.000000Z",
+                "local_timezone": "America/New_York",
+                "created_at": "2025-08-25T12:47:11.000000Z"
+              },
+              "lead": {
+                "id": 209846,
+                "email": "info@drea-maesthetics.com",
+                "first_name": "Drea.m Aesthetics",
+                "last_name": null,
+                "status": "unverified",
+                "title": "https://www.drea-maesthetics.com/",
+                "company": "Drea M Aesthetics",
+                "custom_variables": [
+                  {
+                    "name": "phone number",
+                    "value": "+1 440-339-3030"
+                  },
+                  {
+                    "name": "city",
+                    "value": "Mayfield"
+                  },
+                  {
+                    "name": "review congrats",
+                    "value": ""
+                  }
+                ],
+                "emails_sent": 1,
+                "opens": 0,
+                "unique_opens": 0,
+                "replies": 1,
+                "unique_replies": 1,
+                "bounces": 0
+              },
+              "campaign": {
+                "id": 104,
+                "name": "Copy of SKINBASE | South Carolina + Georgia | Run"
+              },
+              "scheduled_email": {
+                "id": 8068252,
+                "sequence_step_id": 482,
+                "status": "sent",
+                "scheduled_date_est": "2025-08-22T17:34:00.000000Z",
+                "scheduled_date_local": "2025-08-22T17:34:00.000000Z",
+                "local_timezone": "America/New_York",
+                "sent_at": "2025-08-22T17:34:53.000000Z",
+                "opens": 0,
+                "replies": 1,
+                "unique_opens": 0,
+                "unique_replies": 1,
+                "interested": null,
+                "raw_message_id": "<9fb14493-30a0-4974-990b-e2c46f237dac@skinbaseus.com>",
+                "sequence_step_order": 1
+              },
+              "sender_email": {
+                "id": 670,
+                "name": "Richard Faulkner",
+                "email": "r.faulkner@skinbaseus.com",
+                "status": "connected",
+                "type": "google_workspace_oauth",
+                "daily_limit": 17,
+                "emails_sent": 693,
+                "replied": 22,
+                "opened": 5,
+                "unsubscribed": 0,
+                "bounced": 7,
+                "unique_replies": 21,
+                "unique_opens": 1,
+                "total_leads_contacted": 335,
+                "interested": 0,
+                "created_at": "2025-03-18T19:48:02.000000Z",
+                "updated_at": "2025-08-25T12:47:11.000000Z"
+              }
+            }
+          },
+          "webhookUrl": "https://revitk.app.n8n.cloud/webhook/efd794f6-6267-4786-af41-02697881493b",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

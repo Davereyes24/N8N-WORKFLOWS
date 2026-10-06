@@ -1,0 +1,3261 @@
+{
+  "name": "ClickUp Audit Log",
+  "nodes": [
+    {
+      "parameters": {
+        "team": "9016521112",
+        "events": [
+          "taskUpdated"
+        ],
+        "filters": {
+          "spaceId": "90164743655"
+        }
+      },
+      "type": "n8n-nodes-base.clickUpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        144
+      ],
+      "id": "0cb73687-80b0-4ea3-a395-e9bcdbf9ad38",
+      "name": "ClickUp Trigger",
+      "webhookId": "61747e0c-a383-4bb7-a9f3-a940d349ae5d",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task ID": "={{ $('ClickUp Trigger1').item.json.task_id }}",
+            "Task Name": "={{ $json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger1').item.json.event }}",
+            "Field Updated": "-",
+            "Old Value": "-",
+            "New Value": "-",
+            "User Name": "={{ $('ClickUp Trigger1').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger1').item.json.history_items[0].user.email }}",
+            "Team": "={{ $json.list.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -1040
+      ],
+      "id": "a0975358-56c4-44f8-91bf-54544756afc3",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "team": "9016521112",
+        "events": [
+          "taskCreated"
+        ],
+        "filters": {
+          "spaceId": "90164743655"
+        }
+      },
+      "type": "n8n-nodes-base.clickUpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -1040
+      ],
+      "id": "f3293390-b983-4a8a-8b22-8de0039f49c1",
+      "name": "ClickUp Trigger1",
+      "webhookId": "0ab17a25-e3c7-42d4-a96b-7bb542a63488",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b383cc58-a417-4285-a62c-fdba67685aa8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "status"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "65f7f1b0-79c0-45bb-b22a-85c3532b548e",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "custom_field",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "custom_field"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1fd222ce-ba49-4dcb-a756-529575013d5a",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "content",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "content"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c2175946-7e65-48c7-b98b-b9b060e1e8bf",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "priority",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "priority"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "71074a64-a29a-4630-971c-442ec68647a6",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "assignee_add",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "assignee"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0b78db55-ea4e-4e84-ae1b-fb3b3ea35dc9",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "due_date",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "due_date"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a0c4c196-5ad7-4017-be9d-00dd8e2ac6aa",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "tag",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "tag"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a8018066-cac6-4ed5-a6de-10e2e84bb1ad",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "section_moved",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "section_moved"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "90e37a5f-bbb1-47f1-92e0-a43a578d07d1",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "comment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "comment"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ef2ff227-c25e-477b-965a-f64268fd1594",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "time_estimate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "time_estimate"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "49dd42e1-6695-4926-b58d-9515d4855801",
+                    "leftValue": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+                    "rightValue": "time_spent",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "time_spent"
+            }
+          ]
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "931efa4b-d7c5-4345-b659-5869d239164d",
+      "name": "Switch",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -1040
+      ],
+      "id": "7ec2bf91-9ab2-4097-a91f-7d662a01d2e8",
+      "name": "Get a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before.status || ''}}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after.status }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -816
+      ],
+      "id": "a90c508a-4fa7-4f26-9d45-8a8556657faf",
+      "name": "Status Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -624
+      ],
+      "id": "25bc387c-9bb5-499a-9c1e-f390d840168e",
+      "name": "Custom Field Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -432
+      ],
+      "id": "cd471b60-daed-4850-b1ba-55de1cc8842c",
+      "name": "Content Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        144
+      ],
+      "id": "367e4252-64d0-4c2d-b79f-a2834eaa3830",
+      "name": "Get Task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before.priority || '' }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after.priority || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -240
+      ],
+      "id": "c12bf5b2-df59-4672-994a-6d202027eb88",
+      "name": "Priority Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before || '' }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after.email || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -48
+      ],
+      "id": "7ec05db5-4800-4b11-95b6-c44e18352586",
+      "name": "Assignee Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('ClickUp Trigger').item.json.history_items[0].before || '' }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "before",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        48,
+        144
+      ],
+      "id": "20d50e65-c598-49df-998e-9fd91c4a8ff0",
+      "name": "Date & Time",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('Date & Time').item.json.before || ''}}",
+            "New Value": "={{ $json.after || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        144
+      ],
+      "id": "776fcf83-4296-476b-9bf4-4af830c8d5ff",
+      "name": "Due Date Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('ClickUp Trigger').item.json.history_items[0].after || '' }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "after",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        272,
+        144
+      ],
+      "id": "49f573c0-c74a-4229-8ec8-ddce513a6921",
+      "name": "Date & Time1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before.name || '' }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after.name || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        336
+      ],
+      "id": "b5682742-ed7f-4aae-a7aa-280bbd090406",
+      "name": "Tag Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before.name || '' }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items[0].after.name || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        528
+      ],
+      "id": "c852ebdc-7aa2-4714-9ebf-e805e8944022",
+      "name": "Section Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger').item.json.history_items[0].before || '' }}",
+            "New Value": "={{ $('ClickUp Trigger').item.json.history_items?.[0]?.comment?.text_content ?? '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        720
+      ],
+      "id": "8bf85bba-8036-4641-b921-e33bad9bb81f",
+      "name": "Comment Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('ClickUp Trigger').item.json.history_items[0].before || '' }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "before",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        48,
+        912
+      ],
+      "id": "0939aa8f-66f2-46fb-9f53-bc7112677f32",
+      "name": "TE Date",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('ClickUp Trigger').item.json.history_items[0].after || '' }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "after",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        272,
+        912
+      ],
+      "id": "a08e83be-b127-401b-90c0-94ae5ae1b33d",
+      "name": "TE Date2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('ClickUp Trigger').item.json.history_items[0].before || '' }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "before",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        48,
+        1104
+      ],
+      "id": "c08e6261-ceb8-404a-bb1f-eca684d56cec",
+      "name": "TS Date",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getTimeBetweenDates",
+        "startDate": "={{ $('ClickUp Trigger').item.json.history_items[0].after.start || '' }}",
+        "endDate": "={{ $('ClickUp Trigger').item.json.history_items[0].after.end || '' }}",
+        "units": [
+          "hour"
+        ],
+        "outputFieldName": "after",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        272,
+        1104
+      ],
+      "id": "9e5c7d11-7988-4c61-97d3-3a7f857de3c8",
+      "name": "TS Date 2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('TE Date').item.json.before || ''}}",
+            "New Value": "={{ $json.after || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        912
+      ],
+      "id": "56ec5f8d-0fd9-47b5-97d8-e88a991c230a",
+      "name": "Time Estimate Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task').item.json.id }}",
+            "Team": "={{ $('Get Task').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('TS Date').item.json.before || ''}}",
+            "New Value": "={{ $json.after || '' }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        1104
+      ],
+      "id": "05b202f6-6f89-4757-84c1-4facbf7bb12e",
+      "name": "Time Spent Update",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE",
+          "mode": "list",
+          "cachedResultName": "Doing Team - Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 367769651,
+          "mode": "list",
+          "cachedResultName": "Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B4i6-fC2sIIhPpP1WY1P58FSs-b9kFHYn9EE8TGlImE/edit#gid=367769651"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task ID": "={{ $('ClickUp Trigger2').item.json.task_id }}",
+            "Task Name": "={{ $json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger2').item.json.event }}",
+            "Field Updated": "-",
+            "Old Value": "-",
+            "New Value": "-",
+            "User Name": "={{ $('ClickUp Trigger2').item.json.history_items[0].user.username || ''}}",
+            "User Email": "={{ $('ClickUp Trigger2').item.json.history_items[0].user.email || '' }}",
+            "Team": "={{ $json.list.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -1264
+      ],
+      "id": "f24e9d90-81c8-44e4-a789-76e62784f3d4",
+      "name": "Append row in sheet1",
+      "retryOnFail": true,
+      "waitBetweenTries": 1500,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -1264
+      ],
+      "id": "a934583b-31f4-4c9f-b82b-a352427f7c47",
+      "name": "Get a task1",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "team": "9016521112",
+        "events": [
+          "taskDeleted"
+        ],
+        "filters": {
+          "spaceId": "90164743655"
+        }
+      },
+      "type": "n8n-nodes-base.clickUpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -1264
+      ],
+      "id": "b0df836c-011c-434f-a25e-3c9a7c244424",
+      "name": "ClickUp Trigger2",
+      "webhookId": "730206b8-bd5b-4b22-b17b-a9b0c704bad3",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "team": "9016521112",
+        "events": [
+          "taskStatusUpdated"
+        ],
+        "filters": {
+          "spaceId": "90164743655"
+        }
+      },
+      "type": "n8n-nodes-base.clickUpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -1504
+      ],
+      "id": "76f941ce-3939-4e68-9491-f7ab4f8b4cbe",
+      "name": "ClickUp Trigger3",
+      "webhookId": "61747e0c-a383-4bb7-a9f3-a940d349ae5d",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -1504
+      ],
+      "id": "36ed9e7e-2777-48c1-bb4a-b810dd299495",
+      "name": "Get Task1",
+      "credentials": {
+        "clickUpApi": {
+          "id": "j74n5apSW7jM28oM",
+          "name": "ClickUp Admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13XZ5zJqMpK-iUs0NQ6V9JWZ9YPtpQ-0IMb5SUE1Q0fk",
+          "mode": "list",
+          "cachedResultName": "ClickUp Audit Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13XZ5zJqMpK-iUs0NQ6V9JWZ9YPtpQ-0IMb5SUE1Q0fk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13XZ5zJqMpK-iUs0NQ6V9JWZ9YPtpQ-0IMb5SUE1Q0fk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get Task1').item.json.id }}",
+            "Team": "={{ $('Get Task1').item.json.list.name }}",
+            "Date": "={{ $now.format('dd/MM/yyyy') }}",
+            "Time": "={{ $now.format('HH:mm:ss') }}",
+            "Task Name": "={{ $('Get Task1').item.json.name }}",
+            "Event Type": "={{ $('ClickUp Trigger3').item.json.event }}",
+            "User Name": "={{ $('ClickUp Trigger3').item.json.history_items[0].user.username }}",
+            "User Email": "={{ $('ClickUp Trigger3').item.json.history_items[0].user.email }}",
+            "Field Updated": "={{ $('ClickUp Trigger3').item.json.history_items[0].field }}",
+            "Old Value": "={{ $('ClickUp Trigger3').item.json.history_items[0].before.status || ''}}",
+            "New Value": "={{ $('ClickUp Trigger3').item.json.history_items[0].after.status }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Name",
+              "displayName": "Task Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Name",
+              "displayName": "User Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Email",
+              "displayName": "User Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Field Updated",
+              "displayName": "Field Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Old Value",
+              "displayName": "Old Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Value",
+              "displayName": "New Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -192,
+        -1504
+      ],
+      "id": "d1b0e8ca-639a-4698-a260-61b752a18976",
+      "name": "Status Update1",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "ClickUp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Status Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Custom Field Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Priority Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assignee Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tag Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Section Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Comment Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "TE Date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "TS Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Task": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Date & Time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time1": {
+      "main": [
+        [
+          {
+            "node": "Due Date Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TE Date": {
+      "main": [
+        [
+          {
+            "node": "TE Date2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TE Date2": {
+      "main": [
+        [
+          {
+            "node": "Time Estimate Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TS Date": {
+      "main": [
+        [
+          {
+            "node": "TS Date 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TS Date 2": {
+      "main": [
+        [
+          {
+            "node": "Time Spent Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get a task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp Trigger3": {
+      "main": [
+        [
+          {
+            "node": "Get Task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Task1": {
+      "main": [
+        [
+          {
+            "node": "Status Update1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:ClickUp Trigger": {},
+    "node:ClickUp Trigger1": {},
+    "node:ClickUp Trigger2": {},
+    "node:ClickUp Trigger3": {}
+  },
+  "pinData": {
+    "ClickUp Trigger1": [
+      {
+        "json": {
+          "event": "taskCreated",
+          "history_items": [
+            {
+              "id": "4992276937332081448",
+              "type": 1,
+              "date": "1773359033103",
+              "field": "task_creation",
+              "parent_id": "901610591481",
+              "data": {
+                "trace_id": "2570109097119893605",
+                "from_recur": false,
+                "task_copied": "86d23zfy0",
+                "subtaskCount": 12,
+                "from_template": true,
+                "subcategory_id": "901610591481",
+                "task": {
+                  "id": "86d23zfy0",
+                  "name": "Additional Request"
+                }
+              },
+              "source": null,
+              "user": {
+                "id": 114610415,
+                "username": "Outsourced Doers",
+                "email": "subscriptions@outsourceddoers.com",
+                "color": "",
+                "initials": "OD",
+                "profilePicture": null,
+                "role": 1,
+                "role_subtype": 0
+              },
+              "before": null,
+              "after": null
+            }
+          ],
+          "task_id": "86d29gun4",
+          "team_id": "9016521112",
+          "webhook_id": "85ebcd4b-4fe6-4cb6-8dfd-16966a6e661e"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

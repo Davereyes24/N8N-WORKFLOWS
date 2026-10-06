@@ -1,0 +1,782 @@
+{
+  "name": "GHL template contact",
+  "flow": [
+    {
+      "id": 5,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 1759892,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "label": "1",
+              "data": {
+                "editable": "true"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hook",
+            "type": "hook:gateway-webhook",
+            "label": "Webhook",
+            "required": true
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "label": "Maximum number of results"
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "module": "highlevel:createAContact",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": 6978618
+      },
+      "mapper": {
+        "dnd": false,
+        "email": "{{5.step_6_question_13}}",
+        "phone": "{{5.step_6_question_12}}",
+        "address": {
+          "address1": "{{5.step_5_question_5}}"
+        },
+        "lastName": " ",
+        "firstName": "{{5.step_6_question_11}}",
+        "customField": {
+          "9ol9BbK3uiRyQBzcG2QI": "{{5.step_3_question_4}}",
+          "Xqz7gU24T5vHPJo0wwfr": "{{5.utm_content}}",
+          "ZYMWrv5eWjb1xFkiTPSn": "{{5.utm_medium}}",
+          "tOU3PNlYaUAgUOA6dQl6": "{{5.utm_campaign}}",
+          "tkvSh1oFqUWlii1zNUXF": "{{5.utm_term}}",
+          "vHYQveSvb8iZgC8ElV16": "{{5.utm_source}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "dnd": {
+              "mode": "chose"
+            },
+            "tags": {
+              "mode": "chose"
+            },
+            "address": {
+              "nested": {
+                "country": {
+                  "mode": "chose"
+                }
+              }
+            },
+            "timezone": {
+              "mode": "chose",
+              "label": "Empty"
+            },
+            "customField": {
+              "nested": {
+                "FE7f2gMiqmrM9P6RHioY": {
+                  "mode": "chose",
+                  "label": "Empty"
+                },
+                "Y5hGnu10bThAoxUIac2t": {
+                  "mode": "chose",
+                  "label": "Empty"
+                },
+                "w8ScNDSPR2HrqGrpzLh6": {
+                  "mode": "chose",
+                  "label": "Empty"
+                },
+                "xQzrmNW8c86KyjV6QJiQ": {
+                  "mode": "chose",
+                  "label": "Empty"
+                }
+              }
+            }
+          },
+          "parameters": {
+            "__IMTCONN__": {
+              "data": {
+                "scoped": "true",
+                "connection": "highlevel"
+              },
+              "label": "My GoHighLevel Company (Deprecated) connection"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "__IMTCONN__",
+            "type": "account:highlevel,highlevel3",
+            "label": "Connection",
+            "required": true
+          }
+        ],
+        "expect": [
+          {
+            "name": "email",
+            "type": "email",
+            "label": "Email"
+          },
+          {
+            "name": "phone",
+            "type": "text",
+            "label": "Phone"
+          },
+          {
+            "name": "firstName",
+            "type": "text",
+            "label": "First Name"
+          },
+          {
+            "name": "lastName",
+            "type": "text",
+            "label": "Last Name"
+          },
+          {
+            "name": "gender",
+            "type": "text",
+            "label": "Gender"
+          },
+          {
+            "name": "dateOfBirth",
+            "time": false,
+            "type": "date",
+            "label": "Date of Birth"
+          },
+          {
+            "name": "companyName",
+            "type": "text",
+            "label": "Company Name"
+          },
+          {
+            "name": "website",
+            "type": "url",
+            "label": "Website"
+          },
+          {
+            "name": "tags",
+            "type": "select",
+            "label": "Tags",
+            "multiple": true
+          },
+          {
+            "name": "address",
+            "spec": [
+              {
+                "name": "address1",
+                "type": "text",
+                "label": "Street"
+              },
+              {
+                "name": "city",
+                "type": "text",
+                "label": "City"
+              },
+              {
+                "name": "state",
+                "type": "text",
+                "label": "State"
+              },
+              {
+                "name": "postalCode",
+                "type": "text",
+                "label": "PostalCode"
+              },
+              {
+                "name": "country",
+                "type": "select",
+                "label": "Country"
+              }
+            ],
+            "type": "collection",
+            "label": "Address"
+          },
+          {
+            "name": "source",
+            "type": "text",
+            "label": "Source"
+          },
+          {
+            "name": "timezone",
+            "type": "select",
+            "label": "Timezone"
+          },
+          {
+            "name": "dnd",
+            "type": "boolean",
+            "label": "Dnd",
+            "required": true
+          },
+          {
+            "name": "customField",
+            "spec": [
+              {
+                "name": "5vYJahfsXDWNwOMt4rnQ",
+                "type": "text",
+                "label": "campaign_id"
+              },
+              {
+                "name": "9ol9BbK3uiRyQBzcG2QI",
+                "type": "text",
+                "label": "Project Timeline?"
+              },
+              {
+                "name": "DafNCIs5GxyOdFi9mwwz",
+                "type": "text",
+                "label": "fbclid"
+              },
+              {
+                "name": "FE7f2gMiqmrM9P6RHioY",
+                "type": "select",
+                "label": "Is your project located in *LOCATION* or within a 60 minute drive?"
+              },
+              {
+                "name": "GhyZLXcotJYxFTNwMuqI",
+                "type": "text",
+                "label": "Homeowner?"
+              },
+              {
+                "name": "QFDKYKxXp0qxd9Yg8UjK",
+                "type": "text",
+                "label": "Home Type"
+              },
+              {
+                "name": "UsQXzRfT2k4Ox5Gjjznh",
+                "type": "text",
+                "label": "Scope Of Project"
+              },
+              {
+                "name": "Xqz7gU24T5vHPJo0wwfr",
+                "type": "text",
+                "label": "utm_content"
+              },
+              {
+                "name": "Y5hGnu10bThAoxUIac2t",
+                "type": "select",
+                "label": "What Service Are You Looking For?",
+                "validate": {
+                  "enum": [
+                    "Replace Entire Roof",
+                    "Repair Existing Roof",
+                    "Not Sure, Need Inspection"
+                  ]
+                }
+              },
+              {
+                "name": "YHdv2ETxhznAGO4rksZY",
+                "type": "text",
+                "label": "medium_id"
+              },
+              {
+                "name": "ZYMWrv5eWjb1xFkiTPSn",
+                "type": "text",
+                "label": "utm_medium"
+              },
+              {
+                "name": "cqy4XD0PMRh0xOYACK3U",
+                "type": "text",
+                "label": "Appointment Time"
+              },
+              {
+                "name": "eA54jy89ACAT6LHk0Yqb",
+                "type": "text",
+                "label": "content_id"
+              },
+              {
+                "name": "tOU3PNlYaUAgUOA6dQl6",
+                "type": "text",
+                "label": "utm_campaign"
+              },
+              {
+                "name": "tkvSh1oFqUWlii1zNUXF",
+                "type": "text",
+                "label": "utm_term"
+              },
+              {
+                "name": "u3MpQ4wqNVAokKVcSw6B",
+                "type": "text",
+                "label": "Square Footage"
+              },
+              {
+                "name": "vHYQveSvb8iZgC8ElV16",
+                "type": "text",
+                "label": "utm_source"
+              },
+              {
+                "name": "w8ScNDSPR2HrqGrpzLh6",
+                "type": "select",
+                "label": "When Do You Want This Project Done?"
+              },
+              {
+                "name": "xQzrmNW8c86KyjV6QJiQ",
+                "type": "select",
+                "label": "What Best Describes Your Home?",
+                "validate": {
+                  "enum": [
+                    "Single Family",
+                    "Townhouse or Duplex",
+                    "Commercial"
+                  ]
+                }
+              }
+            ],
+            "type": "collection",
+            "label": "Custom Fields"
+          }
+        ],
+        "interface": [
+          {
+            "name": "id",
+            "type": "text",
+            "label": "Contact ID"
+          },
+          {
+            "name": "timezone",
+            "type": "text",
+            "label": "Timezone"
+          },
+          {
+            "name": "type",
+            "type": "text",
+            "label": "Type"
+          },
+          {
+            "name": "locationId",
+            "type": "text",
+            "label": "Location ID"
+          },
+          {
+            "name": "dnd",
+            "type": "boolean",
+            "label": "Dnd"
+          },
+          {
+            "name": "inboundDndSettings",
+            "spec": [
+              {
+                "name": "all",
+                "spec": [
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "All"
+              }
+            ],
+            "type": "collection",
+            "label": "Inbound Dnd Settings"
+          },
+          {
+            "name": "dndSettings",
+            "spec": [
+              {
+                "name": "Call",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "Call"
+              },
+              {
+                "name": "Email",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "Email"
+              },
+              {
+                "name": "SMS",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "SMS"
+              },
+              {
+                "name": "WhatsApp",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "WhatsApp"
+              },
+              {
+                "name": "GMB",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "GMB"
+              },
+              {
+                "name": "FB",
+                "spec": [
+                  {
+                    "name": "code",
+                    "type": "text",
+                    "label": "Code"
+                  },
+                  {
+                    "name": "message",
+                    "type": "text",
+                    "label": "Message"
+                  },
+                  {
+                    "name": "status",
+                    "type": "text",
+                    "label": "Status"
+                  }
+                ],
+                "type": "collection",
+                "label": "FB"
+              }
+            ],
+            "type": "collection",
+            "label": "Dnd Settings"
+          },
+          {
+            "name": "createdBy",
+            "spec": [
+              {
+                "name": "sourceId",
+                "type": "text",
+                "label": "Source ID"
+              },
+              {
+                "name": "channel",
+                "type": "text",
+                "label": "Channel"
+              },
+              {
+                "name": "source",
+                "type": "text",
+                "label": "Source"
+              },
+              {
+                "name": "sourceName",
+                "type": "text",
+                "label": "Source Name"
+              },
+              {
+                "name": "timestamp",
+                "type": "date",
+                "label": "Timestamp"
+              }
+            ],
+            "type": "collection",
+            "label": "Created By"
+          },
+          {
+            "name": "tags",
+            "type": "array",
+            "label": "Tags"
+          },
+          {
+            "name": "dateAdded",
+            "type": "date",
+            "label": "Date Added"
+          },
+          {
+            "name": "additionalEmails",
+            "type": "array",
+            "label": "Additional Emails"
+          },
+          {
+            "name": "additionalPhones",
+            "type": "array",
+            "label": "Additional Phones"
+          },
+          {
+            "name": "country",
+            "type": "text",
+            "label": "Country"
+          },
+          {
+            "name": "lastName",
+            "type": "text",
+            "label": "Last Name"
+          },
+          {
+            "name": "lastNameLowerCase",
+            "type": "text",
+            "label": "Last Name Lower Case"
+          },
+          {
+            "name": "emailLowerCase",
+            "type": "text",
+            "label": "Email Lower Case"
+          },
+          {
+            "name": "email",
+            "type": "text",
+            "label": "Email"
+          },
+          {
+            "name": "postalCode",
+            "type": "text",
+            "label": "Postal Code"
+          },
+          {
+            "name": "dateUpdated",
+            "type": "date",
+            "label": "Date Updated"
+          },
+          {
+            "name": "fullNameLowerCase",
+            "type": "text",
+            "label": "Full Name Lower Case"
+          },
+          {
+            "name": "firstName",
+            "type": "text",
+            "label": "First Name"
+          },
+          {
+            "name": "firstNameLowerCase",
+            "type": "text",
+            "label": "First Name Lower Case"
+          },
+          {
+            "name": "source",
+            "type": "text",
+            "label": "Source"
+          },
+          {
+            "name": "companyName",
+            "type": "text",
+            "label": "Company Name"
+          },
+          {
+            "name": "website",
+            "type": "text",
+            "label": "Website"
+          },
+          {
+            "name": "phone",
+            "type": "text",
+            "label": "Phone"
+          },
+          {
+            "name": "customField",
+            "spec": [
+              {
+                "name": "5vYJahfsXDWNwOMt4rnQ",
+                "type": "text",
+                "label": "campaign_id"
+              },
+              {
+                "name": "9ol9BbK3uiRyQBzcG2QI",
+                "type": "text",
+                "label": "Project Timeline?"
+              },
+              {
+                "name": "DafNCIs5GxyOdFi9mwwz",
+                "type": "text",
+                "label": "fbclid"
+              },
+              {
+                "name": "FE7f2gMiqmrM9P6RHioY",
+                "type": "text",
+                "label": "Is your project located in *LOCATION* or within a 60 minute drive?"
+              },
+              {
+                "name": "GhyZLXcotJYxFTNwMuqI",
+                "type": "text",
+                "label": "Homeowner?"
+              },
+              {
+                "name": "QFDKYKxXp0qxd9Yg8UjK",
+                "type": "text",
+                "label": "Home Type"
+              },
+              {
+                "name": "UsQXzRfT2k4Ox5Gjjznh",
+                "type": "text",
+                "label": "Scope Of Project"
+              },
+              {
+                "name": "Xqz7gU24T5vHPJo0wwfr",
+                "type": "text",
+                "label": "utm_content"
+              },
+              {
+                "name": "Y5hGnu10bThAoxUIac2t",
+                "type": "text",
+                "label": "What Service Are You Looking For?"
+              },
+              {
+                "name": "YHdv2ETxhznAGO4rksZY",
+                "type": "text",
+                "label": "medium_id"
+              },
+              {
+                "name": "ZYMWrv5eWjb1xFkiTPSn",
+                "type": "text",
+                "label": "utm_medium"
+              },
+              {
+                "name": "cqy4XD0PMRh0xOYACK3U",
+                "type": "text",
+                "label": "Appointment Time"
+              },
+              {
+                "name": "eA54jy89ACAT6LHk0Yqb",
+                "type": "text",
+                "label": "content_id"
+              },
+              {
+                "name": "tOU3PNlYaUAgUOA6dQl6",
+                "type": "text",
+                "label": "utm_campaign"
+              },
+              {
+                "name": "tkvSh1oFqUWlii1zNUXF",
+                "type": "text",
+                "label": "utm_term"
+              },
+              {
+                "name": "u3MpQ4wqNVAokKVcSw6B",
+                "type": "text",
+                "label": "Square Footage"
+              },
+              {
+                "name": "vHYQveSvb8iZgC8ElV16",
+                "type": "text",
+                "label": "utm_source"
+              },
+              {
+                "name": "w8ScNDSPR2HrqGrpzLh6",
+                "type": "text",
+                "label": "When Do You Want This Project Done?"
+              },
+              {
+                "name": "xQzrmNW8c86KyjV6QJiQ",
+                "type": "text",
+                "label": "What Best Describes Your Home?"
+              }
+            ],
+            "type": "collection",
+            "label": "Custom Fields"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "slots": null,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us2.make.com",
+    "notes": []
+  }
+}

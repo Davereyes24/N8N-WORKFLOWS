@@ -1,0 +1,620 @@
+{
+  "name": "Keyword Research - GGmod",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "clientId"
+            },
+            {
+              "name": "facebook_url",
+              "type": "any"
+            },
+            {
+              "name": "isTest",
+              "type": "boolean"
+            },
+            {
+              "name": "instagram_profile_url"
+            },
+            {
+              "name": "sheetDocId"
+            },
+            {
+              "name": "writeKey"
+            },
+            {
+              "name": "competitors",
+              "type": "any"
+            },
+            {
+              "name": "website"
+            },
+            {
+              "name": "overview"
+            }
+          ]
+        }
+      },
+      "id": "9eacf5ed-a213-4584-a335-0313eb0fa3a5",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        208,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize inbound fields (including competitors, overview, website) into a clean, consistent payload.\n\nconst input = $json || {};\n\nconst toStr = (v) => (v == null ? '' : String(v).trim());\nconst firstNonEmpty = (...keys) => {\n  for (const k of keys) {\n    const v = toStr(input[k]);\n    if (v) return v;\n  }\n  return '';\n};\n\n// Basic URL scrubber: trim + ensure http(s) + collapse double slashes\nconst cleanUrl = (raw) => {\n  let u = toStr(raw);\n  if (!u) return '';\n  u = u.replace(/^['\"\\s]+|['\"\\s]+$/g, '');\n  if (!/^https?:\\/\\//i.test(u)) u = 'https://' + u;\n  u = u.replace(/^(https?:\\/\\/)(\\/)+/i, '$1');\n  return u;\n};\n\n// Canonical base fields\nconst clientId     = firstNonEmpty('clientId', 'client_id', 'id');\nconst sheetDocId   = firstNonEmpty('sheetDocId', 'sheet_id', 'sheetId');\nconst writeKey     = firstNonEmpty('writeKey', 'write_key');\nconst isTest       = input.isTest === true || String(input.isTest).toLowerCase() === 'true';\n\nconst facebookUrl  = cleanUrl(firstNonEmpty('facebook_profile_url', 'facebook_url', 'Facebook_url', 'facebookUrl'));\nconst instagramUrl = cleanUrl(firstNonEmpty('instagram_profile_url', 'instagram_url', 'ig_url', 'instagramUrl'));\n\nconst website      = cleanUrl(firstNonEmpty('website', 'site', 'homepage'));\nconst overview     = firstNonEmpty('overview', 'bio', 'description');\n\n// Competitors normalization\nconst rawCompetitors = Array.isArray(input.competitors) ? input.competitors : [];\nconst competitors = rawCompetitors\n  .map((c) => {\n    const name = toStr(c?.name);\n    const site = cleanUrl(c?.website || c?.site || '');\n    const ig   = cleanUrl(c?.instagram_url || c?.instagramUrl || c?.ig_url || '');\n    return { name, website: site, instagramUrl: ig };\n  })\n  // Keep rows that have at least a name AND a plausible IG URL\n  .filter((c) => c.name && c.instagramUrl);\n\n// Meta\nconst workflowVersion = '2025-10-08.keyword-research.v2';\nconst runId = `${new Date().toISOString()}|keyword-research|${clientId || 'noClient'}`;\n\nreturn [\n  {\n    json: {\n      clientId,\n      sheetDocId,\n      writeKey,\n      isTest,\n      facebookUrl,\n      instagramUrl,\n      website,\n      overview,\n      competitors,      // normalized list: [{ name, website, instagramUrl }]\n      workflowVersion,\n      runId,\n      receivedAt: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "id": "d8bb5dca-ee11-4694-bb83-59416f47a06c",
+      "typeVersion": 2,
+      "name": "Normalize Inputs",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        560,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{({\n  runId: $json.runId,\n  workflowVersion: $json.workflowVersion,\n  stage: 'init',\n  clientId: $json.clientId || 'noClient',\n  isTest: $json.isTest === true,\n  hasWebsite: !!$json.website,\n  hasOverview: !!$json.overview,\n  competitorCount: Array.isArray($json.competitors) ? $json.competitors.length : 0,\n  competitorsWithIG: Array.isArray($json.competitors) ? $json.competitors.filter(c => c.instagramUrl).length : 0,\n  competitorsWithFB: Array.isArray($json.competitors) ? $json.competitors.filter(c => c.facebookUrl).length : 0\n})}}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "65645860-ca57-471f-9107-e637a7954e65",
+      "typeVersion": 3.4,
+      "name": "Run Meta",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        768,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "==={{({ runId: $json.runId, stage: 'start', facebookUrl: $json.facebookUrl, clientId: $json.clientId || 'noClient' })}}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "f2965c54-7962-4c0d-b3cb-a69e9f982497",
+      "typeVersion": 3.4,
+      "name": "Log: Start",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        960,
+        192
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate required inputs + shape of competitors.\n// Required: sheetDocId, instagramUrl, facebookUrl\n// Optional but recommended: website, overview, competitors[]\n\nconst j = $json || {};\nconst missing = [];\nconst warnings = [];\n\nconst need = (key, label = key) => {\n  const v = j[key];\n  if (!v || String(v).trim() === '') missing.push(label);\n};\n\nneed('sheetDocId', 'sheetDocId');\n\nif (missing.length) {\n  throw new Error(`Missing required inputs: ${missing.join(', ')}`);\n}\n\n// URL sanity\nif (j.facebookUrl && !/https?:\\/\\/(www\\.)?facebook\\.com\\//i.test(j.facebookUrl)) {\n  warnings.push(`facebookUrl does not look like a Facebook link: ${j.facebookUrl}`);\n}\nif (j.instagramUrl && !/https?:\\/\\/(www\\.)?instagram\\.com\\//i.test(j.instagramUrl)) {\n  warnings.push(`instagramUrl does not look like an Instagram link: ${j.instagramUrl}`);\n}\nif (j.website && !/^https?:\\/\\//i.test(j.website)) {\n  warnings.push(`website is not a valid URL: ${j.website}`);\n}\n\n// Competitors shape checks (optional but helpful)\nif (Array.isArray(j.competitors)) {\n  const tooMany = j.competitors.length > 12;\n  if (tooMany) warnings.push(`competitors list is long (${j.competitors.length}); consider capping at ~8–12 for cost/speed.`);\n\n  const bad = [];\n  j.competitors.forEach((c, idx) => {\n    const nameOk = !!(c && c.name && String(c.name).trim());\n    const igOk   = !!(c && c.instagramUrl && /instagram\\.com\\//i.test(c.instagramUrl));\n    if (!nameOk || !igOk) bad.push(idx);\n  });\n  if (bad.length) {\n    warnings.push(`Some competitors missing name or instagramUrl at indices: ${bad.join(', ')}`);\n  }\n} else if (j.competitors != null) {\n  warnings.push('competitors provided but not an array; ignoring.');\n}\n\n// Soft checks on overview\nif (j.overview && j.overview.length < 40) {\n  warnings.push('overview appears very short; richer context improves trend quality.');\n}\n\nreturn [\n  {\n    json: {\n      ...j,\n      validationTimestamp: new Date().toISOString(),\n      validationWarnings: warnings\n    }\n  }\n];"
+      },
+      "id": "1a49a680-0201-4a93-aac0-3591b094489b",
+      "typeVersion": 2,
+      "name": "Validate Inputs",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1008,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Robustly parse Perplexity/OpenAI response, tolerate object or JSON-string content,\n// normalize slugs, and enforce 10 items.\n\nconst base = $item(0).$node['Validate Inputs']?.json ?? {};\nconst first = $input.first()?.json ?? {};\n\n// --- Safely unwrap model content into string OR object ---\nfunction pickPayload(value) {\n  if (value == null) return null;\n\n  // Plain JSON string / text response\n  if (typeof value === 'string') return value;\n\n  // Already parsed JSON object\n  if (typeof value === 'object' && !Array.isArray(value)) {\n    // If this object itself looks like the target payload, return it\n    if (value.platform || value.items) return value;\n\n    // Common nested fields\n    if ('text' in value) {\n      const v = pickPayload(value.text);\n      if (v != null && v !== '') return v;\n    }\n\n    if ('content' in value) {\n      const v = pickPayload(value.content);\n      if (v != null && v !== '') return v;\n    }\n\n    if ('message' in value) {\n      const v = pickPayload(value.message);\n      if (v != null && v !== '') return v;\n    }\n\n    if ('output' in value) {\n      const v = pickPayload(value.output);\n      if (v != null && v !== '') return v;\n    }\n  }\n\n  // Arrays: return first usable payload\n  if (Array.isArray(value)) {\n    for (const item of value) {\n      const v = pickPayload(item);\n      if (v != null && v !== '') return v;\n    }\n  }\n\n  return null;\n}\n\nconst rawPayload =\n  pickPayload(first?.output) ??\n  pickPayload(first?.message) ??\n  pickPayload(first?.content);\n\nif (rawPayload == null || rawPayload === '') {\n  throw new Error('IG trends response missing content');\n}\n\n// --- Extract JSON if payload is a string; otherwise use object directly ---\nfunction extractJson(text) {\n  let t = String(text || '').trim();\n\n  const fenceRe = /```(?:json)?\\s*([\\s\\S]*?)\\s*```/i;\n  const m = t.match(fenceRe);\n  if (m && m[1]) t = m[1].trim();\n\n  // If still not plain JSON, try grabbing a JSON-looking block\n  if (!/^\\s*[\\[{]/.test(t)) {\n    const firstObj = t.indexOf('{');\n    const lastObj = t.lastIndexOf('}');\n    const firstArr = t.indexOf('[');\n    const lastArr = t.lastIndexOf(']');\n\n    const objSpan = firstObj !== -1 && lastObj !== -1 && lastObj > firstObj;\n    const arrSpan = firstArr !== -1 && lastArr !== -1 && lastArr > firstArr;\n\n    if (objSpan && arrSpan) {\n      t =\n        firstObj < firstArr\n          ? t.slice(firstObj, lastObj + 1)\n          : t.slice(firstArr, lastArr + 1);\n    } else if (objSpan) {\n      t = t.slice(firstObj, lastObj + 1);\n    } else if (arrSpan) {\n      t = t.slice(firstArr, lastArr + 1);\n    }\n  }\n\n  return JSON.parse(t);\n}\n\nlet parsed;\ntry {\n  parsed =\n    typeof rawPayload === 'string'\n      ? extractJson(rawPayload)\n      : rawPayload;\n} catch (err) {\n  throw new Error(`IG trends response is not valid JSON: ${err.message}`);\n}\n\n// --- Validate platform ---\nconst platform = String(parsed?.platform || '').toLowerCase();\nif (platform !== 'instagram') {\n  throw new Error(\n    `IG trends platform mismatch: expected \"instagram\", received \"${parsed?.platform}\"`\n  );\n}\n\n// --- Normalize items ---\nconst items = Array.isArray(parsed?.items) ? parsed.items : [];\nconst cleaned = [];\nconst seen = new Set();\nconst warnings = [];\n\nfunction normSlug(s) {\n  let t = String(s || '').trim();\n  t = t.replace(/^#/, '').toLowerCase();\n  t = t.replace(/\\s+/g, '');\n  t = t.replace(/[^a-z0-9_]/g, '');\n  return t;\n}\n\nfunction validIgLink(slug, link) {\n  const want = `https://www.instagram.com/explore/tags/${encodeURIComponent(slug)}/`;\n  const ok =\n    typeof link === 'string' &&\n    /^https?:\\/\\/(www\\.)?instagram\\.com\\/explore\\/tags\\/[^/]+\\/?$/i.test(link);\n  return ok ? link : want;\n}\n\nfor (const entry of items) {\n  const trendRaw = entry?.trend ?? entry?.hashtag ?? '';\n  const slug = normSlug(trendRaw);\n\n  if (!slug) continue;\n\n  if (slug.length < 2 || slug.length > 48) {\n    warnings.push(`Trend \"${trendRaw}\" skipped due to length bounds`);\n    continue;\n  }\n\n  if (seen.has(slug)) {\n    warnings.push(`Duplicate trend skipped: ${slug}`);\n    continue;\n  }\n\n  seen.add(slug);\n  const link = validIgLink(slug, entry?.link);\n  cleaned.push({ trend: slug, link });\n}\n\n// Enforce EXACTLY 10: truncate if >10; error if <10\nif (cleaned.length > 10) cleaned.length = 10;\n\nif (cleaned.length !== 10) {\n  throw new Error(\n    `IG trends validation failed: expected 10 items, received ${cleaned.length}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      ...base,\n      igTrends: cleaned,\n      igTrendsRaw: parsed,\n      igTrendWarnings: warnings,\n      igParsedAt: new Date().toISOString(),\n    },\n  },\n];"
+      },
+      "id": "99d76f23-1aed-421d-b3bb-68c20f070957",
+      "typeVersion": 2,
+      "name": "Parse IG Trends",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1456,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "==={{({ runId: $json.runId, stage: 'ig_trends_parsed', count: ($json.igTrends || []).length, warnings: $json.igTrendWarnings || [] })}}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "16e57075-fd26-445b-8694-3d2304dc13c4",
+      "typeVersion": 3.4,
+      "name": "Log: IG Trends",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1664,
+        192
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $item(0).$node['Parse IG Trends']?.json ?? {};\n\n// Support both old Chat Completions shape and new Responses API shape\nconst rawContent =\n  $json?.choices?.[0]?.message?.content ??\n  $json?.output?.[0]?.content?.find?.(c => c.type === 'output_text')?.text ??\n  $json?.output?.[0]?.content?.[0]?.text ??\n  '';\n\nif (!rawContent) {\n  throw new Error('FB trends response missing content');\n}\n\nfunction extractJson(text) {\n  let t = String(text || '').trim();\n\n  const fenceRe = /```(?:json)?\\s*([\\s\\S]*?)\\s*```/i;\n  const m = t.match(fenceRe);\n  if (m && m[1]) t = m[1].trim();\n\n  if (!/^\\s*[\\[{]/.test(t)) {\n    const first = t.indexOf('{');\n    const last = t.lastIndexOf('}');\n    if (first !== -1 && last !== -1 && last > first) {\n      t = t.slice(first, last + 1);\n    }\n  }\n\n  return JSON.parse(t);\n}\n\nlet parsed;\ntry {\n  parsed = extractJson(rawContent);\n} catch (err) {\n  throw new Error(`FB trends response is not valid JSON: ${err.message}`);\n}\n\nconst platform = String(parsed.platform || '').toLowerCase();\nif (platform !== 'facebook') {\n  throw new Error(\n    `FB trends platform mismatch: expected \"facebook\", received \"${parsed.platform}\"`\n  );\n}\n\nconst items = Array.isArray(parsed.items) ? parsed.items : [];\nconst cleaned = [];\nconst seen = new Set();\nconst warnings = [];\n\nfunction normSlug(s) {\n  let t = String(s || '').trim();\n  t = t.replace(/^#/, '').toLowerCase();\n  t = t.replace(/\\s+/g, '');\n  t = t.replace(/[^a-z0-9_]/g, '');\n  return t;\n}\n\nfunction validFbLink(slug, link) {\n  const want = `https://www.facebook.com/hashtag/${encodeURIComponent(slug)}`;\n  const ok =\n    typeof link === 'string' &&\n    /^https?:\\/\\/(www\\.)?facebook\\.com\\/hashtag\\/[^/]+\\/?$/i.test(link);\n\n  return ok ? link.replace(/\\/+$/, '') : want;\n}\n\nfor (const entry of items) {\n  const trendRaw = entry?.trend ?? entry?.hashtag ?? '';\n  const slug = normSlug(trendRaw);\n  if (!slug) continue;\n\n  if (slug.length < 2 || slug.length > 48) {\n    warnings.push(`Trend \"${trendRaw}\" skipped due to length bounds`);\n    continue;\n  }\n\n  if (seen.has(slug)) {\n    warnings.push(`Duplicate trend skipped: ${slug}`);\n    continue;\n  }\n\n  seen.add(slug);\n  const link = validFbLink(slug, entry?.link);\n  cleaned.push({ trend: slug, link });\n}\n\nif (cleaned.length > 10) cleaned.length = 10;\nif (cleaned.length !== 10) {\n  throw new Error(\n    `FB trends validation failed: expected 10 items, received ${cleaned.length}`\n  );\n}\n\n// Return ONE item containing the fbTrends array\nreturn [\n  {\n    json: {\n      ...base,\n      fbTrends: cleaned,\n      fbTrendsRaw: parsed,\n      fbTrendWarnings: warnings,\n      fbParsedAt: new Date().toISOString(),\n    },\n  },\n];"
+      },
+      "id": "7a8abbe4-0e92-4ef8-b914-bb49e370e966",
+      "typeVersion": 2,
+      "name": "Parse FB Trends",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1920,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "==={{({ runId: $json.runId, stage: 'fb_trends_parsed', count: ($json.fbTrends || []).length, warnings: $json.fbTrendWarnings || [] })}}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4b08b2b9-0e3b-4c7d-bd0c-f847b984d9f9",
+      "typeVersion": 3.4,
+      "name": "Log: FB Trends",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2112,
+        192
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "==={{({ runId: $json.runId, stage: 'market_research_ready', instagramCount: ($json.igTrends || []).length, facebookCount: ($json.fbTrends || []).length })}}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "7105c773-0835-435e-90af-3a945d6a3146",
+      "typeVersion": 3.4,
+      "name": "Log: Ready to Append",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2336,
+        192
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build 20 rows (10 IG + 10 FB) for the Market research sheet\n// Columns: writeKey, Platform, Trend Description & Hashtags, Link\n// Pass-through (not written as columns): sheetDocId, runId\n\nconst ig = Array.isArray($json.igTrends) ? $json.igTrends : [];\nconst fb = Array.isArray($json.fbTrends) ? $json.fbTrends : [];\n\nif (ig.length !== 10) {\n  throw new Error(`Expected 10 Instagram trends before writing rows, found ${ig.length}`);\n}\nif (fb.length !== 10) {\n  throw new Error(`Expected 10 Facebook trends before writing rows, found ${fb.length}`);\n}\n\nconst rows = [];\nconst sheetDocId = $json.sheetDocId;\nconst runId = $json.runId || '';\nconst writeKey = $json.writeKey || '';\n\nconst ensureIgLink = (slug, link) => {\n  const want = `https://www.instagram.com/explore/tags/${encodeURIComponent(slug)}/`;\n  const ok = typeof link === 'string' &&\n             /^https?:\\/\\/(www\\.)?instagram\\.com\\/explore\\/tags\\/[^/]+\\/?$/i.test(link);\n  return ok ? (link.endsWith('/') ? link : link + '/') : want;\n};\n\nconst ensureFbLink = (slug, link) => {\n  const want = `https://www.facebook.com/hashtag/${encodeURIComponent(slug)}`;\n  const ok = typeof link === 'string' &&\n             /^https?:\\/\\/(www\\.)?facebook\\.com\\/hashtag\\/[^/]+\\/?$/i.test(link);\n  // Prefer no trailing slash for FB\n  return (ok ? link : want).replace(/\\/+$/, '');\n};\n\nfor (const entry of ig) {\n  const slug = String(entry.trend || '').trim().toLowerCase();\n  rows.push({\n    writeKey,\n    Platform: 'Instagram',\n    'Trend Description & Hashtags': `#${slug}`,\n    Link: ensureIgLink(slug, entry.link),\n    // pass-through for the Sheets node config\n    sheetDocId,\n    runId\n  });\n}\n\nfor (const entry of fb) {\n  const slug = String(entry.trend || '').trim().toLowerCase();\n  rows.push({\n    writeKey,\n    Platform: 'Facebook',\n    'Trend Description & Hashtags': `#${slug}`,\n    Link: ensureFbLink(slug, entry.link),\n    // pass-through for the Sheets node config\n    sheetDocId,\n    runId\n  });\n}\n\nreturn rows.map(row => ({ json: row }))"
+      },
+      "id": "0371191a-cbd8-4b59-b4e8-5ca47331d85d",
+      "typeVersion": 2,
+      "name": "Build Market Research Rows",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2144,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1646583359,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=1646583359"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Platform": "={{ $json.Platform }}",
+            "Trend Description & Hashtags": "={{ $json['Trend Description & Hashtags'] }}",
+            "Link": "={{ $json.Link }}",
+            "Write Key": "={{ $json.writeKey }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Write Key",
+              "displayName": "Write Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trend Description & Hashtags",
+              "displayName": "Trend Description & Hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Platform Conversations, Themes & Comments Discussed",
+              "displayName": "Platform Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "displayName": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Run ID",
+              "displayName": "Run ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "60df8e5a-4286-494f-9f6b-0471101fb28a",
+      "typeVersion": 4.7,
+      "name": "Append rows → Market Research",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2352,
+        416
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": "={{ $env.LOGGER_WORKFLOW_ID }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        192
+      ],
+      "id": "441beb31-b666-45d0-880c-200077f74491",
+      "name": "Send Log",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a senior social trend analyst inside an automation. Analyze the client’s Facebook presence using their page plus supplied business context and competitor profiles, then return the current top 10 Facebook Business related hashtags/trend tags that are specifically relevant to the client’s business and useful for near-term content planning.\n\nQuality & constraints:\n\t•\tRecency: weight the last 60 days (prefer last 30).\n\t•\tRelevance first: choose intent-rich, niche-specific tags aligned to the client’s offers and audience.\n\t•\tExclude: generic filler (love, instagood, follow, reels, viral, etc.), banned/sensitive tags, pure branded-only tags (client/company name), and spam/engagement bait.\n\t•\tDeduplicate/normalize: lowercase slugs, no #, no spaces/emojis/symbols; regex [a-z0-9_]{2,48}; prefer canonical forms.\n\t•\tGeo: include at most one high-signal geo tag only if clearly relevant.\n\t•\tAvoid overlap: prefer tags that add coverage vs. the already-selected Instagram list provided.\n\t•\tRanking: (1) semantic fit, (2) recent momentum on Facebook, (3) specificity vs. genericness, (4) planning utility.\n\t•\tSTRICT JSON ONLY in this exact schema (no commentary, no markdown):\n{“platform”:“facebook”,“items”:[{“trend”:””,“link”:””}]}\n\t•\tEach link must be: https://www.facebook.com/hashtag/{slug}\n\t•\tReturn exactly 10 unique items.\n\nMethod:\n\t•\tDerive themes from the client’s FB page (about/featured/most-recent posts & comments), the website & overview, and competitor profiles (both FB and IG only as evidence of what performs in the niche).\n\t•\tUse competitor signals to inform selection; do not output competitor-branded tags.\n"
+            },
+            {
+              "content": "=Client Facebook: {{ $json.facebookUrl }}\nWebsite: {{ $json.website }}\nOverview: {{ $json.overview }}\n\nCompetitors (JSON): {{ JSON.stringify($json.competitors || []) }}\nAlready-selected Instagram tags (avoid near-dupes where possible): {{ JSON.stringify($json.igTrends || []) }}\n\nReturn only the JSON object described in the system prompt."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 1024
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1648,
+        384
+      ],
+      "id": "2887abac-2e04-404c-91e3-51273cecdd5b",
+      "name": "Perplexity — FB Trends",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a senior social trend analyst inside an automation. Your task is to analyze the client’s Instagram profile plus supplied business context and competitor profiles, then return the current top 10 Instagram Business related hashtags/trend tags that are specifically relevant to the client’s business and useful for near-term content planning.\n\nQuality & constraints:\n\t•\tRecency: weight the last 60 days (prefer last 30).\n\t•\tRelevance first: choose intent-rich, niche-specific tags aligned to the client’s offers and audience.\n\t•\tExclude: generic filler (love, instagood, follow, reels, viral, etc.), banned/sensitive tags, pure branded-only tags (client/company name), and spam/engagement bait.\n\t•\tDedupe/normalize: lowercase slugs, no #, no spaces/emojis/symbols; regex [a-z0-9_]{2,48}; prefer canonical form over near-variants.\n\t•\tGeo: include at most one high-signal geo tag only if clearly relevant.\n\t•\tRanking: (1) semantic fit, (2) recent momentum, (3) specificity vs. genericness, (4) planning utility (campaign/calendar).\n\t•\tSTRICT JSON ONLY in this exact schema (no commentary, no markdown):\n{“platform”:“instagram”,“items”:[{“trend”:””,“link”:””}]}\n\t•\tEach link must be: https://www.instagram.com/explore/tags/{slug}/\n\t•\tReturn exactly 10 unique items.\n\nMethod:\n\t•\tDerive themes from the client’s IG (bio/highlights/recent posts/reels/captions), the provided overview & website, and competitor profiles (IG + FB as supporting evidence of what performs in the niche).\n\t•\tUse competitor signals only to inform what’s working; do not output competitor-branded tags."
+            },
+            {
+              "content": "=Client Facebook: {{ $json.facebookUrl }}\nWebsite: {{ $json.website }}\nOverview: {{ $json.overview }}\n\nCompetitors (JSON): {{ JSON.stringify($json.competitors || []) }}\nAlready-selected Instagram tags (avoid near-dupes where possible): {{ JSON.stringify($json.igTrends || []) }}\n\nReturn only the JSON object described in the system prompt."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 1024,
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        384
+      ],
+      "id": "63506abc-7d22-4bab-8f55-357dc75fe2d9",
+      "name": "Perplexity — IG Trends",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Normalize Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Inputs": {
+      "main": [
+        [
+          {
+            "node": "Run Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Meta": {
+      "main": [
+        [
+          {
+            "node": "Validate Inputs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log: Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: Start": {
+      "main": [
+        [
+          {
+            "node": "Send Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Inputs": {
+      "main": [
+        [
+          {
+            "node": "Perplexity — IG Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse IG Trends": {
+      "main": [
+        [
+          {
+            "node": "Log: IG Trends",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Perplexity — FB Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: IG Trends": {
+      "main": [
+        [
+          {
+            "node": "Send Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse FB Trends": {
+      "main": [
+        [
+          {
+            "node": "Build Market Research Rows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log: FB Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: FB Trends": {
+      "main": [
+        [
+          {
+            "node": "Log: Ready to Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log: Ready to Append": {
+      "main": [
+        [
+          {
+            "node": "Send Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Market Research Rows": {
+      "main": [
+        [
+          {
+            "node": "Append rows → Market Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity — FB Trends": {
+      "main": [
+        [
+          {
+            "node": "Parse FB Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity — IG Trends": {
+      "main": [
+        [
+          {
+            "node": "Parse IG Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "clientId": "Barrel and Board Design",
+          "facebook_url": "https://www.facebook.com/SPTbrand",
+          "isTest": "",
+          "instagram_profile_url": "https://www.instagram.com/sptbrands/?hl=en",
+          "sheetDocId": "1h87DLHWnMWzeRt-rR6ojyK0fbXA7bititBlqH9WXri4",
+          "writeKey": "Barrel and Board Design|competitor|studio-mcgee|latest|slot|05|row|6",
+          "competitors": "Studio McGee",
+          "website": "https://www.instagram.com/studiomcgee",
+          "overview": ""
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

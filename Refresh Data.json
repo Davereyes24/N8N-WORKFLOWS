@@ -1,0 +1,701 @@
+{
+  "name": "Refresh Data",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "7381815b-0830-42bb-b062-140ffb71a4ec",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fd604dee-6704-4914-a2b1-c14583a586a3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/timeattendance/api/v1/CertificateOfAttendances/{{ $('Get row(s) in sheet1').item.json.requestId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        912,
+        -64
+      ],
+      "id": "b7fa3126-01b9-49c8-a402-3407578fd3cb",
+      "name": "HTTP Request3",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Overiden?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "d5e79cd1-71f8-468d-a2b4-cb829f1006b3",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "499bbc4a-7247-4c0b-96db-e26bfe6eb749",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        144
+      ],
+      "id": "b7c700fd-8600-43f9-a10c-15d05401f7f4",
+      "name": "Webhook",
+      "webhookId": "499bbc4a-7247-4c0b-96db-e26bfe6eb749"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "CertificateOfAttendance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b689b4a4-d6c8-40c4-98ea-04a3211f895d"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ef120d2a-68d9-46a9-83d2-864eef8cf60c",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "CertificateOfAttendance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        0
+      ],
+      "id": "f3a5c317-64d1-40ab-bacb-15e42e5a10c0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/timeattendance/api/v1/Leave/{{ $('Get row(s) in sheet1').item.json.requestId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        112
+      ],
+      "id": "74c73e12-b5a8-4f00-9a00-dad3d4abe873",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestId": "={{ $('Get row(s) in sheet1').item.json.requestId }}",
+            "Name": "={{ $('Get row(s) in sheet1').item.json.Name }}",
+            "type": "CertificateOfAttendance",
+            "HR notes": "={{ $json.rejectOrCancelReason }}",
+            "HR descision": "={{ $json.rejectReason }}"
+          },
+          "matchingColumns": [
+            "requestId"
+          ],
+          "schema": [
+            {
+              "id": "requestId",
+              "displayName": "requestId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DateFiled",
+              "displayName": "DateFiled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateFrom",
+              "displayName": "DateFrom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateTo",
+              "displayName": "DateTo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Doer Reason",
+              "displayName": "Doer Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI recomendation",
+              "displayName": "AI recomendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LeaveStatus",
+              "displayName": "LeaveStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RejectReason",
+              "displayName": "RejectReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order number",
+              "displayName": "Order number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cancelType",
+              "displayName": "cancelType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "employeeId",
+              "displayName": "employeeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "requestType",
+              "displayName": "requestType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "transactionId",
+              "displayName": "transactionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": " actionType",
+              "displayName": " actionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "approverId",
+              "displayName": "approverId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "HR notes",
+              "displayName": "HR notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HR descision",
+              "displayName": "HR descision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HR user",
+              "displayName": "HR user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Overiden?",
+              "displayName": "Overiden?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "attachments",
+              "displayName": "attachments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "assigned to ",
+              "displayName": "assigned to ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        -80
+      ],
+      "id": "cdda3789-5e58-41ec-ba20-0a047c385053",
+      "name": "Update COA",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "doneverse.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "103.144.156.161",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PH",
+            "cf-ray": "9d731cb74d9d84c3-HKG",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "priority": "u=1, i",
+            "referer": "https://07a72aa1-17df-4221-97f8-ac77010a9b00.lovableproject.com/",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "103.144.156.161, 162.158.114.157",
+            "x-forwarded-host": "doneverse.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-766bf75cdc-bvqlf",
+            "x-is-trusted": "yes",
+            "x-real-ip": "103.144.156.161"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://doneverse.app.n8n.cloud/webhook/499bbc4a-7247-4c0b-96db-e26bfe6eb749",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Update COA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "52002bd7-ac08-4cd2-9e48-e2e54b10bbe8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0ecc848b16fe6364a93d6c7540edc4ca5a615011025519aa95a509a936e5f84a"
+  },
+  "id": "PKsyzN0uAWnqiYUq",
+  "tags": []
+}

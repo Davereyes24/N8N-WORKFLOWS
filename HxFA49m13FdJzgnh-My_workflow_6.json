@@ -1,0 +1,115 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "143d5f47-26c3-4f6f-a4e6-47e6dfab387b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "Key-Value Stores",
+        "storeId": {
+          "__rl": true,
+          "value": "MGHVpOp2uenWMXNaN",
+          "mode": "id"
+        },
+        "recordKey": {
+          "__rl": true,
+          "value": "video-ililyluvyu-20220712131157-7119473137439264026.mp4",
+          "mode": "list",
+          "cachedResultName": "video-ililyluvyu-20220712131157-7119473137439264026.mp4",
+          "cachedResultUrl": "https://api.apify.com/v2/key-value-stores/MGHVpOp2uenWMXNaN/records/video-ililyluvyu-20220712131157-7119473137439264026.mp4"
+        }
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3266b146-7c69-4056-9291-2604a6143d18",
+      "name": "Get key-value store record",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "lRgHDRn2OmIp6oqQA"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "13d2a54d-bfa9-42e2-994d-60e311b58869",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        144
+      ],
+      "id": "25cf6574-420b-4f6a-b58d-cfbc7648d747",
+      "name": "Wait",
+      "webhookId": "f756ba53-6b6c-444b-8528-7c6179e7b727"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Get key-value store record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

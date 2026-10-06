@@ -1,0 +1,922 @@
+{
+  "name": "Calendar Generation - GGmod",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "clientId"
+            },
+            {
+              "name": "isTest",
+              "type": "boolean"
+            },
+            {
+              "name": "sheetDocId"
+            },
+            {
+              "name": "writeKey"
+            },
+            {
+              "name": "bussines context"
+            },
+            {
+              "name": "post type"
+            }
+          ]
+        }
+      },
+      "id": "606a2321-615a-4269-b60b-cce5acfb1ef2",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        192,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Page Name"
+            },
+            {
+              "fieldToAggregate": "Page URL"
+            },
+            {
+              "fieldToAggregate": "Post"
+            },
+            {
+              "fieldToAggregate": "Post URL"
+            },
+            {
+              "fieldToAggregate": "Why this post worked: "
+            },
+            {
+              "fieldToAggregate": "Trends Used: "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        160
+      ],
+      "id": "341202b6-759b-42d6-883f-ea052c8781b8",
+      "name": "Aggregate2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 731471861,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=731471861"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1360,
+        128
+      ],
+      "id": "75f5f151-83f3-4eea-9714-d11abfbd7c42",
+      "name": "Get Bussines Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 228331455,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=228331455"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2096,
+        160
+      ],
+      "id": "f01034d0-f03e-4783-8e5b-62a72307b711",
+      "name": "Get Trend Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 960971568,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=960971568"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1616,
+        160
+      ],
+      "id": "71a4138b-aeba-4cf1-9fbb-3946cbcb93d2",
+      "name": "Get Competitor Research",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1646583359,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=1646583359"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        512
+      ],
+      "id": "4f037b9a-35dc-4c33-84ca-e94eb793fee6",
+      "name": "Get Market Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Build Tranche Offsets\n * - Consolidates research from upstream nodes\n * - Emits 3 items (offsetDays: 0, 10, 20)\n * - Added 'post type' field from Start node\n */\n\nconst MAX_CHARS = 6000;\nconst SEP = \"\\n—\\n\";\n\n// ---------- Helpers ----------\n\n// 1. Define compactText FIRST so other helpers can use it if needed\nfunction compactText(s, max = MAX_CHARS) {\n  if (!s) return '';\n  let out = String(s).replace(/\\s+\\n/g, '\\n').replace(/\\n{3,}/g, '\\n\\n').trim();\n  if (out.length > max) out = out.slice(0, max) + '…';\n  return out;\n}\n\n// 2. safeJoin (safe to use now)\nfunction safeJoin(arr, key, max = MAX_CHARS) {\n  if (!Array.isArray(arr)) return '';\n  const parts = arr\n    .map(o => (key ? (o?.[key] ?? '') : (typeof o === 'string' ? o : JSON.stringify(o))))\n    .filter(Boolean);\n  let out = parts.join(SEP);\n  if (out.length > max) out = out.slice(0, max) + '…';\n  return out;\n}\n\nfunction tryItems(nodeName) {\n  try {\n    const arr = $items(nodeName);\n    if (Array.isArray(arr) && arr.length) return arr.map(i => i.json || {});\n  } catch (e) { /* ignore */ }\n  try {\n    const j = $item(0).$node?.[nodeName]?.json;\n    if (j) return [j];\n  } catch (e) { /* ignore */ }\n  return [];\n}\n\nfunction pickFirstNonEmpty(objs, key) {\n  for (const o of objs) {\n    const v = o?.[key];\n    if (typeof v === 'string' && v.trim()) return v.trim();\n  }\n  return '';\n}\n\n// ---------- Gather upstream research ----------\nconst biz = tryItems('Get Bussines Research');\nconst comp = tryItems('Get Competitor Research');\nconst agg  = tryItems('Aggregate2');\nconst trend = tryItems('Get Trend Research');\nconst market = tryItems('Get Market Research');\n\n// Business\nconst businessSummary = compactText(\n  pickFirstNonEmpty(biz, 'Business Research Ideas Summary') ||\n  pickFirstNonEmpty(biz, 'Business Research Ideas Summary\\n')\n);\n\nconst businessTone = compactText(\n  pickFirstNonEmpty(biz, 'Social Media Tone/Voice/Language')\n);\n\n// Competitors\nlet competitorsWhy = '';\nlet competitorsTrends = '';\n\nif (agg.length) {\n  const a0 = agg[0];\n  const why = Array.isArray(a0['Why this post worked: ']) ? a0['Why this post worked: '] : [a0['Why this post worked: ']].filter(Boolean);\n  const trends = Array.isArray(a0['Trends Used: ']) ? a0['Trends Used: '] : [a0['Trends Used: ']].filter(Boolean);\n\n  competitorsWhy = compactText(why.join(SEP));\n  competitorsTrends = compactText(trends.join(SEP));\n}\n\nif (!competitorsWhy) {\n  competitorsWhy = compactText(safeJoin(comp, 'Why this post worked: '));\n}\nif (!competitorsTrends) {\n  competitorsTrends = compactText(safeJoin(comp, 'Trends Used: '));\n}\n\n// Trend research\nconst trendHashtags = compactText(\n  pickFirstNonEmpty(trend, 'Hashtags') ||\n  pickFirstNonEmpty(trend, 'Hashtag') ||\n  pickFirstNonEmpty(trend, 'Trend Hashtags')\n);\n\nconst trendNotes = compactText(\n  pickFirstNonEmpty(trend, 'Key Takeaways & Content Calendar Recommendations:') ||\n  pickFirstNonEmpty(trend, 'Chat GPT Trend Search') ||\n  pickFirstNonEmpty(trend, 'Trend or Pattern')\n);\n\n// Market research\nlet marketSummary = '';\nif (market.length) {\n  const m0 = { ...market[0] };\n  ['row_number', 'Client ID', 'Run ID', 'isTest', 'writeKey', '#', 'Link to post'].forEach(k => delete m0[k]);\n  const pretty = Object.entries(m0)\n    .filter(([, v]) => v !== '' && v !== null && v !== undefined)\n    .map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`)\n    .join('\\n');\n  marketSummary = compactText(pretty || JSON.stringify(m0));\n}\n\n// ---------- Read context & post type from Start ----------\nlet bussinesContext = '';\nlet postType = '';\n\ntry {\n  const startNode = $('Start').first().json;\n  bussinesContext = compactText(startNode?.['bussines context'] || '');\n  postType = compactText(startNode?.['post type'] || '');\n} catch (e) {\n  // Fallback\n  const startNode = $item(0).$node?.Start?.json;\n  bussinesContext = compactText(startNode?.['bussines context'] || '');\n  postType = compactText(startNode?.['post type'] || '');\n}\n\n// ---------- Emit three tranche items: 0, 10, 20 days ----------\nconst trancheOffsets = [0, 10, 20];\nconst base = {\n  businessSummary,\n  businessTone,\n  competitorsWhy,\n  competitorsTrends,\n  trendHashtags,\n  trendNotes,\n  marketSummary,\n  postType,\n  ['bussines context']: bussinesContext,\n};\n\n// Propagate pass-through fields\nconst startJson = $item(0).$node?.Start?.json || {};\n['clientId', 'isTest', 'sheetDocId', 'writeKey'].forEach(k => {\n  if (startJson[k] !== undefined) base[k] = startJson[k];\n});\n\nconst out = trancheOffsets.map(offsetDays => ({\n  json: { offsetDays, ...base }\n}));\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        512
+      ],
+      "id": "b28c9223-d5a7-44df-8eca-96ab34d39a8d",
+      "name": "Build Tranche Offsets"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        512
+      ],
+      "id": "86f1c2b9-3f9d-4c7a-9919-11048b1689f1",
+      "name": "Loop Tranches"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"sheetDocId\": {{ JSON.stringify($json.sheetDocId ?? $('Loop Tranches').item.json.sheetDocId ?? $('Start').item.json.sheetDocId) }},\n\n  \"Content Ready?\": {{ JSON.stringify(\"No\") }},\n\n  \"Calendar Key\": {{ JSON.stringify(`${$json.Date || \"\"}|${$json.Time || \"\"}|${$json[\"Post name\"] || $json.Theme || \"\"}`) }},\n\n  \"Date\": {{ JSON.stringify($json.Date || \"\") }},\n  \"Day\": {{ JSON.stringify($json.Day || \"\") }},\n  \"Time\": {{ JSON.stringify($json.Time || \"\") }},\n\n  \"Media Type\": {{ JSON.stringify($json[\"Media Type\"] || \"\") }},\n  \"Creative\": {{ JSON.stringify($json.Creative || \"Generated Image\") }},\n  \"Theme\": {{ JSON.stringify($json.Theme || \"\") }},\n  \"Creative Link\": {{ JSON.stringify($json[\"Creative Link\"] || \"\") }},\n\n  \"Post Description\": {{ JSON.stringify($json[\"Post Description\"] || \"\") }},\n  \"Post Captions/Text Overlays\": {{ JSON.stringify($json[\"Post Captions/Text Overlays\"] || \"\") }},\n  \"Post Creation Instructions\": {{ JSON.stringify($json[\"Post Creation Instructions\"] || \"\") }},\n\n  \"Audio \": {{ JSON.stringify(($json[\"Audio\"] ?? $json[\"Audio \"]) ?? \"N/A\") }},\n  \"Pinterest Board\": {{ JSON.stringify($json[\"Pinterest Board\"] || \"\") }},\n  \"YouTube Thumbnail Design Link\": {{ JSON.stringify($json[\"YouTube Thumbnail Design Link\"] || \"\") }},\n  \"Notes\": {{ JSON.stringify($json.Notes || \"\") }},\n\n  \"Facebook\": {{ JSON.stringify($json.Facebook || \"\") }},\n  \"Instagram\": {{ JSON.stringify($json.Instagram || \"\") }},\n  \"LinkedIn\": {{ JSON.stringify($json.LinkedIn || \"\") }},\n  \"Pinterest\": {{ JSON.stringify($json.Pinterest || \"\") }},\n  \"TikTok\": {{ JSON.stringify($json.TikTok || \"\") }},\n  \"YouTube\": {{ JSON.stringify($json.YouTube || \"\") }},\n\n  \"AI assets creation prompt\": {{ JSON.stringify(($json[\"AI assets creation prompt\"] ?? $json[\"Post Creation Instructions\"]) ?? \"\") }},\n  \"Post name\": {{ JSON.stringify($json[\"Post name\"] || \"\") }},\n  \"Post GDrive folder link\": {{ JSON.stringify($json[\"Post GDrive folder link\"] || \"\") }},\n  \"Regenerate post\": {{ JSON.stringify($json[\"Regenerate post\"] || \"\") }},\n  \"Regenerate image\": {{ JSON.stringify($json[\"Regenerate image\"] || \"\") }},\n  \"Row number\": {{ JSON.stringify($json[\"Row number\"] || \"\") }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2128,
+        912
+      ],
+      "id": "e4c63c1f-d6ad-44f2-a0f6-69e1d97ac42b",
+      "name": "Set Calendar Row"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 251971541,
+          "mode": "list",
+          "cachedResultName": "Content Calendar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=251971541"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Calendar Key": "={{ $json['Calendar Key'] }}",
+            "Content Ready?": "={{ $json['Content Ready?'] }}",
+            "Date": "={{ $json.Date }}",
+            "Day": "={{ $json.Day }}",
+            "Time": "={{ $json.Time }}",
+            "Media Type": "={{ $json['Media Type'] }}",
+            "Creative": "={{ $json.Creative }}",
+            "Theme": "={{ $json.Theme }}",
+            "Creative Link": "={{ $json['Creative Link'] }}",
+            "Post Creation Instructions": "={{ $json['Post Creation Instructions'] }}",
+            "Audio ": "={{ $json['Audio '] }}",
+            "Pinterest Board": "={{ $json['Pinterest Board'] }}",
+            "YouTube Thumbnail Design Link": "={{ $json['YouTube Thumbnail Design Link'] }}",
+            "Notes": "={{ $json.Notes }}",
+            "Facebook": "={{ $json.Facebook }}",
+            "Instagram": "={{ $json.Instagram }}",
+            "LinkedIn": "={{ $json.LinkedIn }}",
+            "Pinterest": "={{ $json.Pinterest }}",
+            "TikTok": "={{ $json.TikTok }}",
+            "YouTube": "={{ $json.YouTube }}",
+            "AI assets creation prompt": "={{ $json['AI assets creation prompt'] }}",
+            "Post name": "={{ $json['Post name'] }}",
+            "Post GDrive folder link": "={{ $json['Post GDrive folder link'] }}",
+            "Regenerate post": "={{ $json['Regenerate post'] }}",
+            "Regenerate image": "={{ $json['Regenerate image'] }}",
+            "Post Captions/Post Description": "={{ $json['Post Description'] }}",
+            "Text Overlays": "={{ $json['Post Captions/Text Overlays'] }}"
+          },
+          "matchingColumns": [
+            "Calendar Key"
+          ],
+          "schema": [
+            {
+              "id": "Content Ready?",
+              "displayName": "Content Ready?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Media Type",
+              "displayName": "Media Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Creative",
+              "displayName": "Creative",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Creative Link",
+              "displayName": "Creative Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post Captions/Post Description",
+              "displayName": "Post Captions/Post Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Text Overlays",
+              "displayName": "Text Overlays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post Creation Instructions",
+              "displayName": "Post Creation Instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Audio ",
+              "displayName": "Audio ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pinterest Board",
+              "displayName": "Pinterest Board",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "YouTube Thumbnail Design Link",
+              "displayName": "YouTube Thumbnail Design Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pinterest",
+              "displayName": "Pinterest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TikTok",
+              "displayName": "TikTok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "YouTube",
+              "displayName": "YouTube",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI assets creation prompt",
+              "displayName": "AI assets creation prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post name",
+              "displayName": "Post name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post GDrive folder link",
+              "displayName": "Post GDrive folder link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Regenerate post",
+              "displayName": "Regenerate post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Regenerate image",
+              "displayName": "Regenerate image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Calendar Key",
+              "displayName": "Calendar Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2352,
+        912
+      ],
+      "id": "646fe2b4-1f24-4c7b-befc-131338aff48a",
+      "name": "Upsert Calendar Row",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.Posts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        656
+      ],
+      "id": "cf7ad68c-faa2-409a-9eda-751ec44d27b1",
+      "name": "Split Out Posts"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a senior content strategist specializing in Facebook & Instagram editorial planning. Plan high-level content themes aligned to business goals, competitive context, market realities, and current trends. Always output STRICT JSON only, exactly matching the requested schema with no extra keys or commentary. Compute the correct start date as the next calendar day plus the provided offset and map to the correct weekday. Apply weekday/weekend posting time windows and select a single best time per day. Ensure each day uses a unique creative format, include at least one of each required Post Theme and Media Type across the tranche, avoid repetition, align to content pillars, and include a concise Strategic Note for each day. Expand theme variety to include deeper, more niche-aligned topics that reflect {{ $json['bussines context'] }}. Distinguish between platform-specific insights (Facebook vs Instagram) when relevant.\"",
+              "role": "system"
+            },
+            {
+              "content": "=You are a senior content strategist. Plan the high-level content THEMES for a 10-day tranche of a 30-day Facebook & Instagram calendar. Use Business, Competitors, Market, and Trend research below. Output PURE JSON only.\\n# INPUTS \\nToday's Date: {{ $today }}\\nClient: {{ $json.clientId }}\\nBusiness Research: {{ $json.businessSummary }}\\nTone/Voice: {{ $json.businessTone }}\\nCompetitors (why & trends): {{ $json.competitorsWhy }} & {{ $json.competitorsTrends }}\\nMarket Research: {{ $json.marketSummary }}\\nTrend Research: {{ $json.trendNotes }} | Hashtags: {{ $json.trendHashtags }}\\nTranche Offset (days): {{ $json.offsetDays }}\\nBusiness Context: {{ $json['bussines context'] }}\\n\\n# RULES\\n- Plan exactly 10 days of social content themes.\\n- Date for Day 1 = next calendar day + {{ $json.offsetDays }} days.\\n- Allocate Time per day: weekdays 11:30–13:30, weekends 10:00–12:00 (use the single best time).\\n- Each day must feature a unique creative format. Include a healthy mix of post types—not just quotes.{{ $json.postType }}\\n- Expand the range of content to include more in-depth, topic-rich, and brand-niche aligned ideas based on {{ $json['bussines context'] }} {{ $json.postType }}.\\n- If multiple platforms are being used, specify how the focus or format varies by platform (e.g., Facebook authority post vs Instagram engagement post).\\n- Over the 10 days, include at least one of each of the following categories:\\n  1. Post Themes — e.g., No Post, Poll, Training Video, Daily Challenge, Testimonials, Declaration / Fill In The Blanks, Lead Magnet, Audio File / Book Chapter, Podcast Episode, YouTube Video, Quote, Competition, Recommendations, Instructional / How-To, Answer an FAQ, Resource Promotion, Content Promotion, Offer Promotion, Founder Story, Founder Commentary, Engaging Content, Team Spotlight, Services / Offers, Other\\n  2. Media Types — e.g., Reel, Image, Carousel, Pin, Article, IGTV, Live, Video, Story, Standard Pin, Ideas (Story) Pin, Rich Pin\\n- Avoid repetition of the same creative type or layout within this 10-day tranche.\\n- Each theme must align with the client’s business goals, {{ $json['bussines context'] }}, and content pillars.\\n- Include a short “Strategic Note” explaining why each day’s post supports growth, engagement, or authority.\\n\\n# OUTPUT (STRICT JSON)\\n{\\n  \\\"Themes10\\\": [\\n    {\\\"Date\\\":\\\"YYYY-MM-DD\\\",\\\"Day\\\":\\\"Monday|Tuesday|...\\\",\\\"Time\\\":\\\"HH:MM\\\",\\\"Theme\\\":\\\"Specific format name\\\",\\\"Angle\\\":\\\"1–2 sentences explaining the content idea\\\",\\\"Strategic Note\\\":\\\"1 sentence on why it supports strategy\\\"}\\n  ]\\n}\\n- PURE JSON ONLY."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1696,
+        400
+      ],
+      "id": "aa09dd4c-5a33-4e57-89d9-37232f8947a6",
+      "name": "Plan Themes (10-day Batch)",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a creative director and content ideation specialist. Convert each daily theme into a concrete post idea with a visual brief.Output exactly 10 posts Preserve all Date/Day/Time values from input. Always output STRICT JSON only, exactly matching the provided schema with no extra fields. Keep post names under 6 words, overlay text under 12 words, include a clear hook and imperative CTA, and align the visual concept with the theme and {{ $('Loop Tranches').item.json['bussines context'] }} {{ $json.postType }}. Ensure each idea matches the brand tone and platform style (differentiate when platform data differs). Include relevant business-related hashtags in Notes or CTA where appropriate. Do not fabricate dates.\"",
+              "role": "system"
+            },
+            {
+              "content": "=You are a creative director and content ideation specialist. Turn 10 daily THEMES into concrete post IDEAS with visual briefs. Output PURE JSON only.\\n\\nPost descriptions (captions) must include relevant business-related hashtags. Convert 10 daily THEMES into specific post IDEAS with visual briefs. Output PURE JSON only.\\n\\nINPUTS\\nClient: {{ $('Loop Tranches').item.json.clientId }}\\nThemes10: {{ JSON.stringify($item(0).$node['Plan Themes (10-day Batch)'].json.message?.content?.Themes10 || $item(0).$node['Plan Themes (10-day Batch)'].json.message?.content || $item(0).$node['Plan Themes (10-day Batch)'].json) }}\\nBusiness Research: {{ $('Loop Tranches').item.json.businessSummary }}\\nTone/Voice: {{ $('Loop Tranches').item.json.businessTone }}\\nCompetitors (insights & trends): {{ $('Loop Tranches').item.json.competitorsWhy }} & {{ $('Loop Tranches').item.json.competitorsTrends }}\\nMarket Research: {{ $('Loop Tranches').item.json.marketSummary }}\\nTrend Research: {{ $('Loop Tranches').item.json.trendNotes }}\\nHashtags: {{ $('Loop Tranches').item.json.trendHashtags }}\\nBusiness Context: {{ $('Loop Tranches').item.json['bussines context'] }}\\n\\nRULES\\n- Generate exactly 10 post ideas, one for each theme/day in Themes10 (preserve all original date/day/time data).\\n- Ensure post concepts demonstrate variety, depth, and niche relevance consistent with {{ $('Loop Tranches').item.json['bussines context'] }}.\\n- If platform data differs, specify unique styles or focuses per platform (e.g., Instagram visual storytelling vs Facebook authority post).\\n- Each idea must include:\\n  • Post name (≤ 6 words)\\n  • VisualConcept (1–2 sentences)\\n  • Hook (1 sentence)\\n  • CTA (imperative tone)\\n  • OverlayText (≤ 12 words)\\n  • Notes (1 concise line)\\n- Align each VisualConcept closely with the provided theme’s context and tone.\\n- Include business-related hashtags in Notes or CTA if contextually relevant.\\n\\n# OUTPUT FORMAT (STRICT JSON)\\n{\\n  \\\"Ideas10\\\": [\\n    {\\\"Date\\\": \\\"YYYY-MM-DD\\\",\\\"Day\\\": \\\"Monday|Tuesday|...\\\",\\\"Time\\\": \\\"HH:MM\\\",\\\"Theme\\\": \\\"\\\",\\\"Post name\\\": \\\"\\\",\\\"VisualConcept\\\": \\\"\\\",\\\"Hook\\\": \\\"\\\",\\\"CTA\\\": \\\"\\\",\\\"OverlayText\\\": \\\"\\\",\\\"Notes\\\": \\\"\\\"}\\n  ]\\n}\"\n    },\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2016,
+        432
+      ],
+      "id": "9df1675c-6a58-4e3b-adae-905fef7dcd99",
+      "name": "Generate Ideas (10-day Batch)",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a social media copy chief. Output exactly 10 posts Transform the 10 ideas into final Facebook & Instagram calendar rows. Preserve each idea’s Date, Day, Time, Theme, and Post name. Always output STRICT JSON only, matching the specified schema with no extra fields. Maintain consistent tone and keep emojis minimal. Post Creation Instructions must be step-by-step and include visual guardrails: for any people imagery, include 'use and edit provided founder image according to prompt' with clothing/pose/details (no gender mention); ensure text contrast 4.5:1 using black/white as readable with logo/URL watermark centered bottom; gradients start at 1/3 height and become nearly solid at the bottom. . Ensure post styling, messaging, and visuals feel authentic and current to {{ $('Loop Tranches').item.json['bussines context'] }} {{ $json.postType }} and are optimized for the specific platform (Facebook or Instagram).\"",
+              "role": "system"
+            },
+            {
+              "content": "=Output EXACTLY 10 posts. Convert the 10 IDEAS into final calendar rows for Facebook & Instagram.\nALWAYS return STRICT JSON with Posts[10]. No extra text, no comments, no trailing commas.\n\n# INPUTS\nClient: {{ $('Loop Tranches').item.json.clientId }}\nTone/Voice: {{ $('Loop Tranches').item.json.businessTone }}\nIdeas10: {{ JSON.stringify($item(0).$node['Generate Ideas (10-day Batch)'].json.message?.content?.Ideas10 || $item(0).$node['Generate Ideas (10-day Batch)'].json.message?.content || $item(0).$node['Generate Ideas (10-day Batch)'].json) }}\nCompetitors (why & trends): {{ $('Loop Tranches').item.json.competitorsWhy }} & {{ $('Loop Tranches').item.json.competitorsTrends }}\nTrend Hashtags: {{ $('Loop Tranches').item.json.trendHashtags }}\nTrend Notes: {{ $('Loop Tranches').item.json.trendNotes }}\nBusiness Context: {{ $('Loop Tranches').item.json['bussines context'] }}\n\n# VISUAL GUARDRAILS (apply in instructions)\n- For any people imagery: include “use and edit provided founder image according to prompt” + describe clothing/pose/details (no gender mention).\n- Contrast rule: Quote text Black or White with 4.5:1; logo/URL watermark centered bottom (Black or White, whichever is readable).\n- Gradient rule: if gradient format, start at 1/3 height, nearly solid at bottom.\n\n# RULES\n- Produce exactly 10 posts—one per object in Ideas10, in the same order. Do NOT add, drop, or merge.\n- Copy each idea’s Date, Day, Time, Theme, and “Post name” verbatim (do not invent dates).\n- Maintain platform relevance and post style authenticity per {{ $('Loop Tranches').item.json['bussines context'] }}.\n- Map “Theme/format” to Media Type succinctly: Reel→\"Reel\", Carousel→\"Carousel\", Story→\"Story\", Live→\"Live\", Video/IGTV→\"Video\", Image/Static/Testimonial→\"Image\", Pin→\"Image\".\n- Post Description (caption) ≤ 70 words, includes 5–8 relevant business-related hashtags (mix of brand + trend).\n- Post Captions/Text Overlays ≤ 12 words total.\n- Post Creation Instructions = 4–5 numbered steps, step-by-step, include all guardrails and the founder-image clause when people are shown.\n- Keep emojis minimal in captions; professional tone per “Tone/Voice”.\n- If output size is high, COMPRESS captions first, then instructions; NEVER reduce the number of posts.\n- Fill required fields; leave optional links empty as \"\" if not used. Do NOT add keys not in the schema.\n\n# OUTPUT (STRICT JSON)\n{\n  \"Posts\": [\n    {\n      \"Date\": \"YYYY-MM-DD\",\n      \"Day\": \"Monday|Tuesday|...\",\n      \"Time\": \"HH:MM\",\n      \"Media Type\": \"Image|Video|Reel|Carousel|Story|Live\",\n      \"Creative\": \"One-line description of the visual\",\n      \"Theme\": \"(carry from idea)\",\n      \"Creative Link\": \"\",\n      \"Post Description\": \"Hook → value → CTA(emails or phone numbers indicated). ≤70 words with 5–8 business-related hashtags.\",\n      \"Post Captions/Text Overlays\": \"Hook-Body-CTA(emails or phone numbers indicated)-5-10 hashtags\",\n      \"Post Creation Instructions\": \"4–5 numbered steps with guardrails; include founder-image clause when applicable.\",\n      \"Audio\": \"N/A\",\n      \"Pinterest Board\": \"\",\n      \"YouTube Thumbnail Design Link\": \"\",\n      \"Notes\": \"1-line tie-back to research/trend insight\",\n      \"Facebook\": \"Yes\",\n      \"Instagram\": \"Yes\",\n      \"LinkedIn\": \"\",\n      \"Pinterest\": \"\",\n      \"TikTok\": \"\",\n      \"YouTube\": \"\",\n      \"AI assets creation prompt\": \"Repeat Post Creation Instructions verbatim\",\n      \"Post name\": \"(carry from idea)\",\n      \"Post GDrive folder link\": \"\",\n      \"Regenerate post\": \"\",\n      \"Regenerate image\": \"\",\n      \"Row number\": \"\"\n    }\n  ]\n}\n- PURE JSON ONLY.\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2064,
+        624
+      ],
+      "id": "26342413-7a51-4517-9d00-69b06ef0c126",
+      "name": "Write Captions (10-day Batch)",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Calendar Key"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        704
+      ],
+      "id": "8a93ded2-dca5-462e-ad49-707f02287157",
+      "name": "Aggregate"
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Bussines Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "Get Trend Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Bussines Research": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trend Research": {
+      "main": [
+        [
+          {
+            "node": "Get Market Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitor Research": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Market Research": {
+      "main": [
+        [
+          {
+            "node": "Build Tranche Offsets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Tranche Offsets": {
+      "main": [
+        [
+          {
+            "node": "Loop Tranches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Tranches": {
+      "main": [
+        [
+          {
+            "node": "Plan Themes (10-day Batch)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Posts": {
+      "main": [
+        [
+          {
+            "node": "Set Calendar Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Themes (10-day Batch)": {
+      "main": [
+        [
+          {
+            "node": "Generate Ideas (10-day Batch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Ideas (10-day Batch)": {
+      "main": [
+        [
+          {
+            "node": "Write Captions (10-day Batch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Captions (10-day Batch)": {
+      "main": [
+        [
+          {
+            "node": "Split Out Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Calendar Row": {
+      "main": [
+        [
+          {
+            "node": "Upsert Calendar Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Calendar Row": {
+      "main": [
+        [
+          {
+            "node": "Loop Tranches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "clientId": "California Mantel & Fireplace",
+          "isTest": false,
+          "sheetDocId": "1n2IRhECgtGqJs2vTbjO5Q9DIRmPeOFoJfr5jbxsidFo",
+          "writeKey": "1",
+          "bussines context": "Business specializes in offering gas and electric fireplaces and handcrafted precast and wood mantels to interior design enthusiasts, home builders and remodelers with a focus on handcrafted and unique pieces.https://admin.typeform.com/form/mQcBLIIb/results?responseId=nvi4etjfxk6tkdpzerdnvi4etj8d67aw&fieldId=yHwPAdRZnsNh#responses",
+          "post type": null
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

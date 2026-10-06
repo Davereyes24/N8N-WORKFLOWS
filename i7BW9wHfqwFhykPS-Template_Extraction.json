@@ -1,0 +1,1372 @@
+{
+  "name": "Template Extraction",
+  "nodes": [
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "cpanelDomain",
+              "value": "https://lax015.arandomserver.com:2083"
+            },
+            {
+              "name": "cpanelApiToken",
+              "value": "REDACTED_CPANELAPITOKEN"
+            },
+            {
+              "name": "cpanelUsername",
+              "value": "thefreedomway"
+            },
+            {
+              "name": "domain",
+              "value": "thefreedomway"
+            },
+            {
+              "name": "sqlName",
+              "value": "user_outsourcedoers"
+            },
+            {
+              "name": "sqlPass",
+              "value": "REDACTED_SQLPASS"
+            },
+            {
+              "name": "course-portalUrl",
+              "value": "https://drive.google.com/uc?id=1q-b0vhhaP9iqEZbCfhJu854wLV5XrIwS&export=download"
+            },
+            {
+              "name": "websiteDomain",
+              "value": "members.thefreedomway.online"
+            },
+            {
+              "name": "fileName",
+              "value": "WP Template #2 (Option B - Cerna).zip"
+            },
+            {
+              "name": "founderEmail",
+              "value": "rielly@outsourcedoers.com"
+            },
+            {
+              "name": "founderPass",
+              "value": "REDACTED_FOUNDERPASS"
+            },
+            {
+              "name": "appPassword",
+              "value": "REDACTED_APPPASSWORD"
+            },
+            {
+              "name": "industry"
+            },
+            {
+              "name": "ss_Link",
+              "value": "https://cdn.leonardo.ai/users/59c67290-1df5-4120-bd56-4a114980a11f/generations/732118cd-78e6-4956-8b09-ea0fd13ae641/variations/universal_upscale_0_732118cd-78e6-4956-8b09-ea0fd13ae641_0.jpg"
+            },
+            {
+              "name": "WP-LoginUser",
+              "value": "sitemanager"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f64e4e86-8ff2-4ddd-87b0-a074adaa2556",
+      "name": "Set Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        0
+      ],
+      "id": "66af53ae-b033-4b2b-bfba-b5c824146840",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $('Set Config').item.json.websiteDomain }}/importer.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "REDACTED_TOKEN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        16,
+        -448
+      ],
+      "id": "1802468a-9a74-4013-9568-8dde2eb0e52d",
+      "name": "Trigger PHP script",
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "to copy website template to founder cPanel"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Mysql/create_database",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}_outsourcedoers"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "5a0ab8e0-4a45-4d7a-9cb3-8ab59995d1f2",
+      "name": "Create SQL database"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Mysql/create_user",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}_{{ $('Set Config').item.json.sqlName }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $('Set Config').item.json.sqlPass }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "1d5952e6-b736-4400-97b3-311c1c87d5bb",
+      "name": "Create SQL User account"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Mysql/set_privileges_on_database",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}_{{ $('Set Config').item.json.sqlName }}"
+            },
+            {
+              "name": "database",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}_outsourcedoers"
+            },
+            {
+              "name": "privileges",
+              "value": "ALL PRIVILEGES"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "f7254d8b-f2a2-4f9e-a960-a03667b691ef",
+      "name": "Assign SQL user account"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/save_file_content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members"
+            },
+            {
+              "name": "file",
+              "value": "=importer.php"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.phpContent }}"
+            },
+            {
+              "name": "from_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "to_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "fallback",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "89265eb1-d415-46d2-9965-6622ba67171f",
+      "name": "Upload PHP Script",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        -448
+      ],
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "php script upload\n"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "af4008af-2d3d-4c7c-9d79-40f94f53be27",
+              "name": "phpContent",
+              "value": "<?php\n\n// ===== SELF DELETE (runs AFTER script finishes) =====\nregister_shutdown_function(function () {\n    @unlink(__FILE__);\n});\n\n// ----------------------------------------------------\n$secretToken = 'REDACTED_SECRET';\n$targetDir   = __DIR__; // current folder: /public_html/members\n\n// Save locations\n$zipPathWebsite = $targetDir . '/template/package1.zip';\n\n// --------------- security check ---------------\nif (!isset($_GET['token']) || $_GET['token'] !== $secretToken) {\n    http_response_code(403);\n    echo 'Forbidden';\n    exit;\n}\n\n// --------------- build download urls ----------\n$downloadUrl = 'https://members.thefreedomway.online/template_website.zip';\n\n// ---------- function to download a file -------\nfunction downloadFile($url, $savePath)\n{\n    $fp = fopen($savePath, 'w');\n    if ($fp === false) {\n        return ['success' => false, 'error' => 'Cannot open file for writing'];\n    }\n\n    $ch = curl_init($url);\n    curl_setopt($ch, CURLOPT_FILE, $fp);\n    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);\n    curl_setopt($ch, CURLOPT_TIMEOUT, 0);\n    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);\n\n    curl_exec($ch);\n\n    $curlError = curl_error($ch);\n    $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);\n\n    curl_close($ch);\n    fclose($fp);\n\n    if ($curlError || $httpCode !== 200) {\n        @unlink($savePath);\n        return [\n            'success' => false,\n            'error'   => \"Download failed. HTTP $httpCode Error: $curlError\"\n        ];\n    }\n\n    return ['success' => true];\n}\n\n// ----------- download website zip --------------\n$result1 = downloadFile($downloadUrl, $zipPathWebsite);\nif (!$result1['success']) {\n    http_response_code(500);\n    echo $result1['error'];\n    exit;\n}\n\necho \"Website ZIP: $zipPathWebsite<br>\\n\";\necho \"Importer finished. Script will now delete itself.<br>\\n\";\n\n?>\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -448
+      ],
+      "id": "49a53705-4f37-412f-a461-357d8861e743",
+      "name": "Set PHP script",
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "for website template"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/save_file_content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html"
+            },
+            {
+              "name": "file",
+              "value": "=import-sql.php"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.phpContent }}"
+            },
+            {
+              "name": "from_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "to_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "fallback",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c4946d17-1c92-4b73-9249-2993ce4e0e67",
+      "name": "Upload import-sql",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2480,
+        0
+      ],
+      "notesInFlow": true,
+      "notes": "php script upload\n"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "af4008af-2d3d-4c7c-9d79-40f94f53be27",
+              "name": "phpContent",
+              "value": "=<?php\n// ====== DEBUG SETTINGS ======\nerror_reporting(E_ALL);\nini_set('display_errors', 1);\nini_set('memory_limit', '512M'); // optional bump\n\n// ====== CONFIGURATION ======\n$username     = '{{ $('Set Config').item.json.cpanelUsername }}';\n$sqlUser      = '{{ $('Set Config').item.json.sqlName }}';\n$sqlPass      = '{{ $('Set Config').item.json.sqlPass }}';\n$dbName       = '{{ $('Set Config').item.json.cpanelUsername }}_outsourcedoers';\n$siteEmail    = '{{ $('Set Config').item.json.founderEmail }}';\n$newPassword  = '{{ $('Set Config').item.json.founderPass }}';\n$newEmail     = '{{ $('Set Config').item.json.founderEmail }}';\n$domain       = '{{ $('Set Config').item.json.websiteDomain }}';\n\n// WordPress DB table prefix\n$tablePrefix  = 'wp_'; \n\n$sqlFile      = \"/home/$username/members/public_html/Option B Database.sql\";\n$wpConfigPath = \"/home/$username/members/public_html/tmp/public_html/wp-config.php\";\n$zipFilePath  = \"/home/$username/members/public_html/Option B Template.zip\";\n$sourceDir    = \"/home/$username/members/public_html/tmp/public_html\";\n$targetDir    = \"/home/$username/members/public_html\";\n$functionsPath = \"/home/$username/members/wp-includes/functions.php\"; // inject AFTER move\n\n\nif (strpos($domain, 'http://') !== 0 && strpos($domain, 'https://') !== 0) {\n    $domain = 'https://' . $domain;\n}\n\n// ====== helpers: recursive move & delete ======\nfunction rmove($src, $dst) {\n    if (is_dir($src)) {\n        if (!is_dir($dst)) {\n            if (!mkdir($dst, 0755, true)) {\n                throw new Exception(\"Failed to create directory: $dst\");\n            }\n        }\n        $items = scandir($src);\n        foreach ($items as $item) {\n            if ($item === '.' || $item === '..') {\n                continue;\n            }\n            rmove(\"$src/$item\", \"$dst/$item\");\n        }\n        return true;\n    } else {\n        if (file_exists($dst)) {\n            @unlink($dst);\n        }\n        if (@rename($src, $dst)) {\n            return true;\n        }\n        if (!@copy($src, $dst)) {\n            throw new Exception(\"Failed to move file $src to $dst\");\n        }\n        @unlink($src);\n        return true;\n    }\n}\n\nfunction rrmdir($dir) {\n    if (!is_dir($dir)) {\n        return;\n    }\n    $items = scandir($dir);\n    foreach ($items as $item) {\n        if ($item === '.' || $item === '..') {\n            continue;\n        }\n        $path = \"$dir/$item\";\n        if (is_dir($path)) {\n            rrmdir($path);\n        } else {\n            @unlink($path);\n        }\n    }\n    @rmdir($dir);\n}\n\n// ====== CONNECT TO DATABASE ======\n$mysqli = new mysqli('localhost', $username . '_' . $sqlUser, $sqlPass, $dbName);\nif ($mysqli->connect_errno) {\n    http_response_code(500);\n    die(\"DB connect failed: \" . $mysqli->connect_error);\n}\necho \"Connected to database.<br>\";\n\n// ====== IMPORT SQL ======\nif (!file_exists($sqlFile)) {\n    http_response_code(404);\n    die(\"SQL file not found: $sqlFile\");\n}\necho \"Importing SQL from: $sqlFile<br>\";\n\n// stream the file. do not load entire file into memory\n$handle = fopen($sqlFile, 'r');\nif (!$handle) {\n    http_response_code(500);\n    die(\"Could not open SQL file: $sqlFile\");\n}\n\n$query     = '';\n$lineCount = 0;\n\nwhile (($line = fgets($handle)) !== false) {\n    $lineCount++;\n    $trimmed = trim($line);\n\n    // skip empty lines and simple comments\n    if (\n        $trimmed === '' ||\n        strpos($trimmed, '--') === 0 ||\n        strpos($trimmed, '/*') === 0 ||\n        strpos($trimmed, '*/') === 0\n    ) {\n        continue;\n    }\n\n    $query .= $line;\n\n    // execute when a semicolon ends the statement\n    if (substr(rtrim($line), -1) === ';') {\n        $qTrim = trim($query);\n        if ($qTrim !== '') {\n            if (!$mysqli->query($query)) {\n                echo \"Query error at line $lineCount: \" . $mysqli->error . \"<br><pre>\" . htmlspecialchars($query) . \"</pre><br>\";\n            } else {\n                echo \"Executed SQL query up to line $lineCount.<br>\";\n            }\n        }\n        // reset buffer\n        $query = '';\n    }\n\n    // guard against a single insanely large statement\n    if (strlen($query) > 50 * 1024 * 1024) { // 50 MB\n        fclose($handle);\n        die(\"Single SQL statement exceeds 50MB. Aborting to avoid memory issues.\");\n    }\n}\n\nfclose($handle);\n\n// sanity check. make sure options table exists with the prefix we expect\n$check = $mysqli->query(\"SHOW TABLES LIKE '{$tablePrefix}options'\");\nif (!$check) {\n    die(\"Failed to check for options table: \" . $mysqli->error);\n}\nif ($check->num_rows === 0) {\n    die(\"Options table {$tablePrefix}options does not exist. Check your table prefix or SQL import.\");\n}\n\n// ====== UPDATE wpbb_options ======\necho \"Updating {$tablePrefix}options...<br>\";\n\nif (!$mysqli->query(\"UPDATE {$tablePrefix}options SET option_value = '$domain' WHERE option_name IN ('siteurl', 'home')\")) {\n    die(\"Failed to update site URL: \" . $mysqli->error);\n}\n\nif (!$mysqli->query(\"UPDATE {$tablePrefix}options SET option_value = '$siteEmail' WHERE option_name = 'admin_email'\")) {\n    die(\"Failed to update admin email: \" . $mysqli->error);\n}\n\necho \"{$tablePrefix}options updated.<br>\";\n\n// ====== LOAD PASSWORD HASHER ======\n$classPath = \"$sourceDir/wp-includes/class-phpass.php\";\nif (!file_exists($classPath)) {\n    die(\"Password hashing class not found: $classPath\");\n}\nrequire_once($classPath);\necho \"Loaded password hashing class.<br>\";\n\n// ====== UPDATE wpbb_users ======\n$wp_hasher = new PasswordHash(8, true);\n$hash = $wp_hasher->HashPassword($newPassword);\nlist($nickname,) = explode('@', $newEmail);\n\necho \"Updating admin user in {$tablePrefix}users...<br>\";\n$userUpdate = $mysqli->query(\"\n    UPDATE {$tablePrefix}users \n    SET user_pass = '$hash',\n        user_email = '$newEmail',\n        user_login = '$newEmail',\n        user_nicename = '$nickname'\n    WHERE ID = 1\n\");\nif (!$userUpdate) {\n    die(\"Failed to update user: \" . $mysqli->error);\n}\necho \"Admin user updated.<br>\";\n\n// ====== UPDATE wp-config.php ======\necho \"Updating wp-config.php...<br>\";\nif (file_exists($wpConfigPath)) {\n    $config = file_get_contents($wpConfigPath);\n    $config = preg_replace(\"/define\\\\( *'DB_NAME'.*?\\\\);/\",     \"define('DB_NAME', '$dbName');\", $config);\n    $config = preg_replace(\"/define\\\\( *'DB_USER'.*?\\\\);/\",     \"define('DB_USER', '{$username}_{$sqlUser}');\", $config);\n    $config = preg_replace(\"/define\\\\( *'DB_PASSWORD'.*?\\\\);/\", \"define('DB_PASSWORD', '$sqlPass');\", $config);\n\n    if (file_put_contents($wpConfigPath, $config)) {\n        echo \"wp-config.php updated.<br>\";\n    } else {\n        echo \"Failed to write wp-config.php.<br>\";\n    }\n} else {\n    echo \"wp-config.php not found at: $wpConfigPath<br>\";\n}\n\n// ====== DELETE SQL FILE ======\necho \"Deleting SQL file...<br>\";\necho (@unlink($sqlFile)) ? \"SQL file deleted.<br>\" : \"Could not delete SQL file.<br>\";\n\n// ====== MOVE FILES (TMP -> MEMBERS) ======\necho \"Moving files from tmp to members directory...<br>\";\nif (is_dir($sourceDir)) {\n    try {\n        rmove($sourceDir, rtrim($targetDir, '/'));\n        rrmdir($sourceDir);\n        echo \"Files moved successfully.<br>\";\n    } catch (Exception $e) {\n        echo \"Move failed: \" . $e->getMessage() . \"<br>\";\n    }\n} else {\n    echo \"Source directory not found: $sourceDir<br>\";\n}\n\n// ====== INJECT MU-PLUGIN (AFTER MOVE) ======\necho \"Installing MU plugin for Elementor cache endpoint...<br>\";\n$wpRoot = rtrim($targetDir, '/'); // /home/<user>/members\n$muDir  = $wpRoot . '/wp-content/mu-plugins';\n$muFile = $muDir . '/elementor-cache-endpoint.php';\n\necho \"Target mu-plugins dir: $muDir<br>\";\nif (!is_dir($muDir) && !mkdir($muDir, 0755, true)) {\n    $e = error_get_last();\n    die(\"Could not create mu-plugins: $muDir\" . ($e ? \" ({$e['message']})\" : \"\"));\n}\nclearstatcache(true, $muDir);\necho \"mu-plugins realpath: \" . (@realpath($muDir) ?: '(unresolved)') . \"<br>\";\necho \"mu-plugins writable: \" . (is_writable($muDir) ? 'yes' : 'no') . \"<br>\";\nif (!is_writable($muDir)) {\n    die(\"Directory not writable: $muDir (check ownership/permissions)\");\n}\n\n// Hidden writecheck so you can verify the folder\n$writecheck = $muDir . '/.writecheck';\nif (@file_put_contents($writecheck, (string) time(), LOCK_EX) === false) {\n    $e = error_get_last();\n    die(\"Writecheck failed in $muDir\" . ($e ? \" ({$e['message']})\" : \"\"));\n}\n@chmod($writecheck, 0644);\nclearstatcache(true, $writecheck);\necho \"Writecheck created: \" . (@realpath($writecheck) ?: $writecheck) . \"<br>\";\n\n/**\n * STEP 1: Write the encoded payload, the part that always uploads.\n * It may contain mangled tokens, that is ok. We will fix them in Step 2.\n */\n$muB64 =\n'PD9waHAKLyoqCiAqIFBsdWdpbiBOYW1lOiBFbGVtZW50b3IgQ2FjaGUgRW5kcG9pbnQgKE1VKQogKiBE'\n.'ZXNjcmlwdGlvbjogQWRkcyAvd3AtanNvbi9lbGVtZW50b3ItY2FjaGUvdjEvY2xlYXIgKFBPU1QpLiBD'\n.'bGVhcnMgRWxlbWVudG9yIGZpbGVzIGNhY2hlOyBvcHRpb25hbGx5IGNsZWFycyBhIHBvc3QncyBDU1Mg'\n.'Y2FjaGUuCiAqLwoKaWYgKCAhIGRlZmluZWQoJ0FCU0JBU0gnKSApIHsgcmV0dXJuOyB9CmlmICggISBm'\n.'dW5jdGlvbl9leGlzdHMoJ2FkZF9hY3Rpb24nKSApIHsgcmV0dXJuOyB9CgphZGRfYWN0aW9uKCdyZXN0'\n.'X2FwaV9pbml0JywgZnVuY3Rpb24gKCkgewogICAgaWYgKCAhIGZ1bmN0aW9uX2V4aXN0cygncmVnaXN0'\n.'ZXJfcmVzdF9yb3V0ZScpICkgeyByZXR1cm47IH0KCiAgICByZWdpc3Rlcl9yZXN0X3JvdXRlKCdlbGVt'\n.'ZW50b3ItY2FjaGUvdjEnLCAnL2NsZWFyJywgWwogICAgICAgICdtZXRob2RzJyAgPT4gJ1BPU1QnLAog'\n.'ICAgICAgICdwZXJtaXNzaW9uX2NhbGxiYWNrJyA9PiBmdW5jdGlvbiAoKSB7CiAgICAgICAgICAgIHJl'\n.'dHVybiBmdW5jdGlvbl9leGlzdHMoJ2N1cnJlbnRfdXNlcl9jYW4nKSA/IWN1cnJlbnRfdXNlcl9jYW4o'\n.'J2VkaXRfcG9zdHMnKSA6IGZhbHNlOwogICAgICAgIH0sCiAgICAgICAgJ2NhbGxiYWNrJyA9PiBmdW5j'\n.'dGlvbiAoJHJlcXVlc3QgPSBudWxsKSB7CiAgICAgICAgICAgIGlmIChmdW5jdGlvbl9leGlzdHMoJ2Vy'\n.'cm9yX2xvZycpKSB7IGVycm9yX2xvZygnW01VIEVsZW1lbnRvciBFbmRwb2ludF0gaW52b2tlZCcpOyB9'\n.'CgogICAgICAgICAgICBpZiAoIGNsYXNzX2V4aXN0cygnXEVsZW1lbnRvclxQbHVnaW4nKSApIHsKICAg'\n.'ICAgICAgICAgICAgIHRyeSB7CiAgICAgICAgICAgICAgICAgICAgJHBsdWdpbiA9IFxFbGVtZW50b3Jc'\n.'UGx1Z2luOjpvaW5zdGFuY2UoKTsKICAgICAgICAgICAgICAgICAgICBpZiAoIGlzX3NldCgkcGx1Z2lu'\n.'LT5maWxlc19tYW5hZ2VyKSAmJiBtZXRob2RfZXhpc3RzKCRwbHVnaW4tPmZpbGVzX21hbmFnZXIsICdj'\n.'bGVhcl9jYWNoZScpICkgewogICAgICAgICAgICAgICAgICAgICAgICAkcGx1Z2luLT5maWxlc19tYW5h'\n.'Z2VyLT5jbGVhcl9jYWNoZSgpOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0g'\n.'Y2F0Y2ggKFxUaHJvd2FibGUgJGUpIHsKICAgICAgICAgICAgICAgICAgICByZXR1cm4gbmV3IFdQX0Vy'\n.'cm9yKCdlbGVtZW50b3JfY2xlYXJfZmFpbGVkJywgJGUtPmdldE1lc3NhZ2UoKSwgWydzdGF0dXMnID0+'\n.'IDUwMF0pOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9IGVsc2UgewogICAgICAgICAgICAg'\n.'ICAgcmV0dXJuIG5ldyBXX1BFcnJvcignZWxlbWVudG9yX25vdF9mb3VuZCcsICdFbGVtZW50b3Igbm90'\n.'IGluc3RhbGxlZCcsIFsnc3RhdHVzJyA9PiA0MDBdKTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAg'\n.'JHBvc3RfaWQgPSAwOwogICAgICAgICAgICBpZiAoaXNfb2JqZWN0KCRyZXF1ZXN0KSAmJiBtZXRob2Rf'\n.'ZXhpc3RzKCRyZXF1ZXN0LCAnZ2V0X3BhcmFtJykpIHsKICAgICAgICAgICAgICAgICRwb3N0X2lkID0g'\n.'aW50dmFsKCRyZXF1ZXN0LT5nZXRfcGFyYW0oJ3Bvc3RfaWQnKSk7CiAgICAgICAgICAgIH0KICAgICAg'\n.'ICAgICAgaWYgKCRwb3N0X2lkKSB7CiAgICAgICAgICAgICAgICBkZWxldGVfcG9zdF9tZXRhKCRwb3N0'\n.'X2lkLCAnX2VsZW1lbnRvcl9jc3MnKTsKICAgICAgICAgICAgICAgIGRlbGV0ZV90cmFuc2llbnQoJ2Vs'\n.'ZW1lbnRvcl9jc3NfJyAuICRwb3N0X2lkKTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcmV0dXJu'\n.'IFsnc3VjY2VzcycgPT4gdHJ1ZSwgJ21lc3NhZ2UnID0+ICdFbGVtZW50b3IgY2FjaGUgY2xlYXJlZCcs'\n.'ICdwb3N0X2lkJyA9PiAkcG9zdF9pZF07CiAgICAgICAgfSwKICAgIF0pOwp9KTsK';\n\n$muCode = base64_decode($muB64, true);\nif ($muCode === false || $muCode === '') {\n    die(\"Base64 decode failed or empty payload.\");\n}\n$bytes1 = @file_put_contents($muFile, $muCode, LOCK_EX);\nif ($bytes1 === false || $bytes1 === 0) {\n    $e = error_get_last();\n    die(\"MU plugin write failed: $muFile\" . ($e ? \" ({$e['message']})\" : \"\"));\n}\n@chmod($muFile, 0644);\necho \"MU plugin initial write: $bytes1 bytes<br>\";\n\n/**\n * STEP 2: Clean up known mangles so the file matches the working endpoint.\n */\n$fixes = [\n    'ABSBASH'                       => 'ABSPATH',\n    'W_PError'                      => 'WP_Error',\n    'W\\\\_PError'                    => 'WP_Error',\n    'is_set'                        => 'isset',\n    ' ?!current_user_can'           => ' ? current_user_can',\n    '?!current_user_can'            => ' current_user_can',\n    'current_user_can\\\\) :'         => 'current_user_can) :',\n    '::ynin'                        => '::instance',\n    '::oinstance'                   => '::instance',\n    ' ynin('                        => ' instance(',\n    ' oinstance('                   => ' instance(',\n    '\\\\Elementor\\\\Plugin::ynin'     => '\\\\Elementor\\\\Plugin::instance',\n    '\\\\Elementor\\\\Plugin::oinstance'=> '\\\\Elementor\\\\Plugin::instance',\n    'is_set('                       => 'isset(',\n    'E\\\\ntry('                      => 'Entry(',\n    'new W_PError'                  => 'new WP_Error',\n];\n\n$mu = file_get_contents($muFile);\nif ($mu === false) {\n    die(\"Could not read back $muFile for cleanup.\");\n}\n\n$mu = strtr($mu, $fixes);\n\n// also fix any accidental \"message\" property accesses\n$mu = preg_replace('/\\\\$e->message\\\\b/', '$e->getMessage()', $mu);\n\n// write cleaned file\n$bytes2 = @file_put_contents($muFile, $mu, LOCK_EX);\nif ($bytes2 === false || $bytes2 === 0) {\n    $e = error_get_last();\n    die(\"MU plugin cleanup write failed: $muFile\" . ($e ? \" ({$e['message']})\" : \"\"));\n}\n@chmod($muFile, 0644);\necho \"MU plugin cleaned write: $bytes2 bytes<br>\";\n\n$listing = @scandir($muDir) ?: [];\necho \"mu-plugins contents: \" . implode(', ', $listing) . \"<br>\";\n\n// ====== DELETE ZIP FILE ======\necho \"Deleting ZIP file...<br>\";\nif (file_exists($zipFilePath)) {\n    echo (@unlink($zipFilePath)) ? \"ZIP file deleted.<br>\" : \"Failed to delete ZIP file.<br>\";\n} else {\n    echo \"ZIP file not found at: $zipFilePath<br>\";\n}\n\n// ====== SELF DELETE ======\n$scriptPath = __FILE__;\necho \"Attempting self-deletion...<br>\";\necho (@unlink($scriptPath)) ? \"Script deleted itself successfully.<br>\" : \"Could not delete the script. Please remove manually.<br>\";\n?>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2256,
+        0
+      ],
+      "id": "c242c756-3ccf-47a1-8a7a-d57ca0fb1842",
+      "name": "Set PHP script for SQL"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "Option B Database.sql",
+        "limit": 1,
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "0AOMkMB_ymZHFUk9PVA",
+            "mode": "list",
+            "cachedResultName": "AI agent Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/0AOMkMB_ymZHFUk9PVA"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "0a24cf42-3d20-4e21-ae63-ea183fa56488",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "2ae83844-dff5-4e23-b703-27445baab100",
+      "name": "Wait 5s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        0
+      ],
+      "webhookId": "fe7c18b9-62e6-422a-a10c-243ad8424efa"
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $('Set Config').item.json.websiteDomain }}/import-sql.php",
+        "options": {}
+      },
+      "id": "648e86a0-039a-4d5e-a34e-13f754c9c57a",
+      "name": "Run import-sql.php",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2704,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/upload_files",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file-1",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d762b034-067f-433c-895a-88478dfcf0a4",
+      "name": "Upload Course SQL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2032,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "id": "17b85e68-b945-4de4-9213-bad63471f541",
+      "name": "Get Course SQL",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1808,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/json-api/cpanel",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpanel_jsonapi_user",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}"
+            },
+            {
+              "name": "cpanel_jsonapi_apiversion",
+              "value": "2"
+            },
+            {
+              "name": "cpanel_jsonapi_module",
+              "value": "Fileman"
+            },
+            {
+              "name": "cpanel_jsonapi_func",
+              "value": "fileop"
+            },
+            {
+              "name": "op",
+              "value": "unlink"
+            },
+            {
+              "name": "sourcefiles",
+              "value": "members/template/CourseDatabase.tar.gz"
+            },
+            {
+              "name": "doubledecode",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -432,
+        -224
+      ],
+      "id": "3e1ae628-397a-4800-b7f5-54db6b64c72b",
+      "name": "Remove Database.tar",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "jefCxNhA3w0qxOh4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/jefCxNhA3w0qxOh4",
+          "cachedResultName": "Course Builder — Branding Extraction"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "domain": "={{ $('Set Config').item.json.websiteDomain }}",
+            "founderEmail": "={{ $('Set Config').item.json.founderEmail }}",
+            "appPass": "={{ $('Set Config').item.json.appPassword }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "founderEmail",
+              "displayName": "founderEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "appPass",
+              "displayName": "appPass",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3376,
+        0
+      ],
+      "id": "a7fa0a67-48e2-4562-990e-ba99fdf4f1d4",
+      "name": "Call 'Branding Extraction'"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "Option B Template.zip",
+        "limit": 1,
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "0AOMkMB_ymZHFUk9PVA",
+            "mode": "list",
+            "cachedResultName": "AI agent Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/0AOMkMB_ymZHFUk9PVA"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16,
+        0
+      ],
+      "id": "8332b907-1ffd-4d4b-9695-ae4b1f3c0044",
+      "name": "Search WP Template",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "id": "4661976a-1ff2-48a3-8f6e-eb4f6b872381",
+      "name": "Get Course Template",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/upload_files",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file-1",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2c56c877-5c14-498c-897b-155cc7a0a27d",
+      "name": "Upload Course Template",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        464,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/json-api/cpanel",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cpanel_jsonapi_user",
+              "value": "={{ $('Set Config').item.json.cpanelUsername }}"
+            },
+            {
+              "name": "cpanel_jsonapi_apiversion",
+              "value": "2"
+            },
+            {
+              "name": "cpanel_jsonapi_module",
+              "value": "Fileman"
+            },
+            {
+              "name": "cpanel_jsonapi_func",
+              "value": "fileop"
+            },
+            {
+              "name": "op",
+              "value": "extract"
+            },
+            {
+              "name": "sourcefiles",
+              "value": "=members/public_html/Option B Template.zip"
+            },
+            {
+              "name": "doubledecode",
+              "value": "1"
+            },
+            {
+              "name": "destfiles",
+              "value": "tmp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        0
+      ],
+      "id": "1aa1b18c-fa4d-41e8-9eea-6ed21f9630ba",
+      "name": "Extract Template"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "https://yourdomain/wp-json/wp/v2/sfwd-lessons/123?force=true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3152,
+        0
+      ],
+      "id": "2cbf118c-7324-45a3-8749-1d2d031f6a27",
+      "name": "Reset Template",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "xRNslTryseI1Qe6J",
+          "name": "WP_Admin Credential"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092eeba3-7074-4ca2-a4ac-c1d184c84df9",
+              "name": "odPhp",
+              "value": "<?php\nadd_action('rest_api_init', function () {\n  register_rest_route('od/v1', '/clone-elementor-course', [\n    'methods'  => 'POST',\n    'permission_callback' => function () {\n      return current_user_can('edit_posts');\n    },\n    'callback' => function (\\WP_REST_Request $req) {\n      $template_id = intval($req->get_param('template_id'));\n      $target_id   = intval($req->get_param('target_id'));\n      $replacements = $req->get_param('replacements');\n\n      if (!$template_id || !$target_id) {\n        return new WP_Error('bad_request', 'template_id and target_id required', ['status' => 400]);\n      }\n\n      $keys = ['_elementor_data','_elementor_edit_mode','_elementor_version','_wp_page_template'];\n\n      foreach ($keys as $k) {\n        $val = get_post_meta($template_id, $k, true);\n        if (!is_string($val) || $val === '') continue;\n\n        if ($k === '_elementor_data' && is_array($replacements)) {\n          foreach ($replacements as $pair) {\n            $from = isset($pair['from']) ? (string)$pair['from'] : '';\n            $to   = isset($pair['to']) ? (string)$pair['to'] : '';\n            if ($from !== '') $val = str_replace($from, $to, $val);\n          }\n        }\n\n        update_post_meta($target_id, $k, $val);\n      }\n\n      return [\n        'success' => true,\n        'target_id' => $target_id,\n      ];\n    },\n  ]);\n});",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -672
+      ],
+      "id": "cec7792a-243c-4c2b-b409-9a3686e14780",
+      "name": "Set MU Plugin for Cloning",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/save_file_content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html/wp-content/mu-plugins"
+            },
+            {
+              "name": "file",
+              "value": "=od-clone-elementor-course.php"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.odPhp }}"
+            },
+            {
+              "name": "from_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "to_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "fallback",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "81e185de-a622-4324-9257-a9cf0e369646",
+      "name": "Upload Cloning plugin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        -672
+      ],
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "php script upload\n"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/save_file_content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html/wp-content/mu-plugins"
+            },
+            {
+              "name": "file",
+              "value": "=od-learndash-assign.php"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.odPhp }}"
+            },
+            {
+              "name": "from_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "to_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "fallback",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b6960246-6058-4ea6-9b6d-fe265a130d5b",
+      "name": "Upload Course Assignment Plugin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        240,
+        -672
+      ],
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "php script upload\n"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092eeba3-7074-4ca2-a4ac-c1d184c84df9",
+              "name": "odPhp",
+              "value": "<?php\nadd_action('rest_api_init', function () {\n  register_rest_route('od/v1', '/assign-lesson', [\n    'methods'  => 'POST',\n    'permission_callback' => function () {\n      return current_user_can('edit_posts');\n    },\n    'callback' => function (\\WP_REST_Request $req) {\n      $lesson_id = intval($req->get_param('lesson_id'));\n      $course_id = intval($req->get_param('course_id'));\n      $order     = $req->get_param('order');\n\n      if (!$lesson_id || !$course_id) {\n        return new WP_Error('bad_request', 'lesson_id and course_id required', ['status' => 400]);\n      }\n\n      // Set LearnDash relationship\n      update_post_meta($lesson_id, 'course_id', $course_id);\n\n      // Many LearnDash installs also rely on post_parent\n      wp_update_post([\n        'ID' => $lesson_id,\n        'post_parent' => $course_id,\n      ]);\n\n      // Optional ordering used by some setups\n      if ($order !== null && $order !== '') {\n        update_post_meta($lesson_id, 'menu_order', intval($order));\n        wp_update_post([\n          'ID' => $lesson_id,\n          'menu_order' => intval($order),\n        ]);\n      }\n\n      return [\n        'success' => true,\n        'lesson_id' => $lesson_id,\n        'course_id' => $course_id,\n      ];\n    },\n  ]);\n});",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        -672
+      ],
+      "id": "0f1742a6-23cc-4b34-9199-813122ba88c6",
+      "name": "Set MU Plugin for Course Assignment",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "092eeba3-7074-4ca2-a4ac-c1d184c84df9",
+              "name": "odPhp",
+              "value": "<?php\n/*\nPlugin Name: OD LearnDash Attach Steps (MU)\nDescription: REST endpoints to attach LearnDash Topics and Quizzes to Lessons, without requiring course_id.\nVersion: 1.0.0\n*/\n\nif (!defined('ABSPATH')) {\n  exit;\n}\n\n/**\n * Try to resolve a course_id from a lesson/topic/quiz, but do not fail if we cannot.\n */\nfunction od_ld_maybe_resolve_course_id(int $parent_id): int {\n  if ($parent_id <= 0) {\n    return 0;\n  }\n\n  // Prefer LearnDash helper if available\n  if (function_exists('learndash_get_course_id')) {\n    $cid = (int) learndash_get_course_id($parent_id);\n    if ($cid > 0) {\n      return $cid;\n    }\n  }\n\n  // Fallbacks via meta\n  $cid = (int) get_post_meta($parent_id, 'course_id', true);\n  if ($cid > 0) {\n    return $cid;\n  }\n\n  $cid = (int) get_post_meta($parent_id, '_ld_course', true);\n  if ($cid > 0) {\n    return $cid;\n  }\n\n  return 0;\n}\n\n/**\n * Core helper. attach a child step (topic or quiz) to a lesson.\n * Optionally set course, but never error if course cannot be resolved.\n */\nfunction od_ld_attach_child_to_lesson(int $lesson_id, int $child_id, int $course_id = 0) {\n  if ($lesson_id <= 0 || $child_id <= 0) {\n    return new WP_Error(\n      'invalid_params',\n      'lesson_id and child_id must be valid integers.',\n      ['status' => 400]\n    );\n  }\n\n  if (!function_exists('learndash_update_setting')) {\n    return new WP_Error(\n      'learndash_missing',\n      'LearnDash functions not available. Is LearnDash active',\n      ['status' => 500]\n    );\n  }\n\n  // Attach child to lesson\n  learndash_update_setting($child_id, 'lesson', $lesson_id);\n\n  // Try to set course if we have or can infer it, but do not fail if we cannot\n  if ($course_id <= 0) {\n    $course_id = od_ld_maybe_resolve_course_id($lesson_id);\n  }\n  if ($course_id > 0) {\n    learndash_update_setting($child_id, 'course', $course_id);\n  }\n\n  return [\n    'success'    => true,\n    'lesson_id'  => $lesson_id,\n    'child_id'   => $child_id,\n    'course_id'  => $course_id > 0 ? $course_id : null,\n  ];\n}\n\nadd_action('rest_api_init', function () {\n\n  /**\n   * POST /wp-json/od/v1/attach-step\n   *\n   * Body JSON.\n   * {\n   *   \"lesson_id\": 1234,\n   *   \"child_id\": 5678,\n   *   \"course_id\": 9999   // optional\n   * }\n   */\n  register_rest_route('od/v1', '/attach-step', [\n    'methods'  => 'POST',\n    'permission_callback' => function () {\n      return function_exists('current_user_can') ? current_user_can('edit_posts') : false;\n    },\n    'callback' => function (WP_REST_Request $request) {\n\n      $lesson_id = (int) $request->get_param('lesson_id');\n      $child_id  = (int) $request->get_param('child_id');\n      $course_id = (int) $request->get_param('course_id');\n\n      if ($lesson_id <= 0 || $child_id <= 0) {\n        return new WP_Error(\n          'invalid_params',\n          'lesson_id and child_id are required.',\n          ['status' => 400]\n        );\n      }\n\n      $res = od_ld_attach_child_to_lesson($lesson_id, $child_id, $course_id);\n      return $res;\n    },\n  ]);\n\n  /**\n   * POST /wp-json/od/v1/attach-steps-bulk\n   *\n   * Body JSON.\n   * {\n   *   \"items\": [\n   *     { \"lesson_id\": 1234, \"child_id\": 5678, \"course_id\": 9999 },\n   *     { \"lesson_id\": 1234, \"child_id\": 5679 }\n   *   ]\n   * }\n   */\n  register_rest_route('od/v1', '/attach-steps-bulk', [\n    'methods'  => 'POST',\n    'permission_callback' => function () {\n      return function_exists('current_user_can') ? current_user_can('edit_posts') : false;\n    },\n    'callback' => function (WP_REST_Request $request) {\n\n      $items = $request->get_param('items');\n\n      if (!is_array($items) || count($items) === 0) {\n        return new WP_Error(\n          'invalid_params',\n          'items must be a non empty array.',\n          ['status' => 400]\n        );\n      }\n\n      $results = [];\n\n      foreach ($items as $i => $it) {\n        $lesson_id = isset($it['lesson_id']) ? (int) $it['lesson_id'] : 0;\n        $child_id  = isset($it['child_id']) ? (int) $it['child_id'] : 0;\n        $course_id = isset($it['course_id']) ? (int) $it['course_id'] : 0;\n\n        if ($lesson_id <= 0 || $child_id <= 0) {\n          $results[] = [\n            'index'   => $i,\n            'success' => false,\n            'error'   => 'lesson_id and child_id are required',\n          ];\n          continue;\n        }\n\n        $res = od_ld_attach_child_to_lesson($lesson_id, $child_id, $course_id);\n\n        if (is_wp_error($res)) {\n          $results[] = [\n            'index'    => $i,\n            'success'  => false,\n            'lesson_id'=> $lesson_id,\n            'child_id' => $child_id,\n            'error'    => $res->get_error_message(),\n          ];\n        } else {\n          $results[] = array_merge(['index' => $i], $res);\n        }\n      }\n\n      return [\n        'success' => true,\n        'results' => $results,\n      ];\n    },\n  ]);\n\n});",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -672
+      ],
+      "id": "14c6f96e-e385-4148-9774-136b27b16027",
+      "name": "Set MU Plugin for Lesson Assignment",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Set Config').item.json.cpanelDomain }}/execute/Fileman/save_file_content",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Set Config').item.json.cpanelUsername }}/members/public_html/wp-content/mu-plugins"
+            },
+            {
+              "name": "file",
+              "value": "=od-learndash-attach-steps.php"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.odPhp }}"
+            },
+            {
+              "name": "from_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "to_charset",
+              "value": "utf-8"
+            },
+            {
+              "name": "fallback",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "531d8201-9c5e-4687-bad8-04614d0cd782",
+      "name": "Upload Lesson Assignment Plugin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        688,
+        -672
+      ],
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "php script upload\n"
+    }
+  ],
+  "connections": {
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Search WP Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger PHP script": {
+      "main": [
+        []
+      ]
+    },
+    "Create SQL database": {
+      "main": [
+        [
+          {
+            "node": "Create SQL User account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create SQL User account": {
+      "main": [
+        [
+          {
+            "node": "Assign SQL user account",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign SQL user account": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PHP Script": {
+      "main": [
+        [
+          {
+            "node": "Trigger PHP script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set PHP script": {
+      "main": [
+        [
+          {
+            "node": "Upload PHP Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set PHP script for SQL": {
+      "main": [
+        [
+          {
+            "node": "Upload import-sql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Get Course SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload import-sql": {
+      "main": [
+        [
+          {
+            "node": "Run import-sql.php",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Reset Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run import-sql.php": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Course SQL": {
+      "main": [
+        [
+          {
+            "node": "Set PHP script for SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Course SQL": {
+      "main": [
+        [
+          {
+            "node": "Upload Course SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Database.tar": {
+      "main": [
+        []
+      ]
+    },
+    "Search WP Template": {
+      "main": [
+        [
+          {
+            "node": "Get Course Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Course Template": {
+      "main": [
+        [
+          {
+            "node": "Upload Course Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Course Template": {
+      "main": [
+        [
+          {
+            "node": "Extract Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Template": {
+      "main": [
+        [
+          {
+            "node": "Create SQL database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset Template": {
+      "main": [
+        [
+          {
+            "node": "Call 'Branding Extraction'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set MU Plugin for Cloning": {
+      "main": [
+        [
+          {
+            "node": "Upload Cloning plugin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Cloning plugin": {
+      "main": [
+        [
+          {
+            "node": "Set MU Plugin for Course Assignment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Course Assignment Plugin": {
+      "main": [
+        [
+          {
+            "node": "Set MU Plugin for Lesson Assignment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set MU Plugin for Course Assignment": {
+      "main": [
+        [
+          {
+            "node": "Upload Course Assignment Plugin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set MU Plugin for Lesson Assignment": {
+      "main": [
+        [
+          {
+            "node": "Upload Lesson Assignment Plugin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Lesson Assignment Plugin": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true,
+    "timeSavedPerExecution": 5000
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

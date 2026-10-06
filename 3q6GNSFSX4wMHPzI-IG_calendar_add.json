@@ -1,0 +1,386 @@
+{
+  "name": "IG calendar add",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1362480365,
+          "mode": "list",
+          "cachedResultName": "Content Calendar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=1362480365"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.Date }}",
+            "Day": "={{ $json.Day }}",
+            "Time": "={{ $json.Time }}",
+            "Media Type": "={{ $json.media_type }}",
+            "Creative": "={{ $json.creative }}",
+            "Theme": "={{ $json.theme }}",
+            "Post Captions/Text Overlays": "={{ $json.post_captions_or_text_overlays }}",
+            "Post Description": "={{ $json.post_description }}",
+            "Post Creation Instructions": "={{ $json.AI_post_creation_instructions }}",
+            "Audio ": "={{ $json.audio }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Content Ready?",
+              "displayName": "Content Ready?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Media Type",
+              "displayName": "Media Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Creative",
+              "displayName": "Creative",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Creative Link",
+              "displayName": "Creative Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Description",
+              "displayName": "Post Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Captions/Text Overlays",
+              "displayName": "Post Captions/Text Overlays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Creation Instructions",
+              "displayName": "Post Creation Instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Audio ",
+              "displayName": "Audio ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pinterest Board",
+              "displayName": "Pinterest Board",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YouTube Thumbnail Design Link",
+              "displayName": "YouTube Thumbnail Design Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pinterest",
+              "displayName": "Pinterest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TikTok",
+              "displayName": "TikTok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YouTube",
+              "displayName": "YouTube",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI assets creation prompt",
+              "displayName": "AI assets creation prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post name",
+              "displayName": "Post name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post GDrive folder link",
+              "displayName": "Post GDrive folder link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Regenerate post",
+              "displayName": "Regenerate post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Regenerate image",
+              "displayName": "Regenerate image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Row number",
+              "displayName": "Row number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5296,
+        1376
+      ],
+      "id": "e641c93a-c9e2-40ec-aa3d-ac45bb25597a",
+      "name": "Add contact calendar1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "id",
+              "type": "any"
+            },
+            {
+              "name": "Date",
+              "type": "any"
+            },
+            {
+              "name": "Day",
+              "type": "any"
+            },
+            {
+              "name": "Time",
+              "type": "any"
+            },
+            {
+              "name": "media_type",
+              "type": "any"
+            },
+            {
+              "name": "creative",
+              "type": "any"
+            },
+            {
+              "name": "theme",
+              "type": "any"
+            },
+            {
+              "name": "post_captions_or_text_overlays",
+              "type": "any"
+            },
+            {
+              "name": "post_description",
+              "type": "any"
+            },
+            {
+              "name": "AI_post_creation_instructions",
+              "type": "any"
+            },
+            {
+              "name": "audio",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "c8713ab3-7d6d-4bd5-8fd4-ce1b4c2967df",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        5088,
+        1376
+      ]
+    }
+  ],
+  "connections": {
+    "Add contact calendar1": {
+      "main": [
+        []
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Add contact calendar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

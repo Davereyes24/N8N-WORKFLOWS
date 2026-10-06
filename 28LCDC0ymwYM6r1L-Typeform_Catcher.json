@@ -1,0 +1,178 @@
+{
+  "name": "Typeform Catcher",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6195207a-4798-4e75-94f7-13eb0c211050",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        -736
+      ],
+      "id": "92c6c18b-f31f-498b-8074-e2f9ede23c33",
+      "name": "Webhook",
+      "webhookId": "6195207a-4798-4e75-94f7-13eb0c211050"
+    },
+    {
+      "parameters": {
+        "jsCode": "const formResponse = $input.first().json.body.form_response;\n\nconst fields = formResponse.definition?.fields || [];\nconst answers = formResponse.answers || [];\n\n// Store answers by field id\nconst answersByFieldId = {};\n\nfor (const answer of answers) {\n  const fieldId = answer.field?.id;\n  let value = null;\n\n  if (\"text\" in answer) value = answer.text;\n  else if (\"email\" in answer) value = answer.email;\n  else if (\"number\" in answer) value = answer.number;\n  else if (\"boolean\" in answer) value = answer.boolean;\n  else if (\"date\" in answer) value = answer.date;\n  else if (\"phone_number\" in answer) value = answer.phone_number;\n  else if (\"url\" in answer) value = answer.url;\n  else if (\"choice\" in answer) value = answer.choice?.label ?? null;\n  else if (\"choices\" in answer) value = answer.choices?.labels ?? null;\n  else if (\"file_url\" in answer) value = answer.file_url;\n\n  answersByFieldId[fieldId] = value;\n}\n\n// Return only question: answer\nconst result = {};\n\nfor (const field of fields) {\n  const question = field.title;\n  const fieldId = field.id;\n\n  result[question] = Object.prototype.hasOwnProperty.call(answersByFieldId, fieldId)\n    ? answersByFieldId[fieldId]\n    : null;\n}\n\nreturn [\n  {\n    json: result\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -512
+      ],
+      "id": "1fed8fd8-30d8-491f-8df1-d81162b221a3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "2tifAywm3DBGxTH2",
+          "mode": "list",
+          "cachedResultName": "Founder",
+          "cachedResultUrl": "/projects/elfFFVIFWTzfI539/datatables/2tifAywm3DBGxTH2"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": true
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        -512
+      ],
+      "id": "703db28d-3da2-4eb8-86ee-55db3494c8dd",
+      "name": "Insert row",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const formResponse = $input.first().json.body.form_response;\n\nconst fields = formResponse.definition?.fields || [];\nconst answers = formResponse.answers || [];\n\n// Store answers by field id\nconst answersByFieldId = {};\n\nfor (const answer of answers) {\n  const fieldId = answer.field?.id;\n  let value = null;\n\n  if (\"text\" in answer) value = answer.text;\n  else if (\"email\" in answer) value = answer.email;\n  else if (\"number\" in answer) value = answer.number;\n  else if (\"boolean\" in answer) value = answer.boolean;\n  else if (\"date\" in answer) value = answer.date;\n  else if (\"phone_number\" in answer) value = answer.phone_number;\n  else if (\"url\" in answer) value = answer.url;\n  else if (\"choice\" in answer) value = answer.choice?.label ?? null;\n  else if (\"choices\" in answer) value = answer.choices?.labels ?? null;\n  else if (\"file_url\" in answer) value = answer.file_url;\n\n  answersByFieldId[fieldId] = value;\n}\n\n// Return only question: answer\nconst result = {};\n\nfor (const field of fields) {\n  const question = field.title;\n  const fieldId = field.id;\n\n  result[question] = Object.prototype.hasOwnProperty.call(answersByFieldId, fieldId)\n    ? answersByFieldId[fieldId]\n    : null;\n}\n\nreturn [\n  {\n    json: result\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -736
+      ],
+      "id": "1237cfeb-be77-4f37-9246-52e3ab25a179",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        -736
+      ],
+      "id": "44b44ee8-fa55-4dee-909e-ac031687763a",
+      "name": "Insert row1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bdb9272c-7480-4201-863d-a0ab6ba01f57",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        -512
+      ],
+      "id": "6eae18b4-43e9-44cf-986b-ffcbe0a1feaa",
+      "name": "Webhook1",
+      "webhookId": "bdb9272c-7480-4201-863d-a0ab6ba01f57"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Insert row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 2,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

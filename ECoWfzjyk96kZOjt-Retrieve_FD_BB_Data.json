@@ -1,0 +1,932 @@
+{
+  "name": "Retrieve FD BB_Data",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09d255ca-357d-41ad-8512-46fc525d5c58",
+              "name": "sa_json",
+              "value": "{\n  \"type\": \"service_account\",\n  \"project_id\": \"od-bigquery\",\n  \"private_key_id\": \"REDACTED\",\n  \"private_key\": \"-----BEGIN PRIVATE KEY-----REDACTED-----END PRIVATE KEY-----\\n\",\n  \"client_email\": \"n8n-invoker@od-bigquery.iam.gserviceaccount.com\",\n  \"client_id\": \"109645408051380022715\",\n  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/n8n-invoker%40od-bigquery.iam.gserviceaccount.com\",\n  \"universe_domain\": \"googleapis.com\"\n}",
+              "type": "string"
+            },
+            {
+              "id": "e0a41eff-8437-4a83-8006-fa01ead3ebab",
+              "name": "token_audience",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            },
+            {
+              "id": "c901fe00-c40c-44e4-9fd7-325a21747577",
+              "name": "token_endpoint",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1904,
+        -784
+      ],
+      "id": "33aa62cd-7b63-4687-a114-c44beb4c7be1",
+      "name": "GCP Information"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saRaw = $input.first().json.sa_json;\nconst audience = String($input.first().json.token_audience || \"\").trim();\nconst endpoint = String($input.first().json.token_endpoint || \"\").trim();\n\nif (!saRaw) throw new Error(\"Missing input field: sa_json (service account JSON string)\");\nif (!audience) throw new Error(\"Missing input field: token_audience\");\nif (!endpoint) throw new Error(\"Missing input field: token_endpoint\");\n\nlet sa;\ntry {\n  sa = typeof saRaw === \"string\" ? JSON.parse(saRaw) : saRaw;\n} catch (e) {\n  throw new Error(\"sa_json is not valid JSON\");\n}\n\nif (!sa.client_email || !sa.private_key) {\n  throw new Error(\"sa_json must include client_email and private_key\");\n}\n\nconst now = Math.floor(Date.now() / 1000);\n\nconst header = { alg: \"RS256\", typ: \"JWT\" };\nconst claimSet = {\n  iss: sa.client_email,\n  scope: \"https://www.googleapis.com/auth/cloud-platform\",\n  aud: \"https://oauth2.googleapis.com/token\",\n  iat: now,\n  exp: now + 3600,\n};\n\nconst b64url = (obj) =>\n  Buffer.from(JSON.stringify(obj))\n    .toString(\"base64\")\n    .replace(/=/g, \"\")\n    .replace(/\\+/g, \"-\")\n    .replace(/\\//g, \"_\");\n\nconst unsigned = `${b64url(header)}.${b64url(claimSet)}`;\n\nconst crypto = require(\"crypto\");\nconst signer = crypto.createSign(\"RSA-SHA256\");\nsigner.update(unsigned);\nsigner.end();\n\nconst sig = signer\n  .sign(sa.private_key, \"base64\")\n  .replace(/=/g, \"\")\n  .replace(/\\+/g, \"-\")\n  .replace(/\\//g, \"_\");\n\nconst jwt = `${unsigned}.${sig}`;\n\nconst formEncode = (obj) =>\n  Object.entries(obj)\n    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)\n    .join(\"&\");\n\nconst tokenRes = await this.helpers.httpRequest({\n  method: \"POST\",\n  url: \"https://oauth2.googleapis.com/token\",\n  headers: { \"Content-Type\": \"application/x-www-form-urlencoded\" },\n  body: formEncode({\n    grant_type: \"urn:ietf:params:oauth:grant-type:jwt-bearer\",\n    assertion: jwt,\n  }),\n});\n\nif (!tokenRes?.access_token) {\n  throw new Error(\"Failed to mint Google access token. Check service account JSON and permissions.\");\n}\n\nreturn [\n  {\n    json: {\n      gcp_access_token: tokenRes.access_token,\n      sa_email: sa.client_email,\n      audience,\n      endpoint,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1680,
+        -784
+      ],
+      "id": "6c639c0e-fa0f-4492-a109-66bc97d0db95",
+      "name": "Get GCP Access Token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{{ $json.sa_email }}:generateIdToken ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audience\": \"{{ $json.audience }}\",\n  \"includeEmail\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1456,
+        -784
+      ],
+      "id": "fc854191-78eb-4967-87fb-9d7a37fbf153",
+      "name": "Generate OIDC ID Token"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Get GCP Access Token').item.json.endpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1232,
+        -784
+      ],
+      "id": "c6becceb-b624-458e-ad1a-9e26ccecf804",
+      "name": "Get Keap Token"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/tags?filter=category_id==11",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -784,
+        -880
+      ],
+      "id": "a2fb9ab2-d4e5-425d-9604-03c882e75a8d",
+      "name": "Get Tags",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const PHRASES = [\"months upfront\", \"purchased outsourced doers\"];\nconst needles = PHRASES.map(s => String(s).toLowerCase().trim()).filter(Boolean);\n\nconst tags = Array.isArray($json?.tags) ? $json.tags\n  : Array.isArray($json?.data) ? $json.data\n  : Array.isArray($json) ? $json\n  : [];\n\nconst monthTags = tags.filter(t => {\n  const name = String(t?.name || \"\").toLowerCase();\n  return needles.every(p => name.includes(p));\n});\n\nreturn [{ json: { monthTags } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -880
+      ],
+      "id": "7b20b7de-b8ff-4f63-9ae1-edcde9e6da91",
+      "name": "Get Months Subscribed Tags",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "593cf0ba-ece6-498b-876a-37ea58f45cec",
+              "name": "token",
+              "value": "=REDACTED_SECRET",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1008,
+        -784
+      ],
+      "id": "401d1951-5a06-4d9f-b54b-a175e33e2244",
+      "name": "Set Token"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tagMap = {};\n\n// Build tagMap from monthTags.matches\nconst monthTagsRaw = $input.first().json.monthTags ?? {};\nconst matches = Array.isArray(monthTagsRaw?.matches)\n  ? monthTagsRaw.matches\n  : Array.isArray(monthTagsRaw)\n    ? monthTagsRaw\n    : [];\n\nfor (const t of matches) {\n  if (t?.id != null && t?.name) tagMap[String(t.id)] = String(t.name);\n}\n\n// Type + Shift tag ids\nconst TAG_DMVA_FT = \"14775\";\nconst TAG_DMVA_PT = \"14777\";\nconst TAG_EC_FT   = \"14779\";\nconst TAG_EC_PT   = \"14781\";\n\nconst DOER_2 = \"897\";\nconst DOER_3 = \"1038\";\n\nconst inputItems = $input.all() || [];\nconst out = [];\n\nfor (const it of inputItems) {\n  if (!it.json?.id) continue;\n  \n  const tagIdsRaw = Array.isArray(it.json.tag_ids) ? it.json.tag_ids : [];\n  const tagIds = tagIdsRaw.map(id => String(id)); // normalize to strings\n  const tagNames = tagIds.map(id => tagMap[id]).filter(Boolean);\n\n  // Determine type + shift\n  let type = \"\";\n  let shift = \"\";\n  let multi = \"\";\n\n  const hasDMVA = tagIds.includes(TAG_DMVA_FT) || tagIds.includes(TAG_DMVA_PT);\n  const hasEC   = tagIds.includes(TAG_EC_FT)   || tagIds.includes(TAG_EC_PT);\n  const hasXDoer = tagIds.includes(DOER_2)  || tagIds.includes(DOER_3);\n\n  if (hasDMVA) {\n    type = \"DMVA\";\n    if (tagIds.includes(TAG_DMVA_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_DMVA_PT)) shift = \"PT\";\n  } else if (hasEC) {\n    type = \"EC\";\n    if (tagIds.includes(TAG_EC_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_EC_PT)) shift = \"PT\";\n  }\n\n  multi = hasXDoer ? \"yes\" : \"no\";\n\n  // Remove tag_ids and monthTags\n  const { tag_ids, monthTags, ...rest } = it.json;\n\n  const next = { ...rest };\n\n  if (tagNames.length) next.tag_names = tagNames;\n  if (type) next.type = type;\n  if (shift) next.shift = shift;\n  if (multi) next.multi = multi;\n\n  // drop empty objects\n  if (Object.keys(next).length === 0) continue;\n\n  out.push({ json: next });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        -784
+      ],
+      "id": "8b10b47a-5dfb-4890-8404-89d6ed2b4a28",
+      "name": "Retrieve Month Subscribed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const pickEmail = (arr) => {\n  if (!Array.isArray(arr)) return \"\";\n\n  const toLower = (e) =>\n    String(e ?? \"\")\n      .replace(/\\u00A0/g, \" \")\n      .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n      .trim()\n      .toLowerCase();\n\n  const email1 = arr.find(e => e?.field === \"EMAIL1\")?.email;\n  if (email1) return toLower(email1);\n\n  const email2 = arr.find(e => e?.field === \"EMAIL2\")?.email;\n  if (email2) return toLower(email2);\n\n  const fallback = arr[0]?.email;\n  return fallback ? toLower(fallback) : \"\";\n};\n\nconst pickCF = (arr, id) => {\n  if (!Array.isArray(arr)) return \"\";\n  const hit = arr.find(cf => String(cf?.id) === String(id));\n  return String(hit?.content ?? \"\").trim();\n};\n\nconst extractMonths = (tagNames) => {\n  const tags = Array.isArray(tagNames) ? tagNames : [];\n  for (const t of tags) {\n    const s = String(t || \"\").toLowerCase();\n\n    const m = s.match(/purchased\\s+outsourced\\s+doers\\s+(.+?)\\s+upfront/i);\n    if (m && m[1]) {\n      const between = m[1].trim(); // e.g. \"5 Months\"\n      const m2 = between.match(/(\\d+)\\s*months?/i);\n      if (m2) return `${m2[1]} months`;\n      return between;\n    }\n\n    const m3 = s.match(/(\\d+)\\s*months?/i);\n    if (m3) return `${m3[1]} months`;\n  }\n  return \"\";\n};\n\nconst addr0 = Array.isArray($json.addresses) ? $json.addresses[0] : null;\nconst phone0 = Array.isArray($json.phone_numbers) ? $json.phone_numbers[0] : null;\n\nconst externalId = $json.id ?? null;\n\nreturn [\n  {\n    json: {\n      external_id: externalId,\n      first_name: $json.given_name ?? null,\n      last_name: $json.family_name ?? null,\n      email: pickEmail($json.email_addresses) || null,\n\n      od_application_quality_score: pickCF($json.custom_fields, 708) || null,\n      onboarding_day_1st_doer_date: pickCF($json.custom_fields, 315) || null,\n      months_subscribed: extractMonths($json.tag_names) || null,\n\n      founder_type: $json.type ?? null,\n      founder_category: $json.category ?? null,\n      founder_shift_type: $json.shift ?? null,\n      founder_multi: $json.multi ?? null,\n\n      city: addr0?.locality ?? null,\n      state: addr0?.region ?? null,\n      postal_code: addr0?.postal_code ?? null,\n      country: addr0?.country ?? null,\n\n      company_name: $json.company?.company_name ?? null,\n      time_zone: $json.time_zone ?? null,\n\n      phone_1: phone0?.number ?? null,\n      phone_1_type: phone0?.type ?? null,\n\n      industry: pickCF($json.custom_fields, 229) || null,\n      business_start_date: pickCF($json.custom_fields, 565) || null,\n      monthly_revenue: pickCF($json.custom_fields, 567) || null,\n      va_tasks: pickCF($json.custom_fields, 586) || null,\n\n      matching_status: \"Unmatched\",\n\n      founder_code: externalId ? `FC-${externalId}` : null,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -784
+      ],
+      "id": "5529255d-3f23-41a9-8b3b-e1083fa54d0e",
+      "name": "Finalize Output"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -336,
+        -784
+      ],
+      "id": "f5f43719-0ed9-490b-9e13-7fd2bb6dc9b0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/contacts/{{ $('Loop Over Items').item.json.ids }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,given_name,family_name,preferred_name,email_addresses,tag_ids,custom_fields,company,phone_numbers,time_zone,addresses"
+            },
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -656,
+        -656
+      ],
+      "id": "34685d3b-3b46-4676-91fd-d3c7bdf4b0ba",
+      "name": "Get Contacts",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://atmyeaqlununtvtvppnq.supabase.co/functions/v1/n8n-upsert-founders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1232,
+        -688
+      ],
+      "id": "e298d153-2eb8-4adb-967e-8b08090ca22f",
+      "name": "Supabase Append"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 344051658,
+          "mode": "list",
+          "cachedResultName": "Full Time BB 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=344051658"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            },
+            {
+              "lookupColumn": "Company",
+              "lookupValue": "={{ $json.company_name }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        -1072
+      ],
+      "id": "26fcdd93-5a48-44b1-a396-c80932b2b331",
+      "name": "Get Row from F Database",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const INDUSTRY_FIELDS = [\n  \"*What industry does your business operate in?*\",\n  \"*What niche does your Agency operate in? *\",\n  \"Other\",\n  \"*What niche are you a Coach/Consultant in?*\",\n  \"*What type of Local Service do you operate?*\",\n  \"*What type of Professional Services Business do you operate in?*\",\n  \"*What type of Real Estate Business do you operate?*\",\n  \"*What eCommerce niche do you operate in?*\",\n];\n\nconst TOOL_PREF_FIELDS = [\n  \"*For eCommerce Store Building, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Inventory Management, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*Please select your preferred Landing Page tool below so we can further tailor your Doer's training...*\",\n  \"*For Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n];\n\nconst BLUEPRINT_PRIORITIES_FIELD =\n  \"*Organize the stages of the Doing Blueprint below to let us know your priorities with your Doer...*\";\n\nconst BUSINESS_STATEMENT_FIELD =\n  \"*So that your Doer can understand your business and what/who you serve, please enter your business statement below.*\";\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction norm(s) {\n  return clean(s);\n}\n\nfunction truthyAnswer(v) {\n  const s = norm(v);\n  if (!s) return false;\n  const low = s.toLowerCase();\n  if (low === \"none\" || low === \"none yet\" || low === \"n/a\") return false;\n  return true;\n}\n\nfunction findKeyLike(row, patterns) {\n  const keys = Object.keys(row || {});\n  const lowerKeys = keys.map(k => [k, String(k).toLowerCase()]);\n  for (const p of patterns) {\n    const hit = lowerKeys.find(([, lk]) => lk.includes(p));\n    if (hit) return hit[0];\n  }\n  return null;\n}\n\nfunction findRevenueValue(row) {\n  const revenueKey = findKeyLike(row, [\"current monthly revenue\", \"monthly revenue\", \"revenue\"]);\n  return revenueKey ? row[revenueKey] : \"\";\n}\n\nfunction hasValue(v) {\n  const s = norm(v);\n  if (!s) return false;\n  const low = s.toLowerCase();\n  return !(low === \"n/a\" || low === \"none\" || low === \"none yet\" || low === \"-\");\n}\n\nfunction combineFields(row, fields) {\n  const parts = fields.map(f => norm(row?.[f])).filter(truthyAnswer);\n\n  const seen = new Set();\n  const unique = [];\n  for (const p of parts) {\n    const key = p.toLowerCase();\n    if (!seen.has(key)) {\n      seen.add(key);\n      unique.push(p);\n    }\n  }\n  return unique.join(\", \");\n}\n\n// --------------------\n// Base items from Finalize Output\n// --------------------\nconst baseItems = $items(\"Finalize Output\") || [];\nif (baseItems.length === 0) {\n  return [{ json: { note: 'No items found from node \"Finalize Output\". Check node name.' } }];\n}\n\n\n\n// --------------------\n// Single merged record for this email (already matched upstream)\n// --------------------\nconst merged = ($input.first() && $input.first().json) ? $input.first().json : {};\n\nconst mergedRow = merged;\n\n// Compute enrichment once (same for all base items)\nconst revenue_raw = norm(findRevenueValue(mergedRow));\nconst business_statement = norm(mergedRow[BUSINESS_STATEMENT_FIELD]);\nconst combined_industry_niche = combineFields(mergedRow, INDUSTRY_FIELDS);\nconst combined_tools_preferences = combineFields(mergedRow, TOOL_PREF_FIELDS);\nconst doing_blueprint_priorities = norm(mergedRow[BLUEPRINT_PRIORITIES_FIELD]);\n\n// --------------------\n// Output: keep all base fields + add enrichment fields\n// --------------------\nreturn baseItems.map(it => {\n  const base = it.json || {};\n\n  const next = {\n    ...base,\n\n    // always keep these extra columns too (optional. remove if you do not want them)\n    business_description: business_statement || \"\",\n    tools_required: combined_tools_preferences || \"\"\n  };\n\n  // overrides (only when enrichment has value)\n  if (hasValue(revenue_raw)) next.monthly_revenue = revenue_raw;\n  if (hasValue(combined_industry_niche)) next.industry = combined_industry_niche;\n  if (hasValue(doing_blueprint_priorities)) next.va_tasks = doing_blueprint_priorities;\n\n  return { json: next };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        -688
+      ],
+      "id": "a294df52-727a-405e-92ca-becc798ca2d3",
+      "name": "Summarize Output"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1293580384,
+          "mode": "list",
+          "cachedResultName": "Part Time BB 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1293580384"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            },
+            {
+              "lookupColumn": "Company",
+              "lookupValue": "={{ $('Finalize Output').item.json.company_name }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        -880
+      ],
+      "id": "b8970916-1a09-4f58-bfb1-994441ccdfc8",
+      "name": "Get Row from F Database1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d8218aa-ac4f-4e5c-9de3-0c27842dce6a",
+              "name": "id",
+              "value": "1031035",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2800,
+        -272
+      ],
+      "id": "db1390fe-4b61-4159-8438-fa078d00a7e3",
+      "name": "Edit Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "971e1f2c-8246-47d6-bdc5-1fb1ef7b7c52",
+              "leftValue": "={{ $('Finalize Output').item.json.founder_shift_type }}",
+              "rightValue": "FT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        -976
+      ],
+      "id": "db63165f-b346-48ca-afe3-e3e463c64517",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e53654ca-b65e-4848-a661-a6f3aac66d8f",
+              "name": "ids",
+              "value": "[93755,1040967]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2160,
+        -784
+      ],
+      "id": "c9f0949a-5ef9-46f8-aedd-65e5a8511bff",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "061523da-eef9-43b3-836d-3c4ec166589d",
+              "leftValue": "={{ $json.founder_multi }}",
+              "rightValue": "no",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        -784
+      ],
+      "id": "9db20548-a53e-4f4a-addf-0327bd16eb2a",
+      "name": "Multi?"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1925310868,
+          "mode": "list",
+          "cachedResultName": "Multi Doer BB FT 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1925310868"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            },
+            {
+              "lookupColumn": "Company",
+              "lookupValue": "={{ $json.company_name }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        -688
+      ],
+      "id": "ad38d7bc-226a-481b-98ce-815bb2db4dca",
+      "name": "Get Row from F Database2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566832168,
+          "mode": "list",
+          "cachedResultName": "Multi Doer BB PT 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1566832168"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            },
+            {
+              "lookupColumn": "Company",
+              "lookupValue": "={{ $('Finalize Output').item.json.company_name }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        -496
+      ],
+      "id": "dea44e3a-4d81-4d43-a3c3-6200291e1807",
+      "name": "Get Row from F Database3",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "971e1f2c-8246-47d6-bdc5-1fb1ef7b7c52",
+              "leftValue": "={{ $('Finalize Output').item.json.founder_shift_type }}",
+              "rightValue": "FT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        -592
+      ],
+      "id": "f04f82dd-71d9-4f7b-8819-82228ef2cfbf",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ab866244-6294-4da3-8383-bafe437dd307",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2384,
+        -784
+      ],
+      "id": "233f996a-6577-4c83-9b5b-645cfa66ea77",
+      "name": "Webhook",
+      "webhookId": "ab866244-6294-4da3-8383-bafe437dd307"
+    }
+  ],
+  "connections": {
+    "GCP Information": {
+      "main": [
+        [
+          {
+            "node": "Get GCP Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GCP Access Token": {
+      "main": [
+        [
+          {
+            "node": "Generate OIDC ID Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OIDC ID Token": {
+      "main": [
+        [
+          {
+            "node": "Get Keap Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keap Token": {
+      "main": [
+        [
+          {
+            "node": "Set Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Tags": {
+      "main": [
+        [
+          {
+            "node": "Get Months Subscribed Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Months Subscribed Tags": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token": {
+      "main": [
+        [
+          {
+            "node": "Get Tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Month Subscribed": {
+      "main": [
+        [
+          {
+            "node": "Finalize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Month Subscribed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        []
+      ]
+    },
+    "Finalize Output": {
+      "main": [
+        [
+          {
+            "node": "Multi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Output": {
+      "main": [
+        [
+          {
+            "node": "Supabase Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database1": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Row from F Database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "GCP Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multi?": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get Row from F Database2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database2": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database3": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Keap Trigger": {}
+  },
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

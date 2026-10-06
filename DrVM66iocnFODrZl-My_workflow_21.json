@@ -1,0 +1,749 @@
+{
+  "name": "My workflow 21",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Filter').item.json.id }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=8560"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Filter').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        32
+      ],
+      "id": "3f98ca5e-291b-45e6-a496-1d17cd254115",
+      "name": "create approvals3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields3').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=6"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Webhook').item.json.query.requestId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Webhook').item.json.query.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        864,
+        16
+      ],
+      "id": "3690e8a1-2404-4d2f-b979-420a1a493064",
+      "name": "create approvals12",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.sprout.ph/timeattendance/api/v1/CertificateOfAttendances",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "SortColumn",
+              "value": "DateFiled"
+            },
+            {
+              "name": "SortOrder",
+              "value": "asc"
+            },
+            {
+              "name": "StatusIds",
+              "value": "1"
+            },
+            {
+              "name": "CompanyId",
+              "value": "1"
+            },
+            {
+              "name": "PageNumber",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "RowsPerPage",
+              "value": "100"
+            },
+            {
+              "name": "DateFrom",
+              "value": "={{ $today.minus({ days: 30 }).toISO() }}"
+            },
+            {
+              "name": "DateTo",
+              "value": "={{ $today.plus({ days: 60 }).toISO() }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request').item.json.token_type }} REDACTED_SECRET"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "636634a8-e679-4153-8fb6-c81d569a8e8f",
+      "name": "HTTP Request5",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "=af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "REDACTED_CLIENT_SECRET"
+            },
+            {
+              "name": "grant_type",
+              "value": "=client_credentials"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -992,
+        32
+      ],
+      "id": "6a5ebefb-cd16-4bf0-9974-38dd31ff8e27",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"nodes\": [\n    {\n      \"parameters\": {\n        \"assignments\": {\n          \"assignments\": [\n            {\n              \"id\": \"1\",\n              \"name\": \"my_field_1\",\n              \"value\": \"value\",\n              \"type\": \"string\"\n            },\n            {\n              \"id\": \"2\",\n              \"name\": \"my_field_2\",\n              \"value\": 1,\n              \"type\": \"number\"\n            },\n            {\n              \"id\": \"3\",\n              \"name\": \"my_field_3\",\n              \"value\": \"value_3\",\n              \"type\": \"string\"\n            },\n            {\n              \"id\": \"4\",\n              \"name\": \"my_field_4\",\n              \"value\": 4,\n              \"type\": \"number\"\n            },\n            {\n              \"id\": \"5\",\n              \"name\": \"my_field_5\",\n              \"value\": true,\n              \"type\": \"boolean\"\n            }\n          ]\n        },\n        \"options\": {}\n      },\n      \"id\": \"c6222b07-0db7-458f-b9f4-123456789abc\",\n      \"name\": \"Set 5 Items\",\n      \"type\": \"n8n-nodes-base.set\",\n      \"typeVersion\": 3.4,\n      \"position\": [\n        250,\n        250\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -768,
+        32
+      ],
+      "id": "9e5d3126-4e89-4354-bbaa-2d4a47460318",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "nodes[0].parameters.assignments.assignments",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        32
+      ],
+      "id": "bc46eeb9-1bff-44b7-9f5e-132947844074",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        32
+      ],
+      "id": "cf650ff7-2909-4925-ab43-d6a597d12d10",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2eafd10e-a497-415b-9eca-011b71db43dc",
+              "leftValue": "={{ $json.dateFrom }}",
+              "rightValue": "2026-06-09T00:00:00",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        32
+      ],
+      "id": "77980604-5449-4a1e-83db-eaca1b17506c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88",
+          "mode": "list",
+          "cachedResultName": "Request data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mpfaa59rtv05R64GpZdPER0VmAfPdfLI8mCRhA0uI88/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestId": "={{ $json.id }}",
+            "HR user": "Leave Governor",
+            "employeeId": "={{ $json.employeeId }}",
+            "transactionId": "={{ $json.id }}",
+            "HR descision": "=Approve",
+            "HR notes": "=Sprout Outage"
+          },
+          "matchingColumns": [
+            "requestId"
+          ],
+          "schema": [
+            {
+              "id": "requestId",
+              "displayName": "requestId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateFiled",
+              "displayName": "DateFiled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateFrom",
+              "displayName": "DateFrom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DateTo",
+              "displayName": "DateTo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Doer Reason",
+              "displayName": "Doer Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI recomendation",
+              "displayName": "AI recomendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LeaveStatus",
+              "displayName": "LeaveStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RejectReason",
+              "displayName": "RejectReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order number",
+              "displayName": "Order number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cancelType",
+              "displayName": "cancelType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "employeeId",
+              "displayName": "employeeId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "requestType",
+              "displayName": "requestType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "transactionId",
+              "displayName": "transactionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "actionType",
+              "displayName": "actionType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "approverId",
+              "displayName": "approverId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "HR notes",
+              "displayName": "HR notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR descision",
+              "displayName": "HR descision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR user",
+              "displayName": "HR user",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Overiden?",
+              "displayName": "Overiden?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "attachments",
+              "displayName": "attachments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "assigned to",
+              "displayName": "assigned to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "COA request",
+              "displayName": "COA request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Decision Date",
+              "displayName": "Decision Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        32
+      ],
+      "id": "6edfdeb8-cf8d-46fc-b6b0-8edb8c1b6a47",
+      "name": "Update row in sheet3",
+      "credentials": {
+        "googleApi": {
+          "id": "eEv0nNxwjlpw6eBu",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "create approvals3": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet3": {
+      "main": [
+        [
+          {
+            "node": "create approvals3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": null
+}

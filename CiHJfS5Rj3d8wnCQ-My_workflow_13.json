@@ -1,0 +1,869 @@
+{
+  "name": "My workflow 13",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "7134f4b3-0d45-4dd8-83fd-98561a3afdcf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c0b80c10-1f11-45ec-8d2f-2cbf686fb47d",
+      "name": "Webhook",
+      "webhookId": "7134f4b3-0d45-4dd8-83fd-98561a3afdcf"
+    },
+    {
+      "parameters": {
+        "url": "https://api.activtrak.com/reports/v2/workinghours/users",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ $('Webhook').item.json.query.date_from.split(' ')[0].split('/').reverse().join('-') }}"
+            },
+            {
+              "name": "to",
+              "value": "={{ $('Webhook').item.json.query.date_to.split(' ')[0].split('/').reverse().join('-') }}"
+            },
+            {
+              "name": "clientId",
+              "value": "={{ $json.Id }}"
+            },
+            {
+              "name": "page",
+              "value": "1"
+            },
+            {
+              "name": "pageSize",
+              "value": "1000"
+            },
+            {
+              "name": "minDuration",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1264,
+        160
+      ],
+      "id": "d226de0c-0e73-405e-9b88-33f61fba8e53",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        880,
+        -16
+      ],
+      "id": "ad968889-f4b6-409f-a769-99df8014acd9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc",
+          "mode": "list",
+          "cachedResultName": "HR activtrack",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID No": "={{ $('Merge').item.json['Employee ID'] }}",
+            "First Name": "=",
+            "Reports To": "=",
+            "Undertime *": "={{ $json.totalUndertimeSec }}",
+            "Total Hours": "={{ $json.totalHoursElapsed }}",
+            "Total Hours Worked": "={{ $json.totalHoursWorked }}",
+            "Days Absent *": "={{ $json.daysAbsent }}",
+            "Days Present": "={{ $json.daysPresent }}",
+            "Overbreaks": "={{ $json.totalOverbreakSec }}",
+            "Total Actual Break Minutes": "={{ $json.totalBreakMinutes }}",
+            "Last Name": "={{ $('Merge').item.json['Doer Name'] }}",
+            "Date range": "={{ $('Webhook').item.json.query.date_from.split(' ')[0] }}-{{ $('Webhook').item.json.query.date_to.split(' ')[0] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID No",
+              "displayName": "ID No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date range",
+              "displayName": "Date range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reports To",
+              "displayName": "Reports To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Days Present",
+              "displayName": "Days Present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Days Absent *",
+              "displayName": "Days Absent *",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Undertime *",
+              "displayName": "Undertime *",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Overbreaks",
+              "displayName": "Overbreaks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Actual Break Minutes",
+              "displayName": "Total Actual Break Minutes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Hours Worked",
+              "displayName": "Total Hours Worked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Hours",
+              "displayName": "Total Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RegExcess",
+              "displayName": "RegExcess",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ord-OT",
+              "displayName": "Ord-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ord-ND",
+              "displayName": "Ord-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ord-ND-OT",
+              "displayName": "Ord-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RD",
+              "displayName": "RD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RD-OT",
+              "displayName": "RD-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RD-ND",
+              "displayName": "RD-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RD-ND-OT",
+              "displayName": "RD-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH",
+              "displayName": "SH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-OT",
+              "displayName": "SH-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-ND",
+              "displayName": "SH-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-ND-OT",
+              "displayName": "SH-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH",
+              "displayName": "LH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-OT",
+              "displayName": "LH-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-ND",
+              "displayName": "LH-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-ND-OT",
+              "displayName": "LH-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-RD",
+              "displayName": "SH-RD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-RD-OT",
+              "displayName": "SH-RD-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-RD-ND",
+              "displayName": "SH-RD-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SH-RD-ND-OT",
+              "displayName": "SH-RD-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-RD",
+              "displayName": "LH-RD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-RD-OT",
+              "displayName": "LH-RD-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-RD-ND",
+              "displayName": "LH-RD-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LH-RD-ND-OT",
+              "displayName": "LH-RD-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH",
+              "displayName": "DH",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-ND",
+              "displayName": "DH-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-RD",
+              "displayName": "DH-RD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-RD-ND",
+              "displayName": "DH-RD-ND",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-OT",
+              "displayName": "DH-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-ND-OT",
+              "displayName": "DH-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-RD-OT",
+              "displayName": "DH-RD-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DH-RD-ND-OT",
+              "displayName": "DH-RD-ND-OT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1680,
+        160
+      ],
+      "id": "91bf3e3a-85d1-4b16-b259-df1f7879a387",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ─── n8n Code Node: \"Run Once for Each Item\" ───\n// Input shape per item: { activity: [...], total }\n//\n// Configure these:\nconst EXPECTED_HOURS_PER_DAY = 9;\nconst ALLOWED_BREAK_MINUTES  = 60;\n\n// ─── Parse Rest Days from sheet ─────────────────\n// Expected format: \"Sunday, Monday\" or \"Sunday\" etc.\nconst restDaysRaw = $('Get row(s) in sheet2').item.json['Rest Days'] || '';\nconst REST_DAY_NAMES = new Set(\n  restDaysRaw\n    .split(',')\n    .map(d => d.trim().toLowerCase())\n    .filter(d => d.length > 0)\n);\n\nconst DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];\n\n// ─── PH Public Holidays 2026 ────────────────────\n// Note: EDSA Anniversary (Feb 25) is a special WORKING day → not included.\nconst PH_HOLIDAYS_2026 = new Set([\n  '2026-01-01', // New Year's Day\n  '2026-02-17', // Chinese New Year\n  '2026-03-16', // Davao City Day\n  '2026-03-20', // Eid al-Fitr\n  '2026-04-02', // Maundy Thursday\n  '2026-04-03', // Good Friday\n  '2026-04-04', // Black Saturday\n  '2026-04-09', // Day of Valor\n  '2026-05-01', // Labor Day\n  '2026-05-27', // Eid al-Adha\n  '2026-06-12', // Independence Day\n  '2026-08-14', // Kadayawan Festival (Davao City)\n  '2026-08-21', // Ninoy Aquino Day\n  '2026-08-31', // National Heroes Day\n  '2026-11-01', // All Saints' Day\n  '2026-11-02', // All Souls' Day\n  '2026-11-30', // Bonifacio Day\n  '2026-12-08', // Feast of the Immaculate Conception of Mary\n  '2026-12-24', // Christmas Eve\n  '2026-12-25', // Christmas Day\n  '2026-12-30', // Rizal Day\n  '2026-12-31', // Last Day of the Year\n]);\n\n// ─── Helpers ────────────────────────────────────\n\nfunction isRestDay(dateStr) {\n  const [y, m, d] = dateStr.split('-').map(Number);\n  const dayIndex = new Date(y, m - 1, d).getDay();\n  return REST_DAY_NAMES.has(DAY_NAMES[dayIndex]);\n}\n\nfunction isHoliday(dateStr) {\n  return PH_HOLIDAYS_2026.has(dateStr);\n}\n\nfunction fmtHM(seconds) {\n  if (!seconds || seconds <= 0) return '0h 0m';\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  return `${h}h ${m}m`;\n}\n\nfunction fmtDecimal(seconds) {\n  return +(seconds / 3600).toFixed(2);\n}\n\n// ─── Get the activity array ─────────────────────\n\nconst json = $input.item.json;\nconst records = json.activity || json.data || json.records || json.items || [];\n\nif (!records.length) {\n  return {\n    json: {\n      user: '',\n      userId: null,\n      groups: [],\n      dateRange: '',\n      reportsTo: '',\n      workingDays: 0,\n      daysPresent: 0,\n      daysAbsent: 0,\n      totalUndertime: '0h 0m',\n      totalUndertimeSec: 0,\n      totalOverbreaks: '0h 0m',\n      totalOverbreakSec: 0,\n      totalBreakMinutes: 0,\n      totalHoursWorked: '0h 0m',\n      totalHoursWorkedDec: 0,\n      totalHoursElapsed: '0h 0m',\n    }\n  };\n}\n\n// ─── User info from first record ────────────────\n\nconst firstRec   = records[0];\nconst userName   = firstRec.user || '';\nconst userId     = firstRec.userId || null;\nconst userGroups = firstRec.groups || [];\nconst reportsTo  = userGroups.length > 0 ? userGroups[0] : '';\n\nconst expectedDailySec = EXPECTED_HOURS_PER_DAY * 3600;\nconst allowedBreakSec  = ALLOWED_BREAK_MINUTES * 60;\n\n// ─── Sort by date ascending ─────────────────────\n\nconst sorted = [...records].sort((a, b) => a.date.localeCompare(b.date));\n\n// ─── Sum everything ─────────────────────────────\n\nlet workingDays       = 0;\nlet daysPresent       = 0;\nlet daysAbsent        = 0;\nlet totalWorkedSec    = 0;\nlet totalUndertimeSec = 0;\nlet totalOverbreakSec = 0;\nlet totalBreakMinAll  = 0;\nlet totalElapsedSec   = 0;\n\nfor (const rec of sorted) {\n  if (isRestDay(rec.date) || isHoliday(rec.date)) continue; // skip rest days & holidays\n\n  workingDays++;\n\n  const hasActivity = rec.firstActivity !== null && rec.totalTime > 0;\n\n  if (!hasActivity) {\n    daysAbsent++;\n    totalUndertimeSec += expectedDailySec;\n    continue;\n  }\n\n  daysPresent++;\n\n  const elapsedSec   = Math.max(0, (new Date(rec.lastActivity) - new Date(rec.firstActivity)) / 1000);\n  const breakSec     = Math.max(0, elapsedSec - rec.totalTime);\n  const overbreakSec = Math.max(0, breakSec - allowedBreakSec);\n  const undertimeSec = Math.max(0, expectedDailySec - rec.totalTime);\n\n  totalElapsedSec   += elapsedSec;\n  totalWorkedSec    += rec.totalTime;\n  totalBreakMinAll  += Math.round(breakSec / 60);\n  totalOverbreakSec += overbreakSec;\n  totalUndertimeSec += undertimeSec;\n}\n\nconst dateStart = sorted[0].date;\nconst dateEnd   = sorted[sorted.length - 1].date;\n\n// ─── Return ─────────────────────────────────────\n\nreturn {\n  json: {\n    user: userName,\n    userId,\n    groups: userGroups,\n    dateRange: `${dateStart} → ${dateEnd}`,\n    reportsTo,\n    workingDays,\n    daysPresent,\n    daysAbsent,\n    totalUndertime: fmtHM(totalUndertimeSec),\n    totalUndertimeSec,\n    totalOverbreaks: fmtHM(totalOverbreakSec),\n    totalOverbreakSec,\n    totalBreakMinutes: totalBreakMinAll,\n    totalHoursWorked: fmtHM(totalWorkedSec),\n    totalHoursWorkedDec: fmtDecimal(totalWorkedSec),\n    totalHoursElapsed: fmtHM(totalElapsedSec),\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        160
+      ],
+      "id": "59bd2629-2958-4356-8968-c06375b42e17",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc",
+          "mode": "list",
+          "cachedResultName": "HR activtrack",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oiq5oYJs6jhM_KKtU6dIt9Dvka2w2iESS-eD8uBfmJc/edit#gid=0"
+        },
+        "keepFirstRow": true
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e7bbf743-bf5d-4711-a760-c344e81ada64",
+      "name": "Clear sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM",
+          "mode": "list",
+          "cachedResultName": "Sprout Masterlist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        -144
+      ],
+      "id": "541e2732-2122-4290-b0d3-b17725ae3bb1",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10_F-2TvsTvHRyu4EQLMFMDNOyymN7TjOrromI4SG8Js",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1026330536,
+          "mode": "list",
+          "cachedResultName": "ActivTrak UserAgent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10_F-2TvsTvHRyu4EQLMFMDNOyymN7TjOrromI4SG8Js/edit#gid=1026330536"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        16
+      ],
+      "id": "a83090f3-4181-4092-838d-a1415e3e4bb2",
+      "name": "Get row(s) in sheet4",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "['Employee ID']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        656,
+        -48
+      ],
+      "id": "31667458-3688-4df7-902b-e9631fe6e699",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "doneverse.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "103.144.156.161",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "PH",
+            "cf-ray": "9ed680a3480cb6a7-HKG",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "origin": "https://n-xayfaqtg5zzar4ox24flnuanqflo2b2ompgc73y-1lu-script.googleusercontent.com",
+            "priority": "u=1, i",
+            "referer": "https://n-xayfaqtg5zzar4ox24flnuanqflo2b2ompgc73y-1lu-script.googleusercontent.com/",
+            "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "103.144.156.161, 162.158.179.24",
+            "x-forwarded-host": "doneverse.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-59cd5b855d-ft26p",
+            "x-is-trusted": "yes",
+            "x-real-ip": "103.144.156.161"
+          },
+          "params": {},
+          "query": {
+            "date_from": "30/03/2026 3:00 AM",
+            "date_to": "10/04/2026 3:00 AM"
+          },
+          "body": {},
+          "webhookUrl": "https://doneverse.app.n8n.cloud/webhook/7134f4b3-0d45-4dd8-83fd-98561a3afdcf",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

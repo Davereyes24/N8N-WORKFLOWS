@@ -1,0 +1,117 @@
+{
+  "name": "Allocation Request Sending",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $json.submitter_email }}",
+        "subject": "={{ $json.email_subject }}",
+        "message": "={{ $json.html_body }}",
+        "options": {
+          "ccList": "",
+          "senderName": "Allocation Team"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        16
+      ],
+      "id": "7e7981e2-20af-4b65-8eb7-99c899b5e6eb",
+      "name": "Send a message",
+      "webhookId": "13a37d48-6ba2-404b-8a98-1691a22721af",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "36eRTgxFjR6ZqcDS",
+          "name": "Allocation Team Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0038c4af-26fb-4271-b9b2-d742726ab57c",
+              "name": "html_body",
+              "value": "={{ $json.body.summary_html }}",
+              "type": "string"
+            },
+            {
+              "id": "f7c031c2-a675-4198-8516-f4b2b4c7bbd5",
+              "name": "email_subject",
+              "value": "=Request Submitted Successfully: {{ $json.body.request_type.replaceAll('_', ' ').toTitleCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "7e5c3283-c943-49e1-ba7f-bf4a6c828ef5",
+              "name": "submitter_email",
+              "value": "={{ $json.body.submitter_email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        16
+      ],
+      "id": "00821830-70ee-4f0a-86d3-9e6fb5103b5a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "allocation-form-submissions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "4c00b913-018e-4d06-a0fd-97f9315e87bb",
+      "name": "Webhook",
+      "webhookId": "93f31789-b362-44bc-b8e6-923476e70585"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

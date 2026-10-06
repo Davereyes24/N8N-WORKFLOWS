@@ -1,0 +1,1077 @@
+{
+  "name": "Upsert - Keap to Supabase Bulk",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09d255ca-357d-41ad-8512-46fc525d5c58",
+              "name": "sa_json",
+              "value": "{\n  \"type\": \"service_account\",\n  \"project_id\": \"od-bigquery\",\n  \"private_key_id\": \"REDACTED\",\n  \"private_key\": \"-----BEGIN PRIVATE KEY-----REDACTED-----END PRIVATE KEY-----\\n\",\n  \"client_email\": \"n8n-invoker@od-bigquery.iam.gserviceaccount.com\",\n  \"client_id\": \"109645408051380022715\",\n  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/n8n-invoker%40od-bigquery.iam.gserviceaccount.com\",\n  \"universe_domain\": \"googleapis.com\"\n}",
+              "type": "string"
+            },
+            {
+              "id": "e0a41eff-8437-4a83-8006-fa01ead3ebab",
+              "name": "token_audience",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            },
+            {
+              "id": "c901fe00-c40c-44e4-9fd7-325a21747577",
+              "name": "token_endpoint",
+              "value": "https://getkeapaiagenttoken-vo6glcuprq-ue.a.run.app",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1904,
+        -1168
+      ],
+      "id": "442fa4a7-b60c-4ac5-bcf2-88e0542c246e",
+      "name": "GCP Information"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saRaw = $input.first().json.sa_json;\nconst audience = String($input.first().json.token_audience || \"\").trim();\nconst endpoint = String($input.first().json.token_endpoint || \"\").trim();\n\nif (!saRaw) throw new Error(\"Missing input field: sa_json (service account JSON string)\");\nif (!audience) throw new Error(\"Missing input field: token_audience\");\nif (!endpoint) throw new Error(\"Missing input field: token_endpoint\");\n\nlet sa;\ntry {\n  sa = typeof saRaw === \"string\" ? JSON.parse(saRaw) : saRaw;\n} catch (e) {\n  throw new Error(\"sa_json is not valid JSON\");\n}\n\nif (!sa.client_email || !sa.private_key) {\n  throw new Error(\"sa_json must include client_email and private_key\");\n}\n\nconst now = Math.floor(Date.now() / 1000);\n\nconst header = { alg: \"RS256\", typ: \"JWT\" };\nconst claimSet = {\n  iss: sa.client_email,\n  scope: \"https://www.googleapis.com/auth/cloud-platform\",\n  aud: \"https://oauth2.googleapis.com/token\",\n  iat: now,\n  exp: now + 3600,\n};\n\nconst b64url = (obj) =>\n  Buffer.from(JSON.stringify(obj))\n    .toString(\"base64\")\n    .replace(/=/g, \"\")\n    .replace(/\\+/g, \"-\")\n    .replace(/\\//g, \"_\");\n\nconst unsigned = `${b64url(header)}.${b64url(claimSet)}`;\n\nconst crypto = require(\"crypto\");\nconst signer = crypto.createSign(\"RSA-SHA256\");\nsigner.update(unsigned);\nsigner.end();\n\nconst sig = signer\n  .sign(sa.private_key, \"base64\")\n  .replace(/=/g, \"\")\n  .replace(/\\+/g, \"-\")\n  .replace(/\\//g, \"_\");\n\nconst jwt = `${unsigned}.${sig}`;\n\nconst formEncode = (obj) =>\n  Object.entries(obj)\n    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)\n    .join(\"&\");\n\nconst tokenRes = await this.helpers.httpRequest({\n  method: \"POST\",\n  url: \"https://oauth2.googleapis.com/token\",\n  headers: { \"Content-Type\": \"application/x-www-form-urlencoded\" },\n  body: formEncode({\n    grant_type: \"urn:ietf:params:oauth:grant-type:jwt-bearer\",\n    assertion: jwt,\n  }),\n});\n\nif (!tokenRes?.access_token) {\n  throw new Error(\"Failed to mint Google access token. Check service account JSON and permissions.\");\n}\n\nreturn [\n  {\n    json: {\n      gcp_access_token: tokenRes.access_token,\n      sa_email: sa.client_email,\n      audience,\n      endpoint,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1680,
+        -1168
+      ],
+      "id": "46502cd2-3fae-48d1-b38d-41e9845dfbf9",
+      "name": "Get GCP Access Token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{{ $json.sa_email }}:generateIdToken ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audience\": \"{{ $json.audience }}\",\n  \"includeEmail\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1456,
+        -1168
+      ],
+      "id": "35bddf1f-07b7-40a4-a2c2-eb02e86eed3d",
+      "name": "Generate OIDC ID Token"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Get GCP Access Token').item.json.endpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1232,
+        -1168
+      ],
+      "id": "aabb7b3c-688d-470d-a879-ef7b4e8fc15e",
+      "name": "Get Keap Token"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/tags?filter=category_id==11",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -784,
+        -1264
+      ],
+      "id": "bd53c0ba-7b3c-4feb-8669-dd351db8defd",
+      "name": "Get Tags",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const PHRASES = [\"months upfront\", \"purchased outsourced doers\"];\nconst needles = PHRASES.map(s => String(s).toLowerCase().trim()).filter(Boolean);\n\nconst tags = Array.isArray($json?.tags) ? $json.tags\n  : Array.isArray($json?.data) ? $json.data\n  : Array.isArray($json) ? $json\n  : [];\n\nconst monthTags = tags.filter(t => {\n  const name = String(t?.name || \"\").toLowerCase();\n  return needles.every(p => name.includes(p));\n});\n\nreturn [{ json: { monthTags } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -1264
+      ],
+      "id": "c7fdff66-f2a7-443c-b7d2-062ad58f8d85",
+      "name": "Get Months Subscribed Tags",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "593cf0ba-ece6-498b-876a-37ea58f45cec",
+              "name": "token",
+              "value": "=REDACTED_SECRET",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1008,
+        -1168
+      ],
+      "id": "019372a3-4542-4973-b7dd-895978c30dec",
+      "name": "Set Token"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tagMap = {};\n\n// Build tagMap from monthTags.matches\nconst monthTagsRaw = $input.first().json.monthTags ?? {};\nconst matches = Array.isArray(monthTagsRaw?.matches)\n  ? monthTagsRaw.matches\n  : Array.isArray(monthTagsRaw)\n    ? monthTagsRaw\n    : [];\n\nfor (const t of matches) {\n  if (t?.id != null && t?.name) tagMap[String(t.id)] = String(t.name);\n}\n\n// Type + Shift tag ids\nconst TAG_DMVA_FT = \"14775\";\nconst TAG_DMVA_PT = \"14777\";\nconst TAG_EC_FT   = \"14779\";\nconst TAG_EC_PT   = \"14781\";\n\nconst DOER_2 = \"897\";\nconst DOER_3 = \"1038\";\n\nconst inputItems = $input.all() || [];\nconst out = [];\n\nfor (const it of inputItems) {\n  if (!it.json?.id) continue;\n  \n  const tagIdsRaw = Array.isArray(it.json.tag_ids) ? it.json.tag_ids : [];\n  const tagIds = tagIdsRaw.map(id => String(id)); // normalize to strings\n  const tagNames = tagIds.map(id => tagMap[id]).filter(Boolean);\n\n  // Determine type + shift\n  let type = \"\";\n  let shift = \"\";\n  let multi = \"\";\n\n  const hasDMVA = tagIds.includes(TAG_DMVA_FT) || tagIds.includes(TAG_DMVA_PT);\n  const hasEC   = tagIds.includes(TAG_EC_FT)   || tagIds.includes(TAG_EC_PT);\n  const hasXDoer = tagIds.includes(DOER_2)  || tagIds.includes(DOER_3);\n\n  if (hasDMVA) {\n    type = \"DMVA\";\n    if (tagIds.includes(TAG_DMVA_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_DMVA_PT)) shift = \"PT\";\n  } else if (hasEC) {\n    type = \"EC\";\n    if (tagIds.includes(TAG_EC_FT)) shift = \"FT\";\n    else if (tagIds.includes(TAG_EC_PT)) shift = \"PT\";\n  }\n\n  multi = hasXDoer ? \"yes\" : \"no\";\n\n  // Remove tag_ids and monthTags\n  const { tag_ids, monthTags, ...rest } = it.json;\n\n  const next = { ...rest };\n\n  if (tagNames.length) next.tag_names = tagNames;\n  if (type) next.type = type;\n  if (shift) next.shift = shift;\n  if (multi) next.multi = multi;\n\n  // drop empty objects\n  if (Object.keys(next).length === 0) continue;\n\n  out.push({ json: next });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        -1168
+      ],
+      "id": "a44856d9-ca7d-43f1-8cd0-b32c131c454b",
+      "name": "Retrieve Month Subscribed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const pickEmail = (arr) => {\n  if (!Array.isArray(arr)) return \"\";\n\n  const toLower = (e) =>\n    String(e ?? \"\")\n      .replace(/\\u00A0/g, \" \")\n      .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n      .trim()\n      .toLowerCase();\n\n  const email1 = arr.find(e => e?.field === \"EMAIL1\")?.email;\n  if (email1) return toLower(email1);\n\n  const email2 = arr.find(e => e?.field === \"EMAIL2\")?.email;\n  if (email2) return toLower(email2);\n\n  const fallback = arr[0]?.email;\n  return fallback ? toLower(fallback) : \"\";\n};\n\nconst pickCF = (arr, id) => {\n  if (!Array.isArray(arr)) return \"\";\n  const hit = arr.find(cf => String(cf?.id) === String(id));\n  return String(hit?.content ?? \"\").trim();\n};\n\nconst extractMonths = (tagNames) => {\n  const tags = Array.isArray(tagNames) ? tagNames : [];\n  for (const t of tags) {\n    const s = String(t || \"\").toLowerCase();\n\n    const m = s.match(/purchased\\s+outsourced\\s+doers\\s+(.+?)\\s+upfront/i);\n    if (m && m[1]) {\n      const between = m[1].trim(); // e.g. \"5 Months\"\n      const m2 = between.match(/(\\d+)\\s*months?/i);\n      if (m2) return `${m2[1]} months`;\n      return between;\n    }\n\n    const m3 = s.match(/(\\d+)\\s*months?/i);\n    if (m3) return `${m3[1]} months`;\n  }\n  return \"\";\n};\n\nconst addr0 = Array.isArray($json.addresses) ? $json.addresses[0] : null;\nconst phone0 = Array.isArray($json.phone_numbers) ? $json.phone_numbers[0] : null;\n\nconst externalId = $json.id ?? null;\n\nreturn [\n  {\n    json: {\n      external_id: externalId,\n      first_name: $json.given_name ?? null,\n      last_name: $json.family_name ?? null,\n      email: pickEmail($json.email_addresses) || null,\n\n      od_application_quality_score: pickCF($json.custom_fields, 708) || null,\n      onboarding_day_1st_doer_date: pickCF($json.custom_fields, 315) || null,\n      months_subscribed: extractMonths($json.tag_names) || null,\n\n      founder_type: $json.type ?? null,\n      founder_category: $json.category ?? null,\n      founder_shift_type: $json.shift ?? null,\n      founder_multi: $json.multi ?? null,\n\n      city: addr0?.locality ?? null,\n      state: addr0?.region ?? null,\n      postal_code: addr0?.postal_code ?? null,\n      country: addr0?.country ?? null,\n\n      company_name: $json.company?.company_name ?? null,\n      time_zone: $json.time_zone ?? null,\n\n      phone_1: phone0?.number ?? null,\n      phone_1_type: phone0?.type ?? null,\n\n      industry: pickCF($json.custom_fields, 229) || null,\n      business_start_date: pickCF($json.custom_fields, 565) || null,\n      monthly_revenue: pickCF($json.custom_fields, 567) || null,\n      va_tasks: pickCF($json.custom_fields, 586) || null,\n\n     // matching_status: \"Unmatched\",\n\n      founder_code: externalId ? `FC-${externalId}` : null,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -1168
+      ],
+      "id": "1c3d5ae1-2247-43fb-933c-5436bc56147a",
+      "name": "Finalize Output"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -336,
+        -1168
+      ],
+      "id": "d1968c5e-bfb8-4779-a258-06b2342fbbeb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.infusionsoft.com/crm/rest/v2/contacts/{{ $('Loop Over Items').item.json.ids }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,given_name,family_name,preferred_name,email_addresses,tag_ids,custom_fields,company,phone_numbers,time_zone,addresses"
+            },
+            {}
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -784,
+        -1024
+      ],
+      "id": "967aa0b4-2e09-4bb6-83d7-e2ca3c4aee40",
+      "name": "Get Contacts",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ieqcurgmjhcmvlpwkosa.supabase.co/functions/v1/n8n-upsert-founders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1680,
+        -1360
+      ],
+      "id": "45a31865-f42f-46db-9365-8fbf84526338",
+      "name": "Supabase Append",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "const INDUSTRY_FIELDS = [\n  \"*What industry does your business operate in?*\",\n  \"*What niche does your Agency operate in? *\",\n  \"Other\",\n  \"*What niche are you a Coach/Consultant in?*\",\n  \"*What type of Local Service do you operate?*\",\n  \"*What type of Professional Services Business do you operate in?*\",\n  \"*What type of Real Estate Business do you operate?*\",\n  \"*What eCommerce niche do you operate in?*\",\n];\n\nconst TOOL_PREF_FIELDS = [\n  \"*For eCommerce Store Building, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Inventory Management, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For eCommerce Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*For Email Marketing, please select your preferred tool below so we can further tailor your Doer's training*\",\n  \"*Please select your preferred Landing Page tool below so we can further tailor your Doer's training...*\",\n  \"*For Website, please select your preferred tool below so we can further tailor your Doer's training*\",\n];\n\nconst BLUEPRINT_PRIORITIES_FIELD =\n  \"*Organize the stages of the Doing Blueprint below to let us know your priorities with your Doer...*\";\n\nconst BUSINESS_STATEMENT_FIELD =\n  \"*So that your Doer can understand your business and what/who you serve, please enter your business statement below.*\";\n\n\nconst REASON_FOR_GETTING_A_DOER = \"What was it that made you invest in a Doer?\";\n\n/*\nconst PREFERRED_DOER_TIME_ZONE = \"*We offer 3 time zones that a Doer can work in* \n1.) *PST* (US Pacific Standard Time) OR\n2.) *GMT *(Western European Time)\nOR\n3.) *AEST *(Australian Eastern Standard Time)\nPlease choose the time zone option you want your Doer to work in.\";\n*/\n\n\nconst DETAILS_OF_PROJECT = \"*What is the #1 Project that you'd deem as a success if your Doer completed it in the first 30 days?*\";\nconst BIG_PROJECT_12_MOS = \"What is the big project you want completed in 12 months?\";\nconst TOP_3_SERVICES_PRODUCTS = \"*What are the Top 3 Services &/or Products you offer in your business?*\";\nconst TASKS_DOER_CAN_DO = \"Outside of those projects, what do you not like doing in your business that we can take off your plate?\";\n\n\nconst WEBSITE_FIELD = \"Website\";\n\nconst SOCIAL_MEDIA_FIELDS = [\n  \"Social Media\",\n  \"Other, please specify\",\n];\n\nconst STAFF_MEMBERS_FIELDS = [\n  \"How many employees do you currently have on your team?\",\n];\n\nconst BRAND_GUIDELINES_FIELDS = [\n  \"Please share any brand guidelines or additional branding information\",\n  \"Please provide your brands fonts\",\n  \"Please share your brands HEX codes\",\n  \"Do you have a Brand Style Guide you can share?\",\n  \"Share a link to a folder in your Google Drive, Dropbox, or any other sharing application with your brand style guide.\",\n];\n\nconst LOGO_FIELDS = [\n  \"Please share the link to a high-resolution copy of your logo (.png preferred).\",\n  \"Please provide the link to any images to use for your content\",\n];\n\nconst DOER_UNIVERSITY_BADGE_FIELDS = [\n  \"Are there any other badges you would like your Doer to sit in Doers University?\",\n];\n\n\nfunction clean(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim();\n}\n\nfunction norm(s) {\n  return clean(s);\n}\n\nfunction truthyAnswer(v) {\n  const s = norm(v);\n  if (!s) return false;\n  const low = s.toLowerCase();\n  if (low === \"none\" || low === \"none yet\" || low === \"n/a\") return false;\n  return true;\n}\n\nfunction findKeyLike(row, patterns) {\n  const keys = Object.keys(row || {});\n  const lowerKeys = keys.map(k => [k, String(k).toLowerCase()]);\n  for (const p of patterns) {\n    const hit = lowerKeys.find(([, lk]) => lk.includes(p));\n    if (hit) return hit[0];\n  }\n  return null;\n}\n\nfunction findRevenueValue(row) {\n  const revenueKey = findKeyLike(row, [\"current monthly revenue\", \"monthly revenue\", \"revenue\"]);\n  return revenueKey ? row[revenueKey] : \"\";\n}\n\nfunction hasValue(v) {\n  const s = norm(v);\n  if (!s) return false;\n  const low = s.toLowerCase();\n  return !(low === \"n/a\" || low === \"none\" || low === \"none yet\" || low === \"-\");\n}\n\nfunction combineFields(row, fields) {\n  const parts = fields.map(f => norm(row?.[f])).filter(truthyAnswer);\n\n  const seen = new Set();\n  const unique = [];\n  for (const p of parts) {\n    const key = p.toLowerCase();\n    if (!seen.has(key)) {\n      seen.add(key);\n      unique.push(p);\n    }\n  }\n  return unique.join(\", \");\n}\n\n// --------------------\n// Base items from Finalize Output\n// --------------------\nconst baseItems = $items(\"Finalize Output\") || [];\nif (baseItems.length === 0) {\n  return [{ json: { note: 'No items found from node \"Finalize Output\". Check node name.' } }];\n}\n\n\n\n// --------------------\n// Single merged record for this email (already matched upstream)\n// --------------------\nconst merged = ($input.first() && $input.first().json) ? $input.first().json : {};\n\nconst mergedRow = merged;\n\n// Compute enrichment once (same for all base items)\nconst revenue_raw = norm(findRevenueValue(mergedRow));\nconst business_statement = norm(mergedRow[BUSINESS_STATEMENT_FIELD]);\nconst combined_industry_niche = combineFields(mergedRow, INDUSTRY_FIELDS);\nconst combined_tools_preferences = combineFields(mergedRow, TOOL_PREF_FIELDS);\nconst doing_blueprint_priorities = norm(mergedRow[BLUEPRINT_PRIORITIES_FIELD]);\nconst reason_for_doer = norm(mergedRow[REASON_FOR_GETTING_A_DOER]);\nconst details_project = norm(mergedRow[DETAILS_OF_PROJECT]);\nconst big_project = norm(mergedRow[BIG_PROJECT_12_MOS]);\nconst top3_services = norm(mergedRow[TOP_3_SERVICES_PRODUCTS]);\nconst other_tasks_doer = norm(mergedRow[TASKS_DOER_CAN_DO]);\n\nconst website = norm(mergedRow[WEBSITE_FIELD]);\n\nconst social_media = combineFields(mergedRow, SOCIAL_MEDIA_FIELDS);\nconst staff_members = combineFields(mergedRow, STAFF_MEMBERS_FIELDS);\nconst brand_guidelines = combineFields(mergedRow, BRAND_GUIDELINES_FIELDS);\nconst logo = combineFields(mergedRow, LOGO_FIELDS);\nconst doer_university_badge = combineFields(mergedRow, DOER_UNIVERSITY_BADGE_FIELDS);\n\n// --------------------\n// Output: keep all base fields + add enrichment fields\n// --------------------\nreturn baseItems.map(it => {\n  const base = it.json || {};\n\n  const raw_data = {\n    ...(base.raw_data || {}),\n  };\n\n  if (hasValue(social_media))\n    raw_data.social_media = social_media;\n\n  if (hasValue(staff_members))\n    raw_data.staff_members = staff_members;\n\n  if (hasValue(brand_guidelines))\n    raw_data.brand_guidelines = brand_guidelines;\n\n  if (hasValue(logo))\n    raw_data.logo = logo;\n\n  if (hasValue(doer_university_badge))\n    raw_data.doer_university_badge = doer_university_badge;\n\n  const next = {\n    ...base,\n\n    // always keep these extra columns too (optional. remove if you do not want them)\n    website: website || \"\",\n    business_description: business_statement || \"\",\n    tools_required: combined_tools_preferences || \"\",\n    reason_for_doer: reason_for_doer || \"\",\n    details_project: details_project || \"\",\n    big_project: big_project || \"\",\n    top3_services: top3_services || \"\",\n    other_tasks_doer: other_tasks_doer || \"\",\n    raw_data,\n    \n  };\n\n  // overrides (only when enrichment has value)\n  if (hasValue(revenue_raw)) next.monthly_revenue = revenue_raw;\n  if (hasValue(combined_industry_niche)) next.industry = combined_industry_niche;\n  if (hasValue(doing_blueprint_priorities)) next.va_tasks = doing_blueprint_priorities;\n\n  return { json: next };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        -976
+      ],
+      "id": "372776e5-0ef1-4571-b852-bf3349432c4a",
+      "name": "Summarize Output",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2800,
+        -1008
+      ],
+      "id": "6311a1fc-ff2b-4595-b391-f479b05aface",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2144,
+        -1344
+      ],
+      "id": "8dc58e1b-a00b-4bb5-9900-17f8af25479f",
+      "name": "Loop Over Items",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e53654ca-b65e-4848-a661-a6f3aac66d8f",
+              "name": "ids",
+              "value": "[1104204,1037013,518659,1042051,886289,431969,110463,1187,1106764,996053,1033573,1066493,1080909,1080993,1078747,1075933,16481,757853,1103550,485715,530649,998153,649861,891399,816915,21311,1016247,1071601,1060841,1591,424601,986821,1033155,1074523,512957,1061765,1008119,878305,1023425,1054923,973591,1106814,964947,993607,977429,1080921,1101296,935045,2261,1018463,1082481,1062573,963465,379391,779827,742955,767865,1038721,905725,978317,260360,1078489,266026,960391,783509,1062889,961187,652089,347820,1061789,1050577,1016807,1081241,1066673,1080693,1020233,210450,784427,1099542,7407,1078167,216880,972771,727227,1082255,749205,1100910,362180,733829,1082653,976511,412289,223400,1049119,1081473,1083175,921307,452225,19907,797753,1097052,1081593,797037,552907,1079637,948035,1067733,791773,617975,1033237,522617,1100652,1100436,1025141,1080403,1020313,788973,818451,1103966,324380,933819,610145,1080229,1103488,759309,659759,773517,705175,1099786,995965,889057,959849,686141,669509,1078249,115556,1103202,766199,1103302,1052681,1077619,1099328,951603,953489,1063325,1104128,1084225,1073561,1083727,517891,400819,1055191,1076439,741593,1035409,651313,712065,1063027,1074015,709315,1084977,1066107,1075389,1078441,1096834,212196,1067225,1024617,1098790,892201,971685,993803,1084833,908095,1064515,28933,998929,1077883,1071593,955243,1078841,881481,1066019,992167,879629,816071,254588,1080617,1081647,1104288,1083083,1064945,318370,1008325,599213,899257,1040509,780143,1080255,866573,1107422,1056715,1098472,1083757,764261,1079277,1100012,1058473,1055493,1054139,1076787,443063,1040939,1102500,1017315,1098924,1083179,684799,704769,989401,948021,1058849,440905,1014131,1078855,1014745,1011125,175390,1083681,807907,1055219,734307,1060015,974335,184614,910729,1057141,96227,968371,1042319,1093550,768175,987893,761247,1000313,5947,1050435,681853,927641,1073839,1085557,932335,1059149,674271,959715,1087899,1079777,1057497,664455,1090291,1107832,1069639,1032821,1077985,1055093,1001749,1089655,1107520,973851,590775,1076151,1086489,1059961,648063,516449,251112,413613,1080901,262758,165550,181358,1085125,1087339,2985,1058589,1018145,1099110,1084277,1085265,106345,1089333,735187,90871,984531,733943,713543,1089453,589663,1081093,411275,1100492,1053701,1054333,1081797,36895,1082781,1063995,1081503,769061,996597,875821,1036123,1068705,1107228,218640,379914,993021,1081133,1075593,1085407,906391,1018453,591447,1063895,113051,1103998,999283,989977,115444,45257,1046145,1082093,1083617,1063949,950313,501951,1070363,981912,575667,987041,1063799,745975,1079021,1088559,1076131,144384,696875,1080787,1060411,447985,723609,1085069,574209,129012,224798,133090,1020051,286050,991741,272296,534733,614223,916256,693037,31199,869743,1052525,615435,1065435,1064211,624839,1007927,149844,716651,1082265,947043,984199,945423,1017605,1038829,1019097,1086999,1082419,1102750,878457,952737,1033091,985059,1079841,1065883,1008357,106125,671827,1063311,1066169,723231,1066479,1085227,722689,1065285,532133,829087,967301,7149,1060889,428623,1067003,703017,1082825,1025095,1067763,697847,1070347,991515,1068121,1093075,1033215,776439,908099,735617,1081571,1068137,726651,1102444,1101138,681197,1083007,98481,760751,1068657,984323,1028029,22307,638599,946043,874247,535641,880899,1063889,1085197,763205,1068125,1067125,773645,537251,976757,763921,546267,559507,451721,1085219,1065063,1062699,20885,465263,35351,1066099,926219,1108950,961829,428275,1088693,998319,34051,922277,1104058,548675,1087029,1062385,1022959,1024573,99471,131810,336831,389963,689831,1086121,1008841,727291,980181,982965,960597,1068243,1067587,1011955,1087955,783777,993705,819057,1036631,1065191,1056669,229924,1058677,290018,1070005,597719,869303,854489,517043,1053157,786591,1108970,388830,906147,1103722,771301,1089031,811251,1010801,738621,936755,1062575,138024,991815,924803,1061955,1076595,666525,872317,1087345,868063,1070639,1037391,878569,1067749,1070885,1068525,1040213,1111004,738131,1032223,241358,1053229,1111010,688841,1070021,204722,857579,1070573,959689,1060615,1111024,1068707,431137,1103802,358544,590463,872703,1027923,975071,1059563,917372,1106754,1060771,1074509,1055711,1015899,952809,965333,1060005,1107746,1072167,1064633,1062549,1068077,1028065,941223,624683,1060317,807053,1070549,1034597,956403,1010927,979603,1086265,952831,1047543,911251,1008037,910999,506303,1020141,1059313,1053755,991091,1020001,884269,369498,539861,1002089,851545,389305,783335,1003873,133496,715667,1033195,644095,1059077,978515,1060415,1017917,1050389,1002416,1060899,740115,1067877,1089259,1006081,957767,1066179,279468,1017427,394211,766007,991575,1039093,993677,815979,1046779,155466,1014797,927635,969145,973893,295588,776111,613401,520153,1041745,1057432,953357,141440,1014739,998923,891683,592983,1070723,954141,927089,950019,999901,989749,891097,942653,1033277,955521,1083921,880721,1061899,1049795,503785,761315,1072579,933185,980635,803145,956819,997131,1014499,423651,927071,1061037,818229,1044015,1072829,713359,782193,1087291,1086197,1073771,1073077,934149,1073785,951575,990251,614185,1076773,980479,1030885,174116,1068189,1075983,525635,385442,731089,1071357,601235,1030281,296016,1028791,785627,769849,145078,1088011,1087981,1003110,739995,1031791,1072771,1071423,951161,972287,270670,96153,1086407,1059037,959739,1074655,1072317,1006391,1074483,1034521,980285,312758,1068149,644363,1072437,276978,973779,762491,152794,1028713,993743,991691,477195,726945,1070591,984141,694439,523501,564603,955619,1035281,283272,953273,962419,992569,480071,1055477,1066887,845807,801855,1073641,311790,1071091,551451,702253,540759,907527,1068113,944119,1025613,877845,564245,1076777,1073185,1072397,818407,1040707,947937,1070419,473345,1034113,939799,623317,1072585,800413,840911,1065489,36445,963307,715815,1025299,885271,1058507,181838,1029343,1087573,1003557,1058185,1051049,855513,1077277,1015853,998163,855133,902771,302718,928163,1078435,421145,855633,974523,1009825,989613,954759,1072133,362194,183658,511911,1016755,1040113,786563,1073039,1074123,1074931,226842,1079079,1074067,769917,989803,974697,870081,42937,719871,968815,885167,475813,1033479,1067427,868821,805863,1092171,220202,964099,1071903,1091457,1074929,1076271,199886,805907,1063829,1075561,1091433,1090823,194646,734225,1083609,1076287,889375,1075279,868569,1046335,855899,771269,1073813,1074053,810603,840041,1071745,1027203,195630,891907,889565,200636,1073969,1090515,806365,1068875,958035,1087927,173528,303484,1087681,815119,1020975,815373,511093,1076791,441961,1078369,949119,1087691,958965,1075709,1075653,1073321,1087749,138314,1075049,1076229,1077769,220282,826923,1073631,739393,420891,1048185,1080869,142394,1080455,1010551,963719,1073545,231612,1024425,1048801,1080301,1034913,1063327,1034583,1078423,432999,1069465,89061,1080627,1086271,1086979,1072619,831587,546359,371612,1085695,756515,977581,804397,1016771,785961,1092119,694863,1020795,1001999,393051,268628,1068773,961035,515943,1032175,816985,1029077,159080,1092365,953397,921201,562031,1093988,914082,817387,1029873,1069503,386948,1091589,736411,959723,1090677,1012563,925811,1040893,957121,1029641,953935,564557,1093614,907707,1094024,617327,1046825,940357,1092759,626347,1074503,1091237,809331,1091327,625785,628401,1092925,1046713,1092541,1032737,1058445,964653,1049751,16065,1046823,841095,1084807,1075205,1075197,163244,840755,640471,982449,953891,1079507,549509,958973,855047,645615,891721,1073241,556391,259416,1046131,1094464,1012797,1002538,647249,1082529,811227,1094224,1012895,1040229,363566,959189,999471,1023549,652687,1006533,653609,1093632,224424,782547,792203,560187,1034619,1033381,658375,818177,333619,1053371,998557,974625,887681,1085593,711291,1030369,986153,1094034,537227,782787,1023953,544971,1038421,670601,920236,1091333,1094298,1094250,1042267,1092533,1096130,1038539,1094136,232154,1093762,1025149,1088695,991989,966125,1084787,990287,1090721,1089597,989783,308116,881047,1035991,506513,1092493,239342,1093552,777097,1092041,1094554,1033993,1092873,1065335,1091915,575035,1091821,692857,702807,855233,719649,1079913,609189,1048941,544145,1042763,1056073,1045747,1088165,947885,1030187,710601,1000925,1093434,1059415,1093348,1045039,1092729,938255,282104,209748,280460,597953,1087567,991521,1094664,898981,621215,1095794,1096404,1095338,797171,536497,1034731,1098412,1086527,725053,975305,1050589,1097182,672691,993503,584991,991011,1082643,1039329,1050907,1072869,1098486,825645,1090319,1009511,1099086,569751,1035707,1008901,1097794,728175,963195,1012897,1093546,1097146,1099814,689465,1066871,1095934,1095600,1013617,671833,278204,896981,1098868,859077,1099112,1073501,623069,1100640,1021209,1099490,1095808,1098836,792039,750813,1066033,1094556,1094816,1095026,1041561,267376,1075839,1086587,1088709,1088141,1094794,595483,215174,1099060,175100,1097936,1090339,304956,1099860,1094460,752535,1095370,1101730,1097592,1083677,197378,1101974,746917,1096348,1081879,1093440,756171,982149,1095699,1059645,1100834,102937,1044659,1100828,1098750,760031,1093630,819165,1094178,1022423,1092769,1076429,1015621,1081465,599509,1058519,1033331,1024377,1096256,916918,1102552,786805,409579,1070649,324442,874341,1102458,1023603,991065,1095066,769025,1015319,768363,618207,1013355,1096566,980357,1092857,1100332,1093049,939367,950359,772389,1094966,744461,1103150,775817,1080607,606831,991415,962515,1089371,1051105,971715,1099822,1088303,949645,1096620,656833,981924,1100562,754963,887969,949162,787977,344200,348350,1094576,787637,1088527,1037375,878687,1101190,795043,795733,1060221,1051199,1098312,756173,1101544,1030077,804715,842213,805543,897555,439715,650969,273200,709721,1024331,1035449,738061,839949,842525,658029,1029793,1047341,963371,844769,757811,379688,839605,992733,93063,428081,979137,599705,996109,597617,732225,620125,1021923,737971,982109,742185,1032123,457623,866017,1008871,1000375,696087,886117,927703,417963,603359,806227,971987,980289,561729,1061245,822541,990973,1037423,1061695,1045727,982059,529599,980433,774405,423571,803415,1039257,1031237,782525,1028485,375602,92867,1023039,1020799,957355,431539,1058523,933661,1000055,1040829,752579,947065,729613,315422,763157,951081,322714,999573,999593,1011801,783005,177464,16497,898875,531361,757747,19129,845959,197286,812393,524683,984573,1036889,783937,887099,329610,1013911,93755,939323,984339,719195,868275,980061,739023,1024801,1021185,764103,787511,971437,353976,985423,985589,1037333,985611,949041,1016287,991059,326012,1295,972477,9659,986435,829045,973127,976515,561207,915038,1032669,963907,1050657,239846,809631,333369,1019615,1059525,737615,35273,897897,417343,324556,834989,949685,987963,425199,1025559,750411,1024129,309298,425585,879579,1038577,988635,966487,1044779,925943,890511,444865,854629,980653,1040327,165362,974567,736451,165512,586369,974673,847031,478121,941137,974763,228378,510645,585,522321,698697,2539,939435,738857,965009,965027,508549,21433,994647,575633,663911,576947,689033,960647,745697,961405,965797,733147,607449,142380,640503,901181,1031085,1048393,961157,637695,639673,432133,169086,920515,239516,106765,999129,924603,743851,106911,989965,94545,178484,997055,107643,657593,1043921,593763,590837,416461,625541,982537,780823,443757,807331,744565,1034569,1030139,691911,557363,855507,1047581,1025409,734767,960473,544165,976581,815871,799937,960425,602593,595043,943283,557001,959107,1010559,27361,532597,1042291,507137,1016667,945485,110921,865571,277228,961905,872079,789409,966979,950925,1009295,639305,1020835,1065103,801995,1065097,30363,1043785,15977,444495,691673,1061857,832257,887307,1037793,666127,929979,1024041,1028007,1003323,202146,900573,31753,729051,22507,1015429,825959,3511,593641,998755,1055481,716237,1057255,942133,598753,959337,681559,639517,759529,318366,5915,5889,3633,38207,941671,953595,1060939,782585,499905,821183,942603,696335,520731,671967,690579,93197,839417,930821,185068,933989,517249,722879,933637,594967,244294,1002508,920481,1048321,804361,828211,713505,708905,662127,956303,745289,291908,1060485,753027,660193,202422,29039,1046723,464641,12161,694885,119932,1055289,875619,925759,741949,697043,762845,816357,1065061,924607,832569,1043299,1050071,702969,1040255,944439,825911,598315,776029,1061191,775875,776205,131072,744227,1021817,828151,982629,650841,952777,1001719,880609,784511,813561,945115,692931,861213,1032411,945441,1055689,1038135,832993,11791,733415,220526,843487,1062767,851543,880741,1028593,856153,679517,860639,859231,859141,139666,25193,861293,861307,457285,315770,917874,5857,865001,594141,597055,892289,867957,611761,873383,610397,872909,872749,620909,879613,617905,607343,881013,833621,885591,884827,885913,887529,887527,887319,890783,762653,465905,804047,898949,979895,901137,906539,971773,615837,617107,912936,912124,911263,914890,915710,169678,919072,607633,924429,923899,924779,639801,874217,924967,635045,255608,989661,930549,691549,933081,936509,942113,716271,939007,883279,966477,969155,939403,1003979,716855,1044629,803191,1047953,1043821,1044327,992727,886455,1043965,777683,966417,572803,1042675,1025707,966317,675753,395719,156812,990155,1022213,1029369,538833,638347,977995,698749,1033189,298434,1030487,1008499,204042,744991,780163,178566,1036893,993869,854461,652915,1030819,1045241,723325,584943,885129,1010963,1015903,993545,385404,436969,1056901,182819,967989,983635,847557,527301,810683,716315,716353,1050327,986887,396805,805455,618231,672641,839823,843853,975221,801427,955631,330197,1053497,536693,719937,976265,1049005,621499,523859,971707,1038667,602487,882977,563253,933667,676421,770547,1039229,871695,1017599,853701,1026661,317966,871355,23223,989183,733473,1048511,389935,548597,756965,811583,780629,228394,1018121,898515,24267,186398,900675,669895,887883,1015205,738929,963019,819485,1016993,976443,976922,866511,897861,1056017,1015487,1040119,1027489,1013141,208496,979167,881983,701819,977089,1017453,968415,1052299,794547,1036725,727213,149138,889475,672317,934901,807829,959617,934039,825359,598733,712183,1054337,941233,624217,933481,767845,861487,957763,672005,770395,15989,940955,524713,1035525,813765,970729,1049973,736913,1023285,846459,740821,744845,949069,993227,856343,1051721,1011969,935061,858045,912732,266238,1007739,653535,203214,919028,727933,952871,872873,710755,674617,1009563,991819,953401,30265,715301,944499,536339,719197,991115,550655,953919,290742,978305,949023,954283,955475,579979,878743,954465,1005555,845991,719813,944949,845973,32597,1010997,955735,1012893,969537,40175,41289,956389,956221,1011863,41885,45677,536869,677163,956447,1050287,288846,1013389,1030871,726471,46165,759335,753899,717345,777337,906929,1000765,1024087,270310,892337,413535,765301,345242,92803,1028409,982647,754009,994503,601353,1023509,720627,524369,953233,881395,681551,100181,1037655,248144,478259,102875,103421,136282,983205,855389,104029,1060723,996455,317560,918942,940953,859113,942831,972775,125188,27417,278104,933929,665855,462163,764547,905761,279332,736649,963623,388982,982693,542131,993043,1046071,466883,136626,134628,979115,692241,986013,437889,965679,509529,744707,967215,475143,1003709,1031510,1046077,743021,965881,981419,996897,1044517,525243,634713,897639,997045,550069,938977,148064,580447,906681,601265,942047,817131,803417,1045765,581607,1008373,966003,528349,966073,527125,944071,974551,634367,945421,945695,627785,753259,696649,299738,383308,157424,968303,968409,758233,158622,765319,970627,955779,9839,1046843,762659,1026883,972901,958513,973169,293716,770419,635633,870195,951807,728625,1047087,164284,637367,1040057,952741,1000975,974185,782621,977511,612063,974275,164696,1040685,1016007,765959,937233,1018497,170364,1047483,789339,796493,786795,766755,1025625,1025633,770589,976283,90641,292818,93259,976325,810749,814067,942601,772121,1040869,976561,845371,1027215,1046039,1016331,834649,977111,877875,1023005,332303,955463,873269,936535,777891,1045029,977445,1046775,459495,948839,778087,959945,173604,844469,1017823,779363,1028301,961665,808299,976631,1049051,963751,1028737,107885,860331,811187,969117,964571,405377,984389,638031,1047197,367756,772275,331439,952785,990213,978015,103769,774573,967305,990719,1046725,993895,990739,1030135,642513,828164,973581,867897,709161,941891,314482,799873,948111,1043295,715463,1020383,801081,996219,1055035,801499,733485,1054377,1003553,350848,978605,976851,1001401,978951,980263,1024771,825199,947751,1001677,552159,761719,716225,737199,864021,1031743,731717,979319,980603,1002468,292526,754103,741253,810001,986913,944945,955747,988811,1009021,989809,989665,328224,1005141,1003993,1031035,593379,180000,329254,977127,574487,990231,306084,275478,1040185,880627,577121,543817,331167,866373,991293,824185,825423,951117,842537,223124,966649,1045301,748531,1007175,1012109,833093,862123,1001961,814165,181366,995789,561957,996005,977169,761633,841823,996223,1038939,172416,838479,974605,998229,998295,989663,1004991,998301,187972,925479,1025345,856483,999477,570629,1004137,610265,562607,973921,1045503,1025645,868095,864405,989877,91219,1044257,867439,651081,1002828,1046961,948425,800333,877681,873053,1003933,873335,1004791,1059433,378076,1044565,804349,108075,1006613,804855,1025359,785957,947191,802775,423221,768327,618487,942959,316178,934855,668391,1004795,866447,330845,889273,768457,534819,344072,1027551,941759,883433,333523,999925,717561,906885,988537,1004631,192036,443767,869203,1008737,1052713,676949,1051749,716481,807045,1008775,947263,1038757,1008957,860021,815257,215450,987051,1042229,856915,979809,1015253,514771,902701,919512,1010235,800741,760639,508883,807897,898783,604849,15757,231940,233934,522077,1016263,248006,986131,250528,260028,1016813,513557,800385,977509,804703,934319,794857,911185,2781,920286,701297,605397,914328,608183,950191,1011963,907691,1012761,916374,1032217,1017559,978559,1028005,974369,631887,1017887,771873,986565,861785,924939,576745,634005,632653,638851,636601,636655,1034021,873169,638184,646371,1004451,637781,986879,640327,1019625,643115,642765,770183,1020953,645313,645415,874199,170324,647347,648825,647317,647073,932215,126486,597983,690973,202824,540045,930005,930939,1040903,658103,771965,1011049,192810,963339,782751,782609,669219,668521,941997,697269,983331,731503,670085,1003435,273444,989089,670961,841119,835971,165050,113962,692937,710337,674749,937255,825409,1047035,927029,936805,1050425,772070,679003,682553,1005025,178664,955069,681141,692671,947335,959751,875441,687881,988765,194928,687285,690893,691441,876097,267526,976301,971567,671649,719305,693673,791171,692933,692293,598489,791195,205990,1051867,811093,887109,548475,950171,534603,218874,947015,1006933,937049,876709,289614,982339,855461,1022527,1046243,710511,930843,798193,242424,711527,1050653,714417,1032697,1050377,947379,757231,288186,421949,715473,939855,509569,717015,716637,1033591,983671,394571,738225,814101,720689,722135,995297,985067,723319,762735,1033925,989053,709670,669985,981807,1024649,876989,876333,1034893,877467,876643,292796,753801,727419,1043877,728965,712797,1039091,729147,634165,618373,731237,785053,293828,909627,985291,686323,764375,840151,684577,851555,625531,940217,866281,301822,844325,736999,442635,982585,134444,606377,737761,738023,1033923,968411,738039,986093,277530,761275,1041841,739121,739707,652869,1036695,549241,741857,768459,822879,687915,743771,991273,276000,722023,1036065,1031867,308616,762565,428101,990229,312074,963773,1033451,976861,750303,754433,981823,1029065,318264,756355,153634,317270,770143,747869,965857,1031451,598205,760115,722693,759315,961303,765729,1045633,321060,992861,990721,300856,993981,1046623,327292,964557,1015027,987361,1038547,814119,972915,742089,331049,1055931,962649,750421,772353,996791,1024719,983111,778675,775821,1000077,333217,102999,617563,626977,305688,270346,778123,1000323,717067,343646,780113,266978,1031155,344162,780569,953117,1002356,344238,887967,1013853,345604,950125,783507,971885,938407,743271,687351,788765,974611,985335,943285,798343,1005501,965981,761593,357252,800003,798383,457955,610191,984233,1031545,801743,469935,803863,803357,1006427,987277,1032161,807819,569289,147220,971719,375574,1036743,980299,986777,503553,808369,808427,809241,2023,370142,370228,646295,1004801,1007349,898721,512159,955963,987187,550889,1015045,373706,722731,945507,1024737,798421,1036217,756821,941725,139190,944235,679983,1006927,444007,825863,882093,1005295,378770,822523,990495,987473,699193,986235,809809,986525,811697,833191,644293,883111,526157,810441,1008579,910265,1024125,987389,949343,171708,954399,311476,978993,704919,977137,769551,454309,860931,301104,381114,891245,656201,705671,955017,403979,1008845,886035,476751,589917,776885,632503,644175,643683,956165,993157,733637,653249,984547,777767,620613,523565,1013711,1015339,1019033,380562,675209,975271,221384,979215,808193,824009,983781,575187,978501,641429,648351,807763,108997,1012715,1013119,1022763,626631,647003,612587,935909,574641,545799,978161,398231,763335,564043,482863,567795,407877,404219,773615,938433,783329,139934,1024429,503119,772309,636811,1053135,1011887,776807,1035959,999789,1034969,605205,602017,603629,883533,505005,616211,435809,943795,416601,753301,551395,415477,416619,682009,686957,523737,993377,576551,546589,1036979,1018891,480057,864151,161684,225356,1022303,777749,1017373,793603,1011659,574417,639537,464521,981361,988273,748085,991009,681927,984741,420943,682179,418923,420281,453057,989191,589401,670669,711557,748609,678975,1036257,1022037,511701,1008827,421485,229708,934055,501543,1032241,567717,680461,821601,499769,985281,422325,988367,460763,653603,853535,444037,449791,770681,460945,843321,978293,416781,980487,919670,1047625,1026897,1045485,1021233,1042995,981645,1485,1024149,784963,981903,784647,521955,947887,1053657,1012833,758067,901173,601983,427485,1011995,736259,1019493,429727,981939,985727,1036753,1051439,911129,889775,518517,656187,1036959,930871,435247,627613,998741,1014971,1040413,645559,243710,216260,247802,951199,581755,998883,1028241,657413,974471,50345,751725,768031,958731,982791,1001581,983031,1039685,565147,1036541,721777,880271,167140,656417,983115,735735,614645,724699,1027153,936739,984207,984121,543561,18221,575643,860557,889849,762547,900451,439841,1038267,927679,984385,686559,3535,1027403,1038765,984879,710235,1038283,864537,1039535,568579,844031,963613,944653,944897,785153,1038001,878517,751127,985539,660005,811895,985795,1035963,651849,505015,936013,576225,932539,941691,941339,955569,863393,940385,900977,986217,411923,932151,889707,988349,1032687,973841,1037837,986873,449501,986967,177552,569297,849521,515591,987287,987283,1041771,987887,309016,824133,995717,524159,309316,10291,931023,749709,469165,1019073,926877,825493,859335,736111,942765,445867,447241,447539,951947,1031603,450075,453261,456511,927133,458353,1024369,695035,459445,1031333,865515,468807,939457,743817,657931,472539,857643,874127,1049999,524313,1042547,492885,949601,509413,948831,1000327,913430,830061,512845,869039,1041803,782895,922371,1001397,932385,890335,964251,768425,885997,1024703,519981,922435,861149,456823,1014683,522611,886511,526527,527491,525947,526397,881163,859137,873111,532373,533745,882905,537067,535553,534711,891303,540059,877511,545449,543387,545461,660185,953535,545663,547311,918996,883765,21821,547615,547597,915150,897759,940907,936595,550319,777693,49965,924905,535211,551959,552397,561923,924997,922771,566205,561977,1030311,947071,564499,564609,880669,610339,967731,600171,847229,728585,920370,984551,693821,657417,957323,575781,589131,932923,985901,577237,578417,788779,586337,580441,578525,581551,1043181,935867,588823,585147,908291,591789,106673,985505,835001,596459,597883,641527,959245,1011873,598819,907391,602073,847653,603481,602035,603239,673239,917676,739041,49365,610079,626307,882119,609719,716431,1039233,1024651,613457,614503,301872,643579,781429,615751,955653,937627,936327,669883,775387,624015,958531,990589,633977,804575,630303,373704,721281,1025609,638737,643745,172352,920745,756319,672179,738241,1008041,974745,649937,653195,1023355,954319,657633,655423,653969,109111,684951,546393,760921,658669,915666,922099,656723,803321,566419,664793,665303,711423,889889,591043,530649,595229,950465,942553,996097,1030901,1028113,926113,666569,775661,673265,672237,678585,881309,690501,704999,574991,1054093,729235,685327,970645,687299,914706,694983,695751,958301,928821,610099,702535,707513,709033,923935,711543,683149,450277,448117,806391,548909,504999,922073,685935,880455,938695,533995,595031,986705,918510,695473,941331,96437,139854,977619,926195,925053,983775,28087,576501,632087,847703,861963,615481,460071,898807,765991,96379,952869,726381,1040669,537239,766047,667775,662007,1031051,863029,905609,955121,635185,90821,1029175,472825,710399,906857,416625,528571,971953,796481,947835,813761,898809,726733,994407,51185,607283,845359,221532,940137,822701,963805,883877,999031,971427,957399,934643,562393,938349,143212,810811,627011,818959,644103,318742,956627,951863,814345,813851,507169,900739,163754,994469,1047633,982683,1030115,1033863,1015111,723735,1003345,1009551,838879,941251,257454,905321,753757,311,322470,733597,780955,1064303,601263,830565,738717,1042759,949749,738145,943811,754751,1008981,28059,1044491,995411,770465,770469,780809,779467,989885,865785,695689,812805,790709,829443,987995,25175,984569,992177,959229,987867,818429,194432,954473,824515,828209,829389,352342,1048969,828349,833571,827959,836413,839785,839753,845631,836313,759189,953513,848981,834875,905715,852903,854147,857851,859223,1012175,866729,860056,859987,866505,975219,917464,866739,879539,881773,879235,855217,615087,889721,890463,890179,891709,892303,529595,901297,901087,1030127,552207,658245,926307,928151,933395,1007177,551241,479671,1030103,1033209,985683,988147,30683,1006489,1029195,1041951,1033633,767931,918874,766029,1042935,695707,612253,809461,184540,978413,520545,624873,465771,513193,791973,976307,1029139,976491,736403,975579,172908,1007853,678553,972459,863021,568399,1052325,830449,508559,864249,1029575,993841,974271,996067,942819,959685,775805,1008549,797851,991335,945913,1000617,991031,998811,508959,1054151,842425,520087,754401,965099,1029741,976873,1005491,767831,974377,178152,978215,954639,542311,996727,973101,1003425,978333,1050701,1008103,884447,181106,1008619,1020209,1001805,1024625,748045,848991,989811,315720,951063,850895,559935,1036475,989905,544953,607447,1017025,613943,982163,678807,608961,520927,1012623,745997,1045123,757213,532125,558411,977955,983047,380524,721011,652725,810907,1007839,666023,978583,993481,644271,980269,1035035,1016821,546895,717963,551293,675373,763123,938365,1015883,1014273,948165,981995,979175,920619,970019,547931,1016217,1040967,669399,632029,1000921,651595,1008805,595197,1003751,978431,933773,519155,633435,595029,946735,459337,939633,192478,1015543,244808,938413,1037593,996771,628417,1052577,672837,990829,980383,570899,956235,22339,47849,999563,1013859,637207,944743,1008591,512309,736061,1006315,724415,866861,985575,961721,1008631,979067,695237,1050685,980417,940483,1007003,1005053,1007485,954469,942647,1030095,794999,1038057,1040847,1055823,944427,792323,203690,941739,1016321,180244,984521,957069,1025847,418261,979843,990177,938509,939211,1016373,988185,1052131,714587,979851,930009,1015541,392431,1019241,928689,1022013,985231,824189,462343,926127,1009691,1023611,984739,1060501,965139,724691,853505,865831,796155,1048959,978425,754615,550127,835259,1055163,944225,1048875,530523,518675,674327,966597,1059821,1020415,536971,754617,746173,1026909,843771,733469,833295,609933,722883,1019423,480493,805773,739085,1054451,187110,836637,730725]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2576,
+        -1008
+      ],
+      "id": "234b3265-1908-43b5-81ea-a96dd5b755ec",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "ids",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2384,
+        -1008
+      ],
+      "id": "0764831b-2ac4-4aac-9c76-f8c6899b4759",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "external_id",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1904,
+        -1360
+      ],
+      "id": "74a66eca-7c8f-4c2f-86b3-cb0222219b98",
+      "name": "Split Out1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e53654ca-b65e-4848-a661-a6f3aac66d8f",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "c78863f9-8e12-48f8-9a81-013f6ca23271",
+              "name": "id",
+              "value": "={{ $json.external_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        -1168
+      ],
+      "id": "99da129e-dc89-4ed4-b84f-b271ba694dc6",
+      "name": "Set Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3d4315d1-b1be-4105-bde7-5dac2d111b06",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        784,
+        -1072
+      ],
+      "id": "7aedc07f-f8d5-4b08-ae2f-c8ec2d1c03eb",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad42e532-c476-4a1c-8ecc-0eeae77d3975",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        800,
+        -928
+      ],
+      "id": "c1d19db0-4111-43b4-994f-28900f2d3996",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 344051658,
+          "mode": "list",
+          "cachedResultName": "Full Time BB 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=344051658"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -1456
+      ],
+      "id": "91408a27-d417-4901-9d1a-ecf076d5e325",
+      "name": "Get Row from F Database4",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1293580384,
+          "mode": "list",
+          "cachedResultName": "Part Time BB 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1293580384"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Set Fields').item.json.email }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -1264
+      ],
+      "id": "1c2e25d1-a4b2-4297-8606-0dc93685c01e",
+      "name": "Get Row from F Database5",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1925310868,
+          "mode": "list",
+          "cachedResultName": "Multi Doer BB FT 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1925310868"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Set Fields').item.json.email }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -1072
+      ],
+      "id": "4043a3ce-7eea-41b6-bf54-637db4b6b53c",
+      "name": "Get Row from F Database6",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE",
+          "mode": "list",
+          "cachedResultName": "Typeform responses Founder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566832168,
+          "mode": "list",
+          "cachedResultName": "Multi Doer BB PT 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1i1WP7DO8GeAgf3Id_eyDIZuAlUOnSpcI_Nc-hDuWfHE/edit#gid=1566832168"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Set Fields').item.json.email }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        -928
+      ],
+      "id": "d9b475f4-33db-47bc-8112-f6849ac60a50",
+      "name": "Get Row from F Database7",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6l4D32lU9fYtBVUG",
+          "name": "Drew for Allocation"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "94387102-3ab8-4c0b-831f-440b41f507f8",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        784,
+        -1456
+      ],
+      "id": "e1dae756-8e8f-412c-bb5e-529a2f49bf58",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "850f0b0d-0a61-4d91-bf16-23bfdaafc37a",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        768,
+        -1264
+      ],
+      "id": "257ac0d9-859c-42fb-861b-4dd737e32d06",
+      "name": "If5"
+    }
+  ],
+  "connections": {
+    "GCP Information": {
+      "main": [
+        [
+          {
+            "node": "Get GCP Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GCP Access Token": {
+      "main": [
+        [
+          {
+            "node": "Generate OIDC ID Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OIDC ID Token": {
+      "main": [
+        [
+          {
+            "node": "Get Keap Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keap Token": {
+      "main": [
+        [
+          {
+            "node": "Set Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Tags": {
+      "main": [
+        [
+          {
+            "node": "Get Months Subscribed Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Months Subscribed Tags": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token": {
+      "main": [
+        [
+          {
+            "node": "Get Tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Month Subscribed": {
+      "main": [
+        [
+          {
+            "node": "Finalize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Month Subscribed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Output": {
+      "main": [
+        [
+          {
+            "node": "Set Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Output": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GCP Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields": {
+      "main": [
+        [
+          {
+            "node": "Get Row from F Database4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database4": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database5": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database6": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Row from F Database7": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Row from F Database6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Keap Trigger": {}
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

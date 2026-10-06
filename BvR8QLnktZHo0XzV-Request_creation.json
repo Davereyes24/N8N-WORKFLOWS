@@ -1,0 +1,1911 @@
+{
+  "name": "Request creation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "15AT2qzLP7H209Zof8CFWT-U5RzzAi04FjU3SjEGEqT4",
+          "mode": "list",
+          "cachedResultName": "Request Creation (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15AT2qzLP7H209Zof8CFWT-U5RzzAi04FjU3SjEGEqT4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 599628921,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15AT2qzLP7H209Zof8CFWT-U5RzzAi04FjU3SjEGEqT4/edit#gid=599628921"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -96
+      ],
+      "id": "4ec22e2f-967f-49e8-a0f8-cadc41f48dcc",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "N984q6VEljfzzYAr",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a609ce1c-241f-4476-b19d-b6aae145bcf0",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json['Leave Type'] }}",
+              "rightValue": "CertificateOfAttendance",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        -96
+      ],
+      "id": "0c39ec29-c26b-48d4-bcfa-91e1a0b047f3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM",
+          "mode": "list",
+          "cachedResultName": "Sprout Masterlist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11UmmeFqQmwbQhh2Cls9NvnbyZqBA_nl8yK2HTY31QWM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Doer Email",
+              "lookupValue": "={{ $('Google Sheets Trigger').item.json['Doer Email'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        -96
+      ],
+      "id": "53b9f4de-bcc0-4adc-bc54-219a8e3f91df",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fetch data from previous nodes\nconst inputData = $input.first().json;\nconst sheetData = $('Google Sheets Trigger').first().json;\n\n// Get the raw values from your inputs\nconst inOutStr = sheetData['IN/Out'] || inputData['IN/Out'];\nconst dateStr = sheetData['Date '] || sheetData['Date'] || inputData['Date'];\nconst sproutLink = inputData['Sprout Link'];\nconst schedule = inputData['PT/FT Schedule']; // Fetched in case you need it for future logic\n\n// 1. Determine LogType (IN = 0, OUT = 1)\n// We will store the types in an array to handle the \"Both\" scenario\nlet logTypes = []; \n\nif (inOutStr && typeof inOutStr === 'string') {\n    const typeNormalized = inOutStr.trim().toUpperCase();\n    if (typeNormalized === 'BOTH') {\n        // If \"Both\", we need both an IN (0) and an OUT (1) log\n        logTypes = [0, 1];\n    } else if (typeNormalized === 'OUT') {\n        logTypes = [1];\n    } else if (typeNormalized === 'IN') {\n        logTypes = [0];\n    } else {\n        // Default to IN if unrecognized\n        logTypes = [0];\n    }\n} else {\n    // Default to IN if missing\n    logTypes = [0];\n}\n\n// 2. Format LogTime\n// Validates the date from the Google Sheet and converts it to ISO8601 format.\n// If it fails to parse, it falls back to the raw string provided by the sheet.\nlet logTime = dateStr;\nif (dateStr) {\n    const parsedDate = new Date(dateStr);\n    if (!isNaN(parsedDate.getTime())) {\n        logTime = parsedDate.toISOString(); \n    }\n}\n\n// 3. Determine EmployeeId\n// Extracts the ID from the \"Sprout Link\" query parameters\n// (e.g., \"https://doneverse.hrhub.ph/Employee.aspx?id=21582&...\" -> \"21582\").\nlet employeeId = sproutLink;\nif (sproutLink && typeof sproutLink === 'string') {\n    try {\n        const url = new URL(sproutLink);\n        const id = url.searchParams.get('id');\n        if (id) {\n            employeeId = id;\n        }\n    } catch (e) {\n        // Fallback for malformed or relative URLs\n        const match = sproutLink.match(/[?&]id=([^&]+)/);\n        if (match) {\n            employeeId = match[1];\n        }\n    }\n}\n\n// 4. Construct the Details array\n// Map over the determined logTypes to create the objects for the Details array\nconst detailsArray = logTypes.map(type => {\n    return {\n        LogType: type,\n        LogTime: logTime // Note: If \"Both\", both IN and OUT will have the exact same timestamp currently.\n    };\n});\n\n// 5. Construct the final required output structure\nconst output = {\n    EmployeeId: employeeId,\n    Details: detailsArray\n};\n\n// Return the constructed payload\n// (If using an older version of n8n, you might need to use: return [{ json: output }]; )\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -128
+      ],
+      "id": "845e0942-a99c-4deb-b438-6c25b1c80653",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/CertificateOfAttendances",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<string>"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "<API Key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "TypeId",
+              "value": "0"
+            },
+            {
+              "name": "OtherRemarks",
+              "value": "request"
+            },
+            {
+              "name": "Details[0][LogType]",
+              "value": "={{ $json.Details[0].LogType }}"
+            },
+            {
+              "name": "Details[0][LogTime]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json['Employee ID'] }}"
+            },
+            {
+              "name": "Details[1][LogType]",
+              "value": "={{ $json.Details[1].LogType }}"
+            },
+            {
+              "name": "Details[1][LogTime]",
+              "value": "={{ $json.Details[1].LogTime }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        -112
+      ],
+      "id": "73d4a5e7-d3a9-425a-a3cf-117d6b2f6bfc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "23"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "true"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "false"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        -32
+      ],
+      "id": "ac5b010b-a6a6-4b96-8d91-1351c3607a15",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/empservice/api/v1/Employees/17540/LeaveTypes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        480
+      ],
+      "id": "0e73565f-dcbe-40b9-a3af-3f02e1d54e77",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        -64
+      ],
+      "id": "e8a638e6-5bc5-4568-b6b1-8b9f35f86ac8",
+      "name": "HTTP Request7",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "9bfb6c14-6e39-4cd2-9f6a-fb6d832d1630",
+      "name": "Edit Fields8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fetch data from previous nodes\nconst inputData = $input.first().json;\nconst sheetData = $('Google Sheets Trigger').first().json;\n\n// Helper to safely get values even if column names have spaces\nfunction getValue(obj, possibleKeys) {\n    for (const key of possibleKeys) {\n        if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {\n            return obj[key];\n        }\n    }\n    return undefined;\n}\n\n// Get the raw values from your inputs\nconst inOutStr = getValue(sheetData, ['IN/Out']) || getValue(inputData, ['IN/Out']);\n\nconst dateFromStr =\n    getValue(sheetData, ['Date From', 'Date From ']) ||\n    getValue(inputData, ['Date From', 'Date From ']);\n\nconst dateToStr =\n    getValue(sheetData, ['Date To', 'Date To ']) ||\n    getValue(inputData, ['Date To', 'Date To ']);\n\nconst sproutLink = inputData['Sprout Link'];\nconst schedule = inputData['PT/FT Schedule'];\n\n// Helper function to format dates safely\nfunction formatDateToISO(rawDate) {\n    if (!rawDate) return rawDate;\n\n    let parsedDate;\n\n    const dmyPattern = /^(\\d{1,2})[\\/\\-\\.](\\d{1,2})[\\/\\-\\.](\\d{4})(.*)$/;\n    const match = rawDate.toString().trim().match(dmyPattern);\n\n    if (match) {\n        const day = match[1].padStart(2, '0');\n        const month = match[2].padStart(2, '0');\n        const year = match[3];\n        const timePart = match[4].trim();\n\n        const isoDateString = `${year}-${month}-${day}`;\n\n        if (timePart) {\n            parsedDate = new Date(`${isoDateString} ${timePart}`);\n        } else {\n            parsedDate = new Date(`${isoDateString}T00:00:00`);\n        }\n    } else {\n        parsedDate = new Date(rawDate);\n    }\n\n    if (!isNaN(parsedDate.getTime())) {\n        return parsedDate.toISOString();\n    }\n\n    return rawDate;\n}\n\n// 1. Determine LogType IN = 0, OUT = 1\nlet logType = 0;\n\nif (inOutStr && typeof inOutStr === 'string') {\n    const typeNormalized = inOutStr.trim().toUpperCase();\n\n    if (typeNormalized === 'OUT') {\n        logType = 1;\n    } else if (typeNormalized === 'IN') {\n        logType = 0;\n    }\n}\n\n// 2. Format Date From and Date To\nconst dateFrom = formatDateToISO(dateFromStr);\nconst dateTo = formatDateToISO(dateToStr);\n\n// Use Date From as LogTime\nconst logTime = dateFrom;\n\n// 3. Determine EmployeeId\nlet employeeId = sproutLink;\n\nif (sproutLink && typeof sproutLink === 'string') {\n    try {\n        const url = new URL(sproutLink);\n        const id = url.searchParams.get('id');\n\n        if (id) {\n            employeeId = id;\n        }\n    } catch (e) {\n        const match = sproutLink.match(/[?&]id=([^&]+)/);\n\n        if (match) {\n            employeeId = match[1];\n        }\n    }\n}\n\n// 4. Construct the final output structure\nconst output = {\n    EmployeeId: employeeId,\n\n    // These will now appear in the output\n    DateFrom: dateFrom,\n    DateTo: dateTo,\n\n    Details: [\n        {\n            LogType: logType,\n            LogTime: logTime\n        }\n    ]\n};\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        176
+      ],
+      "id": "a9c11f26-66ca-42cf-bb40-b0aa5a9ca20c",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f151f3cf-83cb-49a8-b730-45e180aa0cb0",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json['Leave Type'] }}",
+              "rightValue": "Vacation Leave",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        112
+      ],
+      "id": "8d95dad6-e5bd-4ebd-89ad-361dd205a314",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/auth/connect/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Client_Id",
+              "value": "={{ $json['Client_Id:'] }}"
+            },
+            {
+              "name": "Client_Secret",
+              "value": "={{ $json['Client_Secret:'] }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "={{ $json.grant_type }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2720,
+        -48
+      ],
+      "id": "10d3b6be-8806-424c-a8dc-c3b73509979a",
+      "name": "HTTP Request16"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86fa0ce9-96cc-42c0-a8e2-9b083b1a270d",
+              "name": "Ocp-Apim-Subscription-Key ",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY",
+              "type": "string"
+            },
+            {
+              "id": "a8b0f9a8-9bf4-41b6-8e10-cc63545509ba",
+              "name": "Client_Id:",
+              "value": "af78dc395e20275dd2ebda49e3ae8ee96894aa394eeba706e9d2ae5d43c50180",
+              "type": "string"
+            },
+            {
+              "id": "2bef54d4-a5c3-42a8-aafb-9710ac526b9b",
+              "name": "Client_Secret:",
+              "value": "REDACTED_CLIENT_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "04410c5d-635f-4bf1-8572-9f69887652ed",
+              "name": "grant_type",
+              "value": "client_credentials",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        -32
+      ],
+      "id": "469c47a9-df7b-4b5c-864b-c12be11bd4e3",
+      "name": "Edit Fields12"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields12').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=Leave"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('HTTP Request10').item.json.details[0].id }}"
+            },
+            {
+              "name": "approverId",
+              "value": "={{ $('HTTP Request10').item.json.pendingTo[0].approverId }}"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "cancelType",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('HTTP Request10').item.json.employeeId }}"
+            },
+            {
+              "name": "Reason",
+              "value": "Error aprroval will be sent "
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2944,
+        -48
+      ],
+      "id": "61786514-9e7b-430c-a87d-b13310488a56",
+      "name": "create approvals13",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Approvals",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields12').item.json['Ocp-Apim-Subscription-Key '] }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields12').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requestType",
+              "value": "=1"
+            },
+            {
+              "name": "actionType",
+              "value": "Approve"
+            },
+            {
+              "name": "transactionId",
+              "value": "={{ $('Update row in sheet1').item.json.transactionId }}"
+            },
+            {
+              "name": "approverId",
+              "value": "=15019"
+            },
+            {
+              "name": "orderNo",
+              "value": "1"
+            },
+            {
+              "name": "cancelType",
+              "value": "1"
+            },
+            {
+              "name": "employeeId",
+              "value": "={{ $('Update row in sheet1').item.json.employeeId }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3168,
+        -48
+      ],
+      "id": "7b9224a9-89a8-4ecc-b44d-9320944ccd3e",
+      "name": "create approvals18",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.sprout.ph/timeattendance/api/v1/Leave/212578",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Accept",
+              "value": "text/plain"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "REDACTED_OCP_APIM_SUBSCRIPTION_KEY"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2096,
+        -192
+      ],
+      "id": "bb56e594-089d-408d-bae8-1c53441873a5",
+      "name": "HTTP Request10",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "358774b5-c8ff-4c0a-8dc5-7bc886a20a37",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.Length }}",
+              "rightValue": "Whole Day",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        32
+      ],
+      "id": "6d32fe76-29ad-4821-a253-6928f78fe852",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "23"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "false"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "true"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        112
+      ],
+      "id": "f8e61519-d411-4351-8219-d1cacb3826cf",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "22"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "true"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "false"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1936,
+        368
+      ],
+      "id": "42ff2354-fd46-4113-8a63-9360c04216e9",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "358774b5-c8ff-4c0a-8dc5-7bc886a20a37",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.Length }}",
+              "rightValue": "Whole Day",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1712,
+        432
+      ],
+      "id": "2511a814-aed8-4c0f-b6b4-021c4e5d066f",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "22"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "false"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "true"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2192,
+        576
+      ],
+      "id": "e08044dd-3997-49ec-a215-39d1de780590",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d89f0f53-5e63-4dda-9ca8-5ac52bdfe0af",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.Length }}",
+              "rightValue": "First Half of day",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        96
+      ],
+      "id": "a0d4fca2-8e38-46f7-a475-4c8ac61d2c2a",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "23"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "false"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "false"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2032,
+        256
+      ],
+      "id": "ce588572-15ff-42f0-970d-73e97c7505a2",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d89f0f53-5e63-4dda-9ca8-5ac52bdfe0af",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.Length }}",
+              "rightValue": "First Half of day",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1936,
+        688
+      ],
+      "id": "296c13c0-22cd-4005-a288-14a8d357e71d",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/Leaves",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $('HTTP Request7').item.json.token_type }} {{ $('HTTP Request7').item.json.access_token }}"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "={{ $('Edit Fields8').item.json['Ocp-Apim-Subscription-Key '] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "LeaveTypeId",
+              "value": "22"
+            },
+            {
+              "name": "StartAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateFrom }}"
+            },
+            {
+              "name": "EndAt",
+              "value": "={{ $('Code in JavaScript1').item.json.DateTo }}"
+            },
+            {
+              "name": "Details[0][LeaveDate]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "Details[0][IsWhole]",
+              "value": "false"
+            },
+            {
+              "name": "Details[0][IsFirstHalfOfTheDay]",
+              "value": "false"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $json.EmployeeId }}"
+            },
+            {
+              "name": "Remarks",
+              "value": "Approved by HR"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2320,
+        720
+      ],
+      "id": "faca1327-ddbd-4a49-af5d-8e446f8aa074",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Google Sheets Trigger').item.json['IN/Out'] }}",
+                    "rightValue": "In",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b92b9c74-a3cc-40a4-a87f-6a3fa5040986"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "46fff4fe-f811-4c9a-abaf-9964e47eafa2",
+                    "leftValue": "={{ $('Google Sheets Trigger').item.json['IN/Out'] }}",
+                    "rightValue": "Out",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "780a7d24-182a-41bd-ae36-d74f6d7a9827",
+                    "leftValue": "={{ $('Google Sheets Trigger').item.json['IN/Out'] }}",
+                    "rightValue": "Both",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        -192
+      ],
+      "id": "e9c2a8b7-d8ee-49f2-98f6-3e69c708c8e2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/CertificateOfAttendances",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<string>"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "<API Key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "TypeId",
+              "value": "0"
+            },
+            {
+              "name": "OtherRemarks",
+              "value": "request"
+            },
+            {
+              "name": "Details[0][LogType]",
+              "value": "={{ $json.Details[0].LogType }}"
+            },
+            {
+              "name": "Details[0][LogTime]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json['Employee ID'] }}"
+            },
+            {
+              "name": "Details[1][LogType]",
+              "value": "={{ $json.Details[1].LogType }}"
+            },
+            {
+              "name": "Details[1][LogTime]",
+              "value": "={{ $json.Details[1].LogTime }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2144,
+        336
+      ],
+      "id": "33476033-b54f-4289-a251-2d39497abee1",
+      "name": "HTTP Request9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/CertificateOfAttendances",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<string>"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "<API Key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "TypeId",
+              "value": "0"
+            },
+            {
+              "name": "OtherRemarks",
+              "value": "request"
+            },
+            {
+              "name": "Details[0][LogType]",
+              "value": "={{ $json.Details[0].LogType }}"
+            },
+            {
+              "name": "Details[0][LogTime]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json['Employee ID'] }}"
+            },
+            {
+              "name": "Details[1][LogType]",
+              "value": "={{ $json.Details[1].LogType }}"
+            },
+            {
+              "name": "Details[1][LogTime]",
+              "value": "={{ $json.Details[1].LogTime }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2208,
+        528
+      ],
+      "id": "f403dda3-418e-408c-a475-7586901aa5c6",
+      "name": "HTTP Request11"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/CertificateOfAttendances",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<string>"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "<API Key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "TypeId",
+              "value": "0"
+            },
+            {
+              "name": "OtherRemarks",
+              "value": "request"
+            },
+            {
+              "name": "Details[0][LogType]",
+              "value": "=1"
+            },
+            {
+              "name": "Details[0][LogTime]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json['Employee ID'] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        -288
+      ],
+      "id": "fcabb10e-7fe0-4b62-a5d1-f9666885398b",
+      "name": "HTTP Request12"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sprout.ph/timeattendance/api/v1/Requests/CertificateOfAttendances",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "<string>"
+            },
+            {
+              "name": "Ocp-Apim-Subscription-Key",
+              "value": "<API Key>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "TypeId",
+              "value": "0"
+            },
+            {
+              "name": "OtherRemarks",
+              "value": "request"
+            },
+            {
+              "name": "Details[0][LogType]",
+              "value": "=0"
+            },
+            {
+              "name": "Details[0][LogTime]",
+              "value": "={{ $json.Details[0].LogTime }}"
+            },
+            {
+              "name": "RequestStatusId",
+              "value": "4"
+            },
+            {
+              "name": "EmployeeId",
+              "value": "={{ $('Get row(s) in sheet').item.json['Employee ID'] }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1552,
+        -448
+      ],
+      "id": "5b2331c4-10a5-4b35-bde6-239e5b9ba0f3",
+      "name": "HTTP Request13"
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        640,
+        32
+      ],
+      "id": "7c384081-fb12-44d2-8e3b-b640021a2bc0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        272
+      ],
+      "id": "f7e56f58-0097-4831-af27-5e2f5b02ee22",
+      "name": "Wait",
+      "webhookId": "b7433db4-b453-4a01-8e81-daf54e6a127e"
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields8": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request16": {
+      "main": [
+        [
+          {
+            "node": "create approvals13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields12": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create approvals13": {
+      "main": [
+        [],
+        [
+          {
+            "node": "create approvals18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Google Sheets Trigger": {
+      "documentId": "15AT2qzLP7H209Zof8CFWT-U5RzzAi04FjU3SjEGEqT4",
+      "sheetId": 599628921,
+      "lastIndexChecked": 71
+    }
+  },
+  "pinData": {
+    "Google Sheets Trigger": [
+      {
+        "json": {
+          "Timestamp": "25/08/2026 07:53:59",
+          "Score": "",
+          "Doer Email": "angelicad.diona@doneverse.com",
+          "Leave Type": "Vacation Leave",
+          "IN/Out": "",
+          "Date From": "18/08/2026",
+          "Length": "Whole Day",
+          "Date To": "18/08/2026",
+          "Email address": "neil.boniao@outsourceddoers.com",
+          "Time IN": "",
+          "Time OUT": ""
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

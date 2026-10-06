@@ -1,0 +1,634 @@
+{
+  "name": "Google search? Keywords",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "about"
+            },
+            {
+              "name": "sheet id"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "nFJndFXA5zjCTuudP",
+          "mode": "list",
+          "cachedResultName": "Google Search Results Scraper (apify/google-search-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/nFJndFXA5zjCTuudP/input"
+        },
+        "customBody": "={\n    \"focusOnPaidAds\": false,\n    \"forceExactMatch\": false,\n    \"includeIcons\": false,\n    \"includeUnfilteredResults\": false,\n    \"maxPagesPerQuery\": 1,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"mobileResults\": false,\n    \"queries\": \"{{ $json.message.content.search_term }}\",\n    \"resultsPerPage\": 100,\n    \"saveHtml\": false,\n    \"saveHtmlToKeyValueStore\": true\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        304
+      ],
+      "id": "11de3f15-258a-432d-a50b-109470d59d55",
+      "name": "Run an Actor",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={\n  \"prompt\": \"Based on this brand description: '{{ $json.about }}', generate one concise search term that could be used to find competitors in the same market. Respond ONLY in valid JSON with this structure: { \\\"search_term\\\": \\\"...\\\" }\"\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        768,
+        352
+      ],
+      "id": "574186cc-258c-4fed-9003-5c8b0ea23935",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('When Executed by Another Workflow').item.json['sheet id'] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1286295341,
+          "mode": "list",
+          "cachedResultName": "Keyword/Google Scholar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rYARVDEuoBO865WBo6XfYNRMalWqSzptByg2RCz8MU0/edit#gid=1286295341"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Google Search\r\nTop Competitors:\r\n": "={{ $json.title }}",
+            "Website": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Core Business Keywords",
+              "displayName": "Core Business Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service-Specific Keywords",
+              "displayName": "Service-Specific Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Audience-Focused Keywords",
+              "displayName": "Audience-Focused Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Workshop / Event Keywords",
+              "displayName": "Workshop / Event Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Authority & Brand-Building Keywords",
+              "displayName": "Authority & Brand-Building Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Long-Tail SEO Keywords",
+              "displayName": "Long-Tail SEO Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Google Search\r\nTop Competitors:\r\n",
+              "displayName": "Google Search\r\nTop Competitors:\r\n",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1648,
+        272
+      ],
+      "id": "ad5647e5-c056-4385-85a0-11337af5a8b8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a market research and SEO expert. Using the search term '{{ $json.message.content.search_term }}', generate keyword ideas categorized into six groups, 10 keywords per group. Output ONLY valid JSON in this structure:\\n\\n{\\n  \\\"Core Business Keywords\\\": [\\\"...\\\"],\\n  \\\"Service-Specific Keywords\\\": [\\\"...\\\"],\\n  \\\"Audience-Focused Keywords\\\": [\\\"...\\\"],\\n  \\\"Workshop / Event Keywords\\\": [\\\"...\\\"],\\n  \\\"Authority & Brand-Building Keywords\\\": [\\\"...\\\"],\\n  \\\"Long-Tail SEO Keywords\\\": [\\\"...\\\"]\\n}\\n\\nGuidelines:\\n- Include 3–6 keywords per category.\\n- Focus on relevance to the core topic.\\n- Use natural, search-friendly phrasing.\\n- Do not include explanations or extra text — output ONLY JSON.\"\n}"
+            },
+            {
+              "content": "You are a market research and SEO expert output json format only",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        528
+      ],
+      "id": "7b452d8a-1674-48cf-abb4-d87099cfb043",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1286295341,
+          "mode": "list",
+          "cachedResultName": "Keyword/Google Scholar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xMh1N2ub8Y9kwXH_K5EX8c99VfESuWStR4RDc7jyWIw/edit#gid=1286295341"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Core Business Keywords": "={{ $json['message.content[\\'Core Business Keywords\\']'] }}",
+            "Service-Specific Keywords": "={{ $json['message.content[\\'Service-Specific Keywords\\']'] }}",
+            "Audience-Focused Keywords": "={{ $json['message.content[\\'Audience-Focused Keywords\\']'] }}",
+            "Workshop / Event Keywords": "={{ $json['message.content[\\'Workshop / Event Keywords\\']'] }}",
+            "Authority & Brand-Building Keywords": "={{ $json['message.content[\\'Authority & Brand-Building Keywords\\']'] }}",
+            "Long-Tail SEO Keywords": "={{ $json['message.content[\\'Long-Tail SEO Keywords\\']'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Core Business Keywords",
+              "displayName": "Core Business Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service-Specific Keywords",
+              "displayName": "Service-Specific Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Audience-Focused Keywords",
+              "displayName": "Audience-Focused Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Workshop / Event Keywords",
+              "displayName": "Workshop / Event Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Authority & Brand-Building Keywords",
+              "displayName": "Authority & Brand-Building Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Long-Tail SEO Keywords",
+              "displayName": "Long-Tail SEO Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Google Search\r\nTop Competitors:\r\n",
+              "displayName": "Google Search\r\nTop Competitors:\r\n",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1904,
+        592
+      ],
+      "id": "588b60ae-67bc-47f4-8983-6aafc146ae35",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "options": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        304
+      ],
+      "id": "bdb3800d-56ad-4fce-8a93-32d51b485403",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "875b811e-a11b-48ca-aaea-5fa1722c14c0",
+              "name": "about",
+              "value": "={{ $json.about }}",
+              "type": "string"
+            },
+            {
+              "id": "01dc13bf-9395-49bc-9a4e-a0c7963fcd76",
+              "name": "sheet_id",
+              "value": "={{ $json['sheet id'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        352
+      ],
+      "id": "47c298d0-2237-4872-9f81-95ce853d0447",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "organicResults",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        304
+      ],
+      "id": "0be9f902-3985-40ec-b8c4-72b0fe6defdc",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        288
+      ],
+      "id": "21455d1a-82e0-458a-9763-aa6e847c7857",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content['Core Business Keywords'], message.content['Service-Specific Keywords'], message.content['Workshop / Event Keywords'], message.content['Authority & Brand-Building Keywords'], message.content['Long-Tail SEO Keywords'], message.content['Audience-Focused Keywords']",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        560
+      ],
+      "id": "a4699cb9-52a7-4918-a21c-45f51f92b63f",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        592
+      ],
+      "id": "4c39cab4-791a-4bc0-bc58-52bb7847c465",
+      "name": "Aggregate1"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "about": "We help keep people safe from dangerous bbq brushes with the first biodegradable BBQ scraper that is 100% safe ,Local Business , target audience Business to Client (B2C)",
+          "sheet id": "1M5MhBD7u4KcYOGIwzOf394dJJkEZdtrLAIAffU7_pfQ"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

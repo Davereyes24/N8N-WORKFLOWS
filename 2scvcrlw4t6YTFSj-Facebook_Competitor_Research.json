@@ -1,0 +1,537 @@
+{
+  "name": "Facebook Competitor  Research",
+  "nodes": [
+    {
+      "parameters": {
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "KoJrdxJCTtpon81KY",
+          "mode": "list",
+          "cachedResultName": "Facebook Posts Scraper (apify/facebook-posts-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/KoJrdxJCTtpon81KY/input"
+        },
+        "customBody": "={\n    \"captionText\": false,\n    \"onlyPostsNewerThan\": \"1600 days\",\n    \"resultsLimit\": 20,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.facebookUrl }}\",\n            \"method\": \"GET\"\n        }\n    ]\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        4560,
+        -64
+      ],
+      "id": "cd768417-7b56-4e9f-b22f-c7a965f49ad6",
+      "name": "Run an Actor2",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        4848,
+        -64
+      ],
+      "id": "40845efa-a484-4bd6-bc9d-c5349debeddb",
+      "name": "Get dataset items2",
+      "credentials": {
+        "apifyApi": {
+          "id": "5CgKrpw1ODXuubrn",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "you are smart social media profiles analyses tool",
+              "role": "system"
+            },
+            {
+              "content": "=your task in to analyze JSON body and provide next information:\n{{ $json.isVideo }}{{ $json.text }}{{ $json.url }}\n{{ $json.comments }}{{ $json.likes }}\n2 most successful posts within 3 months, their URLs, media type (if \"is video\" is null then output image), number of likes, number of coments (in not specified output 0), captions.\n\nAlso analyze captions and output why this post worked so good and which trends are used. You can not see images so base this information on captions only. If There are no enough information for this analyses just output \"Not enough information\". \nexample of good \"why post worked\": \"Professional Insight: Sharing a personal experience about a book that influenced your approach to corporate politics provides valuable insight, positioning you as a thought leader.\n\nEngaging Narrative: The caption addresses common professional challenges, encouraging followers to reflect on their own experiences and consider new perspectives.\n\nCall to Action: Encouraging followers to share the post increases engagement and extends its reach.\"\n\nExample of good \"trends used\": \"Lifestyle Imagery: Featuring a candid photo of yourself in a natural setting aligns with the trend of sharing lifestyle content that humanizes the brand.\n\nEducational Content: Discussing a book that impacted your professional life taps into the trend of providing educational value to followers.\n\nPersonal Storytelling: Sharing personal experiences and insights resonates with audiences seeking authentic connections on social media.\n\nProfessional Development Focus: Addressing topics like corporate politics and leadership growth aligns with the trend of content aimed at career advancement.\n\nHashtag Optimization for Organic Reach: Posts like this likely include highly relevant hashtags that increase discoverability\"\n\n\nYour outpust must be a JSON object in such format:\n\"1post_URL\": \"\",\n\"1post_type\": \"\",\n\"1post_likes\": \"\",\n\"1post_comments\": \"\",\n\"1captions\": \"\",\n\"1why_worked\": \"\",\n\"1trends_used\": \"\",\n\"2post_URL\": \"\",\n\"2post_type\": \"\",\n\"2post_likes\": \"\",\n\"2post_comments\": \"\",\n\"2captions\": \"\",\n\"2why_worked\": \"\",\n\"2trends_used\": \"\" "
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        5424,
+        -64
+      ],
+      "id": "ad8eea6a-613d-43a7-a1e5-a46f6a734052",
+      "name": "Message a model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952139343,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_tJ81W9dQLTakukGk_ngZq_3Y1Z_fmFtuDZLGl2fY5w/edit#gid=952139343"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Page URL": "={{ $('Start').item.json.facebookUrl }}",
+            "Page Name": "={{ $('Start').item.json.name }}",
+            "Post URL": "={{ $('Message a model4').item.json.message.content['2post_URL'] }}",
+            "Post": "={{ $('Message a model4').item.json.message.content['2captions'] }}",
+            "Likes": "={{ $('Message a model4').item.json.message.content['2post_likes'] }}",
+            "Comments": "={{ $('Message a model4').item.json.message.content['2post_comments'] }}",
+            "Why this post worked: ": "={{ $('Message a model4').item.json.message.content['2why_worked'] }}",
+            "Trends Used: ": "={{ $('Message a model4').item.json.message.content['2trends_used'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Page Name",
+              "displayName": "Page Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page URL",
+              "displayName": "Page URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post",
+              "displayName": "Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post URL",
+              "displayName": "Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Why this post worked: ",
+              "displayName": "Why this post worked: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trends Used: ",
+              "displayName": "Trends Used: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What are the most common posts used by competitors",
+              "displayName": "What are the most common posts used by competitors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What are the trends used most by competitors:",
+              "displayName": "What are the trends used most by competitors:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        6144,
+        -96
+      ],
+      "id": "3f27b60d-300b-49aa-abcc-fcb5b328c988",
+      "name": "add Competitor Research10",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952139343,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_tJ81W9dQLTakukGk_ngZq_3Y1Z_fmFtuDZLGl2fY5w/edit#gid=952139343"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Page Name": "={{ $('Start').item.json.name }}",
+            "Page URL": "={{ $('Start').item.json.facebookUrl }}",
+            "Post URL": "={{ $json.message.content['1post_URL'] }}",
+            "Post": "={{ $json.message.content['1captions'] }}",
+            "Likes": "={{ $json.message.content['1post_likes'] }}",
+            "Comments": "={{ $json.message.content['1post_comments'] }}",
+            "Why this post worked: ": "={{ $json.message.content['1why_worked'] }}",
+            "Trends Used: ": "={{ $json.message.content['1trends_used'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Page Name",
+              "displayName": "Page Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Page URL",
+              "displayName": "Page URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post",
+              "displayName": "Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post URL",
+              "displayName": "Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Likes",
+              "displayName": "Likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comments",
+              "displayName": "Comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Why this post worked: ",
+              "displayName": "Why this post worked: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trends Used: ",
+              "displayName": "Trends Used: ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What are the most common posts used by competitors",
+              "displayName": "What are the most common posts used by competitors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What are the trends used most by competitors:",
+              "displayName": "What are the trends used most by competitors:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5808,
+        -224
+      ],
+      "id": "392a303f-d7c5-4bc3-b2ee-2851ad53e0f7",
+      "name": "add Competitor Research2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "facebookUrl",
+              "type": "any"
+            },
+            {
+              "name": "id",
+              "type": "any"
+            },
+            {
+              "name": "name"
+            }
+          ]
+        }
+      },
+      "id": "94fa5558-1c2c-476c-a70b-616c8fe25657",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        4352,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "url"
+            },
+            {
+              "fieldToAggregate": "text"
+            },
+            {
+              "fieldToAggregate": "likes"
+            },
+            {
+              "fieldToAggregate": "isVideo"
+            },
+            {
+              "fieldToAggregate": "comments"
+            },
+            {
+              "fieldToAggregate": "user.name"
+            },
+            {
+              "fieldToAggregate": "user.profileUrl"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        5136,
+        -64
+      ],
+      "id": "19431103-5bb5-4105-81e3-62212c7a6646",
+      "name": "Aggregate3"
+    }
+  ],
+  "connections": {
+    "Run an Actor2": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model4": {
+      "main": [
+        [
+          {
+            "node": "add Competitor Research2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add Competitor Research2": {
+      "main": [
+        [
+          {
+            "node": "add Competitor Research10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate3": {
+      "main": [
+        [
+          {
+            "node": "Message a model4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "facebookUrl": "https://www.facebook.com/nwtransformation/",
+          "id": "1_tJ81W9dQLTakukGk_ngZq_3Y1Z_fmFtuDZLGl2fY5w",
+          "name": "nwtransformation"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": null
+}

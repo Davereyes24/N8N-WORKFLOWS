@@ -1,0 +1,1068 @@
+{
+  "name": "Website Injects Database snanofit",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "=<?php\n// ====== DEBUG SETTINGS ======\nerror_reporting(E_ALL);\nini_set('display_errors', 1);\n\necho \"🔍 Starting complete WordPress setup script...<br>\";\n\n// ====== CONFIGURATION ======\n$username     = '{{ $json.username }}';\n$sqlUser      = '{{ $json.sqlUser }}';\n$sqlPass      = '{{ $json.sqlPass }}';\n$dbName       = '{{ $json.username }}_website';\n$siteEmail    = '{{ $json.siteEmail }}';\n$newPassword  = '{{ $json.newPassword }}';\n$newEmail     = '{{ $json.siteEmail }}';\n$domain       = '{{ $json.domain }}';\n$rootDirectoryPath = '{{ $json[\"Root directory\"] }}';\n\n$wpConfigPath = \"/home/$username/public_html/tmp/wp-config.php\";\n$zipFilePath  = \"/home/$username/public_html/{{ $json.zipFileName }}\";\n$sourceDir    = \"/home/$username/public_html/tmp/\";\n$targetDir    = \"/home/$username/{{ $json['Root directory'] }}/\";\n\necho \"✅ Configuration loaded<br>\";\n\n// ====== CONNECT TO DATABASE ======\ntry {\n    $mysqli = new mysqli('localhost', $username . '_' . $sqlUser, $sqlPass, $dbName);\n    if ($mysqli->connect_errno) {\n        die(\"❌ DB connect failed: \" . $mysqli->connect_error);\n    }\n    echo \"✅ Connected to database.<br>\";\n} catch (Exception $e) {\n    die(\"❌ Database exception: \" . $e->getMessage());\n}\n\n// ====== DEBUG PATHS ======\necho \"📍 <strong>Path Configuration:</strong><br>\";\necho \"Username: $username<br>\";\necho \"Root Directory Path: '$rootDirectoryPath'<br>\";\necho \"Source Dir: $sourceDir<br>\";\necho \"Target Dir: $targetDir<br>\";\necho \"WP Config Path: $wpConfigPath<br><br>\";\n\n// ====== UPDATE wp-config.php ======\necho \"📝 <strong>Updating wp-config.php...</strong><br>\";\nif (file_exists($wpConfigPath)) {\n    $config = file_get_contents($wpConfigPath);\n    if ($config !== false) {\n        $config = preg_replace(\"/define\\\\( *'DB_NAME'.*?\\\\);/\", \"define('DB_NAME', '$dbName');\", $config);\n        $config = preg_replace(\"/define\\\\( *'DB_USER'.*?\\\\);/\", \"define('DB_USER', '{$username}_{$sqlUser}');\", $config);\n        $config = preg_replace(\"/define\\\\( *'DB_PASSWORD'.*?\\\\);/\", \"define('DB_PASSWORD', '$sqlPass');\", $config);\n        \n        if (file_put_contents($wpConfigPath, $config)) {\n            echo \"✅ wp-config.php updated.<br>\";\n        } else {\n            echo \"❌ Failed to write wp-config.php. Check permissions.<br>\";\n        }\n    } else {\n        echo \"❌ Could not read wp-config.php.<br>\";\n    }\n} else {\n    echo \"⚠️ wp-config.php not found at: $wpConfigPath<br>\";\n}\n\n// ====== CHECK DIRECTORIES BEFORE MOVE ======\necho \"<br>📂 <strong>Checking directories before move:</strong><br>\";\necho \"Source exists: \" . (is_dir($sourceDir) ? 'YES' : 'NO') . \"<br>\";\necho \"Target exists: \" . (is_dir($targetDir) ? 'YES' : 'NO') . \"<br>\";\n\n// Create target directory if it doesn't exist\nif (!is_dir($targetDir)) {\n    echo \"Creating target directory...<br>\";\n    if (mkdir($targetDir, 0755, true)) {\n        echo \"✅ Target directory created.<br>\";\n    } else {\n        echo \"❌ Failed to create target directory: \" . error_get_last()['message'] . \"<br>\";\n    }\n}\n\n// ====== MOVE FILES ======\necho \"<br>📦 <strong>Moving files...</strong><br>\";\nif (is_dir($sourceDir)) {\n    $items = scandir($sourceDir);\n    if ($items !== false) {\n        $moveCount = 0;\n        $failCount = 0;\n        \n        echo \"Found \" . (count($items) - 2) . \" items to move.<br>\";\n        \n        foreach ($items as $item) {\n            if ($item === '.' || $item === '..') continue;\n            \n            $src = $sourceDir . $item;\n            $dst = $targetDir . $item;\n            \n            echo \"Moving: $item... \";\n            \n            if (rename($src, $dst)) {\n                echo \"✅<br>\";\n                $moveCount++;\n            } else {\n                echo \"❌ Error: \" . error_get_last()['message'] . \"<br>\";\n                $failCount++;\n            }\n        }\n        \n        echo \"Moved: $moveCount items, Failed: $failCount items<br>\";\n        \n        if (rmdir($sourceDir)) {\n            echo \"✅ Source directory removed.<br>\";\n        } else {\n            echo \"⚠️ Could not remove source directory.<br>\";\n        }\n    } else {\n        echo \"❌ Could not scan source directory.<br>\";\n    }\n} else {\n    echo \"⚠️ Source directory not found at: $sourceDir<br>\";\n}\n\n// ====== VERIFY FILES AFTER MOVE ======\necho \"<br>📋 <strong>Verifying target directory contents:</strong><br>\";\nif (is_dir($targetDir)) {\n    $targetItems = scandir($targetDir);\n    echo \"Target directory contains \" . (count($targetItems) - 2) . \" items.<br>\";\n    \n    // Check for WordPress files\n    $wpFiles = ['wp-config.php', 'wp-content', 'wp-admin', 'wp-includes'];\n    foreach ($wpFiles as $wpFile) {\n        $exists = file_exists($targetDir . '/' . $wpFile);\n        echo \"$wpFile: \" . ($exists ? '✅ Found' : '❌ Not found') . \"<br>\";\n    }\n}\n\n// ====== CREATE DIRECTORIES ======\n$wpRoot = rtrim($targetDir, '/');\n$muDir = $wpRoot . '/wp-content/mu-plugins';\n$opsDir = $wpRoot . '/ops';\n$tmpImportsDir = $wpRoot . '/tmp_imports';\n\necho \"<br>🔧 <strong>Creating directories...</strong><br>\";\necho \"WP Root: $wpRoot<br>\";\necho \"MU Dir: $muDir<br>\";\necho \"Ops Dir: $opsDir<br>\";\necho \"Tmp Imports Dir: $tmpImportsDir<br><br>\";\n\n// Create mu-plugins directory\nif (!is_dir($muDir)) {\n    $wpContentDir = dirname($muDir);\n    if (!is_dir($wpContentDir)) {\n        echo \"❌ wp-content directory doesn't exist at: $wpContentDir<br>\";\n    } else {\n        if (mkdir($muDir, 0755, true)) {\n            echo \"✅ Created mu-plugins directory<br>\";\n        } else {\n            echo \"❌ Failed to create mu-plugins: \" . error_get_last()['message'] . \"<br>\";\n        }\n    }\n} else {\n    echo \"ℹ️ mu-plugins directory already exists<br>\";\n}\n\n// Create ops directory  \nif (!is_dir($opsDir)) {\n    if (mkdir($opsDir, 0755, true)) {\n        echo \"✅ Created ops directory<br>\";\n    } else {\n        echo \"❌ Failed to create ops: \" . error_get_last()['message'] . \"<br>\";\n    }\n} else {\n    echo \"ℹ️ ops directory already exists<br>\";\n}\n\n// Create tmp_imports directory\nif (!is_dir($tmpImportsDir)) {\n    if (mkdir($tmpImportsDir, 0755, true)) {\n        echo \"✅ Created tmp_imports directory<br>\";\n    } else {\n        echo \"❌ Failed to create tmp_imports: \" . error_get_last()['message'] . \"<br>\";\n    }\n} else {\n    echo \"ℹ️ tmp_imports directory already exists<br>\";\n}\n\necho \"<br>✅ Directory creation process completed.<br>\";\n// ====== CREATE MU PLUGINS (UPDATED VERSIONS) ======\necho \"🧠 Creating MU plugins...<br>\";\n\n// MU Plugin #1: Elementor cache endpoint (base64 stored safely)\n$muFile1 = $muDir . '/elementor-cache-endpoint.php';\n$elementorB64 = 'PD9waHAKLyoqCiAqIFBsdWdpbiBOYW1lOiBFbGVtZW50b3IgQ2FjaGUgRW5kcG9pbnQgKE1VKQogKiBEZXNjcmlwdGlvbjogQWRkcyAvd3AtanNvbi9lbGVtZW50b3ItY2FjaGUvdjEvY2xlYXIgKFBPU1QpLiBDbGVhcnMgRWxlbWVudG9yIGZpbGVzIGNhY2hlOyBvcHRpb25hbGx5IGNsZWFycyBhIHBvc3QncyBDU1MgY2FjaGUuCiAqLwoKaWYgKCAhIGRlZmluZWQoJ0FCU1BBVEgnKSApIHsgcmV0dXJuOyB9CmlmICggISBmdW5jdGlvbl9leGlzdHMoJ2FkZF9hY3Rpb24nKSApIHsgcmV0dXJuOyB9CgphZGRfYWN0aW9uKCdyZXN0X2FwaV9pbml0JywgZnVuY3Rpb24gKCkgewogICAgaWYgKCAhIGZ1bmN0aW9uX2V4aXN0cygncmVnaXN0ZXJfcmVzdF9yb3V0ZScpICkgeyByZXR1cm47IH0KCiAgICByZWdpc3Rlcl9yZXN0X3JvdXRlKCdlbGVtZW50b3ItY2FjaGUvdjEnLCAnL2NsZWFyJywgWwogICAgICAgICdtZXRob2RzJyAgPT4gJ1BPU1QnLAogICAgICAgICdwZXJtaXNzaW9uX2NhbGxiYWNrJyA9PiBmdW5jdGlvbiAoKSB7CiAgICAgICAgICAgIHJldHVybiBmdW5jdGlvbl9leGlzdHMoJ2N1cnJlbnRfdXNlcl9jYW4nKSA/IGN1cnJlbnRfdXNlcl9jYW4oJ2VkaXRfcG9zdHMnKSA6IGZhbHNlOwogICAgICAgIH0sCiAgICAgICAgJ2NhbGxiYWNrJyA9PiBmdW5jdGlvbiAoJHJlcXVlc3QgPSBudWxsKSB7CiAgICAgICAgICAgIGlmIChmdW5jdGlvbl9leGlzdHMoJ2Vycm9yX2xvZycpKSB7IGVycm9yX2xvZygnW01VIEVsZW1lbnRvciBFbmRwb2ludF0gaW52b2tlZCcpOyB9CgogICAgICAgICAgICBpZiAoIGNsYXNzX2V4aXN0cygnXEVsZW1lbnRvclxQbHVnaW4nKSApIHsKICAgICAgICAgICAgICAgIHRyeSB7CiAgICAgICAgICAgICAgICAgICAgJHBsdWdpbiA9IFxFbGVtZW50b3JcUGx1Z2luOjppbnN0YW5jZSgpOwogICAgICAgICAgICAgICAgICAgIGlmICggaXNzZXQoJHBsdWdpbi0+ZmlsZXNfbWFuYWdlcikgJiYgbWV0aG9kX2V4aXN0cygkcGx1Z2luLT5maWxlc19tYW5hZ2VyLCAnY2xlYXJfY2FjaGUnKSApIHsKICAgICAgICAgICAgICAgICAgICAgICAgJHBsdWdpbi0+ZmlsZXNfbWFuYWdlci0+Y2xlYXJfY2FjaGUoKTsKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9IGNhdGNoIChcVGhyb3dhYmxlICRlKSB7CiAgICAgICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBXUF9FcnJvcignZWxlbWVudG9yX2NsZWFyX2ZhaWxlZCcsICRlLT5nZXRNZXNzYWdlKCksIFsnc3RhdHVzJyA9PiA1MDBdKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICAgIHJldHVybiBuZXcgV1BfRXJyb3IoJ2VsZW1lbnRvcl9ub3RfZm91bmQnLCAnRWxlbWVudG9yIG5vdCBpbnN0YWxsZWQnLCBbJ3N0YXR1cycgPT4gNDAwXSk7CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgICRwb3N0X2lkID0gMDsKICAgICAgICAgICAgaWYgKGlzX29iamVjdCgkcmVxdWVzdCkgJiYgbWV0aG9kX2V4aXN0cygkcmVxdWVzdCwgJ2dldF9wYXJhbScpKSB7CiAgICAgICAgICAgICAgICAkcG9zdF9pZCA9IGludHZhbCgkcmVxdWVzdC0+Z2V0X3BhcmFtKCdwb3N0X2lkJykpOwogICAgICAgICAgICB9CiAgICAgICAgICAgIGlmICgkcG9zdF9pZCkgewogICAgICAgICAgICAgICAgZGVsZXRlX3Bvc3RfbWV0YSgkcG9zdF9pZCwgJ19lbGVtZW50b3JfY3NzJyk7CiAgICAgICAgICAgICAgICBkZWxldGVfdHJhbnNpZW50KCdlbGVtZW50b3JfY3NzXycgLiAkcG9zdF9pZCk7CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIHJldHVybiBbJ3N1Y2Nlc3MnID0+IHRydWUsICdtZXNzYWdlJyA9PiAnRWxlbWVudG9yIGNhY2hlIGNsZWFyZWQnLCAncG9zdF9pZCcgPT4gJHBvc3RfaWRdOwogICAgICAgIH0sCiAgICBdKTsKfSk7Cg==';\n\n$elementorCode = base64_decode($elementorB64, true);\nif ($elementorCode !== false) {\n    @file_put_contents($muFile1, $elementorCode);\n    @chmod($muFile1, 0644);\n    echo \"✅ Elementor MU plugin created.<br>\";\n}\n\n// MU Plugin #2: Site Updater API Safe (NEW VERSION)\n$muFile2 = $muDir . '/site-updater-endpoint.php';\n$siteUpdaterCode = <<<'PLUGIN2'\n<?php\n/**\n * Plugin Name: Site Updater API Safe (MU) - FIXED\n * Description: Safe API that updates content without auto-publishing to avoid Elementor conflicts - FIXED URL handling\n * Version: 4.3.0\n */\n\nif ( ! defined('ABSPATH') ) { return; }\n\nadd_action('rest_api_init', function () {\n    register_rest_route('site-updater/v2', '/update', [\n        'methods'             => 'POST',\n        'callback'            => 'su_safe_content_update_handler',\n        'permission_callback' => 'su_safe_permission_check',\n    ]);\n\n    register_rest_route('site-updater/v2', '/publish', [\n        'methods'             => 'POST',\n        'callback'            => 'su_manual_publish_handler',\n        'permission_callback' => 'su_safe_permission_check',\n    ]);\n\n    register_rest_route('site-updater/v2', '/content', [\n        'methods'             => 'GET',\n        'callback'            => 'su_get_content_handler',\n        'permission_callback' => 'su_safe_permission_check',\n    ]);\n\n    register_rest_route('site-updater/v2', '/test', [\n        'methods'             => 'GET',\n        'callback'            => 'su_test_handler',\n        'permission_callback' => 'su_safe_permission_check',\n    ]);\n    \n    // NEW: Debug endpoint to check stored values\n    register_rest_route('site-updater/v2', '/debug', [\n        'methods'             => 'GET',\n        'callback'            => 'su_debug_handler',\n        'permission_callback' => 'su_safe_permission_check',\n    ]);\n});\n\nfunction su_safe_permission_check() {\n    if (current_user_can('manage_options')) {\n        return true;\n    }\n\n    $auth_header = '';\n    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {\n        $auth_header = $_SERVER['HTTP_AUTHORIZATION'];\n    } elseif (function_exists('getallheaders')) {\n        $headers = getallheaders();\n        $auth_header = isset($headers['Authorization']) ? $headers['Authorization'] : '';\n    }\n\n    if (strpos($auth_header, 'Basic ') === 0) {\n        return current_user_can('manage_options');\n    }\n\n    return new WP_Error('unauthorized', 'Authentication required', ['status' => 401]);\n}\n\nfunction su_test_handler( WP_REST_Request $req ) {\n    return new WP_REST_Response([\n        'status' => 'success',\n        'message' => 'API authentication working',\n        'timestamp' => current_time('mysql'),\n        'user' => wp_get_current_user()->user_login ?? 'anonymous'\n    ], 200);\n}\n\n// NEW: Debug handler to check what's stored\nfunction su_debug_handler( WP_REST_Request $req ) {\n    global $wpdb;\n    \n    $section = $req->get_param('section') ?? 'header';\n    $key = $req->get_param('key') ?? 'image1';\n    \n    $option_name = \"dyn_{$section}_{$key}\";\n    $value = get_option($option_name, 'NOT_FOUND');\n    \n    // Get all dyn_ options for debugging\n    $results = $wpdb->get_results(\n        \"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'dyn_%' ORDER BY option_name\",\n        ARRAY_A\n    );\n    \n    $attachment_id = 0;\n    if ($value !== 'NOT_FOUND' && filter_var($value, FILTER_VALIDATE_URL)) {\n        $attachment_id = attachment_url_to_postid($value);\n    }\n    \n    return new WP_REST_Response([\n        'debug_info' => [\n            'requested_option' => $option_name,\n            'stored_value' => $value,\n            'value_length' => strlen($value),\n            'is_url' => filter_var($value, FILTER_VALIDATE_URL) !== false,\n            'attachment_id' => $attachment_id,\n            'timestamp' => current_time('mysql')\n        ],\n        'all_dyn_options' => $results\n    ]);\n}\n\n/**\n * FIXED Safe Content Update - Better URL handling\n */\nfunction su_safe_content_update_handler( WP_REST_Request $req ) {\n    try {\n        $payload = $req->get_json_params();\n        \n        if (!is_array($payload)) {\n            return new WP_REST_Response(['error' => 'Invalid JSON payload'], 400);\n        }\n\n        $results = [\n            'status' => 'success',\n            'updated_count' => 0,\n            'updated_keys' => [],\n            'errors' => [],\n            'cache_cleared' => false,\n            'timestamp' => current_time('mysql'),\n            'note' => 'Content updated successfully with FIXED URL handling. Pages remain in current status to avoid Elementor conflicts.'\n        ];\n\n        // FIXED: Better content handling with proper URL preservation\n        if (!empty($payload['content']) && is_array($payload['content'])) {\n            foreach ($payload['content'] as $section => $content) {\n                if (!is_array($content)) {\n                    $results['errors'][] = \"Section '{$section}' must be an object\";\n                    continue;\n                }\n\n                foreach ($content as $key => $value) {\n                    try {\n                        $option_name = \"dyn_\" . sanitize_key($section) . \"_\" . sanitize_key($key);\n                        $old_value = get_option($option_name, null);\n                        \n                        // FIXED: Better value sanitization that preserves URLs\n                        $sanitized_value = su_safe_sanitize_value($value);\n                        \n                        // Simple option update - safe operation\n                        $update_result = update_option($option_name, $sanitized_value);\n                        \n                        $results['updated_keys'][] = [\n                            'section' => $section,\n                            'key' => $key,\n                            'option_name' => $option_name,\n                            'old_value' => $old_value,\n                            'new_value' => $sanitized_value,\n                            'original_value' => $value,\n                            'update_success' => $update_result,\n                            'is_url' => filter_var($sanitized_value, FILTER_VALIDATE_URL) !== false\n                        ];\n                        $results['updated_count']++;\n                        \n                    } catch (Exception $e) {\n                        $results['errors'][] = \"Failed to update {$option_name}: \" . $e->getMessage();\n                    }\n                }\n            }\n        }\n\n        // Only clear simple caches - avoid Elementor operations\n        $options = $payload['options'] ?? [];\n        if ($options['clear_cache'] ?? true) {\n            $results['cache_cleared'] = su_safe_simple_cache_clear();\n        }\n\n        return new WP_REST_Response($results, 200);\n        \n    } catch (Exception $e) {\n        return new WP_REST_Response([\n            'status' => 'error',\n            'message' => 'Server error: ' . $e->getMessage(),\n            'timestamp' => current_time('mysql')\n        ], 500);\n    }\n}\n\n/**\n * FIXED: Better value sanitization that preserves URLs properly\n */\nfunction su_safe_sanitize_value($value) {\n    // If it looks like a URL, treat it as such\n    if (filter_var($value, FILTER_VALIDATE_URL)) {\n        return esc_url_raw($value);\n    }\n    \n    // If it looks like a relative URL path (starts with /)\n    if (is_string($value) && (strpos($value, '/wp-content/') === 0 || strpos($value, '/') === 0)) {\n        return esc_url_raw($value);\n    }\n    \n    // If it contains common image extensions, treat as URL\n    if (is_string($value) && preg_match('/\\.(jpg|jpeg|png|gif|webp|svg)(\\?.*)?$/i', $value)) {\n        return esc_url_raw($value);\n    }\n    \n    // If it's numeric, keep as is\n    if (is_numeric($value)) {\n        return $value;\n    }\n    \n    // For everything else, use basic sanitization\n    return sanitize_text_field($value);\n}\n\n/**\n * Manual publish endpoint - separate from content updates (unchanged)\n */\nfunction su_manual_publish_handler( WP_REST_Request $req ) {\n    try {\n        $payload = $req->get_json_params();\n        $options = $payload['options'] ?? [];\n        $post_ids = $payload['post_ids'] ?? []; // NEW: Accept specific post IDs\n\n        $results = [\n            'status' => 'success',\n            'published_pages' => [],\n            'timestamp' => current_time('mysql')\n        ];\n\n        // NEW: If specific post IDs provided, use those. Otherwise, get all draft/private\n        if (!empty($post_ids) && is_array($post_ids)) {\n            // Publish specific posts\n            $page_ids = array_map('intval', $post_ids);\n            $page_ids = array_filter($page_ids, function($id) { return $id > 0; });\n        } else {\n            // Original behavior - get all draft/private posts\n            $page_ids = get_posts([\n                'post_type' => ['page', 'post'],\n                'post_status' => ['draft', 'private'],\n                'posts_per_page' => -1,\n                'fields' => 'ids',\n                'suppress_filters' => true\n            ]);\n        }\n\n        foreach ($page_ids as $page_id) {\n            // NEW: For specific IDs, check if post exists and can be published\n            if (!empty($post_ids)) {\n                $post = get_post($page_id);\n                if (!$post || !in_array($post->post_status, ['draft', 'private', 'publish'])) {\n                    continue; // Skip if post doesn't exist or has invalid status\n                }\n            }\n\n            $updated = wp_update_post([\n                'ID' => $page_id,\n                'post_status' => 'publish'\n            ], true);\n\n            if (!is_wp_error($updated)) {\n                $page = get_post($page_id);\n                $results['published_pages'][] = [\n                    'page_id' => $page_id,\n                    'title' => $page->post_title,\n                    'url' => get_permalink($page_id)\n                ];\n            }\n        }\n\n        return new WP_REST_Response($results, 200);\n        \n    } catch (Exception $e) {\n        return new WP_REST_Response([\n            'status' => 'error',\n            'message' => 'Publish error: ' . $e->getMessage()\n        ], 500);\n    }\n}\n\nfunction su_get_content_handler( WP_REST_Request $req ) {\n    global $wpdb;\n    \n    $results = $wpdb->get_results(\n        \"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'dyn_%'\",\n        ARRAY_A\n    );\n\n    $content = [];\n    foreach ($results as $result) {\n        $option_name = $result['option_name'];\n        $parts = explode('_', $option_name, 3);\n        \n        if (count($parts) >= 3) {\n            $section = $parts[1];\n            $key = $parts[2];\n            \n            if (!isset($content[$section])) {\n                $content[$section] = [];\n            }\n            $content[$section][$key] = $result['option_value'];\n        }\n    }\n\n    return new WP_REST_Response([\n        'content' => $content,\n        'timestamp' => current_time('mysql'),\n        'site_url' => get_site_url()\n    ]);\n}\n\n/**\n * Simple cache clearing - avoid Elementor operations (unchanged)\n */\nfunction su_safe_simple_cache_clear() {\n    $cleared = [];\n    \n    try {\n        // Basic WordPress cache\n        if (function_exists('wp_cache_flush')) {\n            wp_cache_flush();\n            $cleared[] = 'WordPress Cache';\n        }\n\n        // Plugin caches (but not Elementor)\n        if (function_exists('w3tc_flush_all')) {\n            w3tc_flush_all();\n            $cleared[] = 'W3 Total Cache';\n        }\n\n        if (function_exists('wp_cache_clear_cache')) {\n            wp_cache_clear_cache();\n            $cleared[] = 'WP Super Cache';\n        }\n\n        if (function_exists('rocket_clean_domain')) {\n            rocket_clean_domain();\n            $cleared[] = 'WP Rocket';\n        }\n        \n    } catch (Exception $e) {\n        // Continue on error\n    }\n\n    return $cleared;\n}\nPLUGIN2;\n\n@file_put_contents($muFile2, $siteUpdaterCode);\n@chmod($muFile2, 0644);\necho \"✅ Site Updater API Safe MU plugin created.<br>\";\n\n// MU Plugin #3: SU Dynamic Tags (NEW)\n$muFile3 = $muDir . '/su-dynamic-tags.php';\n$dynamicTagsCode = <<<'PLUGIN3'\n<?php\n/**\n * Plugin Name: SU Dynamic Tags Complete with Working Image Sizing (MU)\n * Description: All dynamic tags including working counter and WORKING image handling with sizing controls\n * Version: 4.0.0\n */\n\nif ( ! defined('ABSPATH') ) { exit; }\n\nadd_action('elementor/dynamic_tags/register', function($dynamic_tags) {\n    \n    // Text Content Tag\n    if (!class_exists('SU_Clean_Text_Tag')) {\n        class SU_Clean_Text_Tag extends \\Elementor\\Core\\DynamicTags\\Tag {\n            \n            public function get_name() { return 'su_clean_text'; }\n            public function get_title() { return 'SU Text Content'; }\n            public function get_group() { return 'site'; }\n            public function get_categories() { return [\\Elementor\\Modules\\DynamicTags\\Module::TEXT_CATEGORY]; }\n\n            protected function register_controls() {\n                $this->add_control('clean_text_section', [\n                    'label' => 'Section',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'hero' => 'Hero',\n                        'header' => 'Header',\n                        'about' => 'About',\n                        'services' => 'Services',\n                        'contact' => 'Contact',\n                        'company' => 'Company',\n                        'footer' => 'Footer',\n                    ],\n                    'default' => 'hero',\n                ]);\n\n                $this->add_control('clean_text_key', [\n                    'label' => 'Content Key',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'placeholder' => 'title, subtitle, phone, email...',\n                ]);\n\n                $this->add_control('clean_text_fallback', [\n                    'label' => 'Fallback Text',\n                    'type' => \\Elementor\\Controls_Manager::TEXTAREA,\n                ]);\n            }\n\n            public function render() {\n                $settings = $this->get_settings();\n                $section = $settings['clean_text_section'] ?? 'hero';\n                $key = trim($settings['clean_text_key'] ?? '');\n                $fallback = $settings['clean_text_fallback'] ?? '';\n\n                if (empty($key)) {\n                    echo esc_html($fallback);\n                    return;\n                }\n\n                $option_name = \"dyn_{$section}_{$key}\";\n                $value = get_option($option_name, $fallback);\n                echo esc_html($value);\n            }\n        }\n    }\n\n    // URL Tag\n    if (!class_exists('SU_Clean_URL_Tag')) {\n        class SU_Clean_URL_Tag extends \\Elementor\\Core\\DynamicTags\\Tag {\n            \n            public function get_name() { return 'su_clean_url'; }\n            public function get_title() { return 'SU URL Content'; }\n            public function get_group() { return 'site'; }\n            public function get_categories() { return [\\Elementor\\Modules\\DynamicTags\\Module::URL_CATEGORY]; }\n\n            protected function register_controls() {\n                $this->add_control('clean_url_section', [\n                    'label' => 'Section',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'hero' => 'Hero',\n                        'header' => 'Header', \n                        'social' => 'Social',\n                        'contact' => 'Contact',\n                    ],\n                    'default' => 'hero',\n                ]);\n\n                $this->add_control('clean_url_key', [\n                    'label' => 'URL Key',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'placeholder' => 'button_url, facebook_url, logo_url...',\n                ]);\n\n                $this->add_control('clean_url_fallback', [\n                    'label' => 'Fallback URL',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'default' => '#',\n                ]);\n            }\n\n            public function render() {\n                $settings = $this->get_settings();\n                $section = $settings['clean_url_section'] ?? 'hero';\n                $key = trim($settings['clean_url_key'] ?? '');\n                $fallback = $settings['clean_url_fallback'] ?? '#';\n\n                if (empty($key)) {\n                    echo esc_url($fallback);\n                    return;\n                }\n\n                $option_name = \"dyn_{$section}_{$key}\";\n                $value = get_option($option_name, $fallback);\n                echo esc_url($value);\n            }\n        }\n    }\n\n    // Working Data Tag - Clean Implementation with Image Sizing\n    if (!class_exists('SU_Working_Data_Tag')) {\n        class SU_Working_Data_Tag extends \\Elementor\\Core\\DynamicTags\\Data_Tag {\n            \n            public function get_name() { return 'su_working_data'; }\n            public function get_title() { return 'SU Working Data Tag'; }\n            public function get_group() { return 'media'; }\n            public function get_categories() { \n                return [\\Elementor\\Modules\\DynamicTags\\Module::IMAGE_CATEGORY]; \n            }\n\n            protected function register_controls() {\n                $this->add_control('section', [\n                    'label' => 'Section',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'header' => 'Header',\n                        'hero' => 'Hero',\n                        'services' => 'Services',\n                        'about' => 'About',\n                    ],\n                    'default' => 'header',\n                ]);\n\n                $this->add_control('key', [\n                    'label' => 'Image Key',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'default' => 'image1',\n                ]);\n\n                // Add fallback for better reliability\n                $this->add_control('fallback_image', [\n                    'label' => 'Fallback Image',\n                    'type' => \\Elementor\\Controls_Manager::MEDIA,\n                    'dynamic' => [\n                        'active' => true,\n                        'categories' => [\n                            \\Elementor\\Modules\\DynamicTags\\Module::IMAGE_CATEGORY,\n                        ],\n                    ],\n                ]);\n            }\n\n            public function get_value(array $options = []) {\n                $settings = $this->get_settings();\n                $section = $settings['section'] ?? 'header';\n                $key = trim($settings['key'] ?? 'image1');\n                \n                $option_name = \"dyn_{$section}_{$key}\";\n                $url = get_option($option_name, '');\n                $attachment_id = 0;\n                \n                if (!empty($url)) {\n                    $attachment_id = attachment_url_to_postid($url);\n                }\n                \n                // Handle fallback\n                if (empty($attachment_id)) {\n                    $fallback = $settings['fallback_image'] ?? [];\n                    if (!empty($fallback['id'])) {\n                        $attachment_id = $fallback['id'];\n                    }\n                }\n                \n                if ($attachment_id && wp_attachment_is_image($attachment_id)) {\n                    return [\n                        'id' => $attachment_id,\n                        'url' => wp_get_attachment_image_url($attachment_id, 'full'),\n                        'alt' => get_post_meta($attachment_id, '_wp_attachment_image_alt', true),\n                    ];\n                }\n                \n                return false;\n            }\n        }\n    }\n\n    // Counter Number Tag\n    if (!class_exists('SU_Clean_Counter_Tag')) {\n        class SU_Clean_Counter_Tag extends \\Elementor\\Core\\DynamicTags\\Tag {\n            \n            public function get_name() { return 'su_clean_counter'; }\n            public function get_title() { return 'SU Counter Number'; }\n            public function get_group() { return 'site'; }\n            public function get_categories() { return [\\Elementor\\Modules\\DynamicTags\\Module::TEXT_CATEGORY]; }\n\n            protected function register_controls() {\n                $this->add_control('clean_counter_section', [\n                    'label' => 'Section',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'hero' => 'Hero',\n                        'stats' => 'Statistics',\n                        'about' => 'About',\n                        'services' => 'Services',\n                        'company' => 'Company',\n                    ],\n                    'default' => 'hero',\n                ]);\n\n                $this->add_control('clean_counter_key', [\n                    'label' => 'Counter Key',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'placeholder' => 'years_experience, clients_served, projects_completed...',\n                ]);\n\n                $this->add_control('clean_counter_fallback', [\n                    'label' => 'Fallback Number',\n                    'type' => \\Elementor\\Controls_Manager::NUMBER,\n                    'default' => 0,\n                ]);\n\n                $this->add_control('clean_counter_format', [\n                    'label' => 'Number Format',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'none' => 'No formatting (1234)',\n                        'comma' => 'Comma separated (1,234)',\n                        'plus' => 'Add plus sign (1,234+)',\n                        'percent' => 'Add percent (1,234%)',\n                    ],\n                    'default' => 'comma',\n                ]);\n            }\n\n            public function render() {\n                $settings = $this->get_settings();\n                $section = $settings['clean_counter_section'] ?? 'hero';\n                $key = trim($settings['clean_counter_key'] ?? '');\n                $fallback = intval($settings['clean_counter_fallback'] ?? 0);\n                $format = $settings['clean_counter_format'] ?? 'comma';\n\n                if (empty($key)) {\n                    echo $this->format_number($fallback, $format);\n                    return;\n                }\n\n                $option_name = \"dyn_{$section}_{$key}\";\n                $value = get_option($option_name, $fallback);\n                \n                // Ensure it's a number\n                $number = intval($value);\n                echo $this->format_number($number, $format);\n            }\n\n            private function format_number($number, $format) {\n                switch ($format) {\n                    case 'comma':\n                        return number_format($number);\n                    case 'plus':\n                        return number_format($number) . '+';\n                    case 'percent':\n                        return number_format($number) . '%';\n                    case 'none':\n                    default:\n                        return $number;\n                }\n            }\n        }\n    }\n    \n    // Counter Number Tag for Counter Widgets\n    if (!class_exists('SU_Counter_Number_Tag')) {\n     class SU_Counter_Number_Tag extends \\Elementor\\Core\\DynamicTags\\Tag {\n        \n        public function get_name() { return 'su_counter_number'; }\n        public function get_title() { return 'SU Counter (Number)'; }\n        public function get_group() { return 'site'; }\n        public function get_categories() { return [\\Elementor\\Modules\\DynamicTags\\Module::NUMBER_CATEGORY]; }\n\n        protected function register_controls() {\n            $this->add_control('number_counter_section', [\n                'label' => 'Section',\n                'type' => \\Elementor\\Controls_Manager::SELECT,\n                'options' => [\n                    'hero' => 'Hero',\n                    'stats' => 'Statistics',\n                    'about' => 'About',\n                    'services' => 'Services',\n                    'company' => 'Company',\n                ],\n                'default' => 'hero',\n            ]);\n\n            $this->add_control('number_counter_key', [\n                'label' => 'Counter Key',\n                'type' => \\Elementor\\Controls_Manager::TEXT,\n                'placeholder' => 'years_experience, clients_served...',\n                'default' => 'years_experience',\n            ]);\n\n            $this->add_control('number_counter_fallback', [\n                'label' => 'Fallback Number',\n                'type' => \\Elementor\\Controls_Manager::NUMBER,\n                'default' => 0,\n            ]);\n        }\n\n        public function render() {\n            $settings = $this->get_settings();\n            $section = $settings['number_counter_section'] ?? 'hero';\n            $key = trim($settings['number_counter_key'] ?? 'years_experience');\n            $fallback = intval($settings['number_counter_fallback'] ?? 0);\n\n            if (empty($key)) {\n                echo $fallback;\n                return;\n            }\n\n            $option_name = \"dyn_{$section}_{$key}\";\n            $value = get_option($option_name, $fallback);\n            \n            // Return raw number for counter widgets\n            echo intval($value);\n        }\n     }\n    }\n\n    // DEBUG TAG for testing (kept from original)\n    if (!class_exists('SU_Debug_Image_Tag')) {\n        class SU_Debug_Image_Tag extends \\Elementor\\Core\\DynamicTags\\Tag {\n            \n            public function get_name() { return 'su_debug_image'; }\n            public function get_title() { return 'SU Image Debug'; }\n            public function get_group() { return 'site'; }\n            public function get_categories() { return [\\Elementor\\Modules\\DynamicTags\\Module::TEXT_CATEGORY]; }\n\n            protected function register_controls() {\n                $this->add_control('debug_section', [\n                    'label' => 'Section',\n                    'type' => \\Elementor\\Controls_Manager::SELECT,\n                    'options' => [\n                        'header' => 'Header',\n                        'hero' => 'Hero',\n                        'about' => 'About',\n                        'gallery' => 'Gallery',\n                    ],\n                    'default' => 'header',\n                ]);\n\n                $this->add_control('debug_key', [\n                    'label' => 'Image Key',\n                    'type' => \\Elementor\\Controls_Manager::TEXT,\n                    'default' => 'image1',\n                ]);\n            }\n\n            public function render() {\n                $settings = $this->get_settings();\n                $section = $settings['debug_section'] ?? 'header';\n                $key = trim($settings['debug_key'] ?? 'image1');\n                \n                $option_name = \"dyn_{$section}_{$key}\";\n                $stored_value = get_option($option_name, 'NOT_FOUND');\n                $attachment_id = 0;\n                \n                if ($stored_value !== 'NOT_FOUND' && filter_var($stored_value, FILTER_VALIDATE_URL)) {\n                    $attachment_id = attachment_url_to_postid($stored_value);\n                }\n                \n                echo \"<div style='background:#000;color:#0f0;padding:10px;font-size:12px;font-family:monospace;border:2px solid #0f0;'>\";\n                echo \"DEBUG IMAGE TAG<br>\";\n                echo \"Option: {$option_name}<br>\";\n                echo \"Stored: {$stored_value}<br>\";\n                echo \"Length: \" . strlen($stored_value) . \"<br>\";\n                echo \"Is URL: \" . (filter_var($stored_value, FILTER_VALIDATE_URL) ? 'YES' : 'NO') . \"<br>\";\n                echo \"Attachment ID: {$attachment_id}<br>\";\n                echo \"Section: {$section}<br>\";\n                echo \"Key: {$key}<br>\";\n                echo \"Timestamp: \" . current_time('Y-m-d H:i:s') . \"<br>\";\n                echo \"</div>\";\n            }\n        }\n    }\n\n    // Register all tags\n    try {\n        $dynamic_tags->register(new SU_Clean_Text_Tag());\n        $dynamic_tags->register(new SU_Clean_URL_Tag());\n        $dynamic_tags->register(new SU_Working_Data_Tag());\n        $dynamic_tags->register(new SU_Clean_Counter_Tag());\n        $dynamic_tags->register(new SU_Counter_Number_Tag());\n        $dynamic_tags->register(new SU_Debug_Image_Tag());\n    } catch (Exception $e) {\n        error_log('SU Dynamic Tags Registration Error: ' . $e->getMessage());\n    }\n});\n\n// CSS approach that works with Elementor's image controls\nadd_action('wp_head', function() {\n    echo '<style>\n        /* Target Elementor image widgets with dynamic content more specifically */\n        .elementor-widget-image .elementor-image img,\n        .elementor-widget-image-box .elementor-image-box-img img {\n            /* Let Elementor handle sizing first, then override if needed */\n        }\n        \n        /* Utility classes for manual control via Elementor CSS classes */\n        .su-image-cover img {\n            width: 100% !important;\n            height: 300px !important;\n            object-fit: cover !important;\n            object-position: center !important;\n        }\n        \n        .su-image-contain img {\n            width: 100% !important;\n            height: 300px !important;\n            object-fit: contain !important;\n            object-position: center !important;\n        }\n        \n        .su-image-fill img {\n            width: 100% !important;\n            height: 300px !important;\n            object-fit: fill !important;\n        }\n        \n        .su-image-small img {\n            width: 100% !important;\n            height: 200px !important;\n            object-fit: cover !important;\n        }\n        \n        .su-image-medium img {\n            width: 100% !important;\n            height: 300px !important;\n            object-fit: cover !important;\n        }\n        \n        .su-image-large img {\n            width: 100% !important;\n            height: 400px !important;\n            object-fit: cover !important;\n        }\n        \n        /* Mobile responsive */\n        @media (max-width: 767px) {\n            .su-image-cover img,\n            .su-image-contain img,\n            .su-image-medium img {\n                height: 200px !important;\n            }\n            \n            .su-image-large img {\n                height: 250px !important;\n            }\n        }\n        \n        /* Service box specific sizing */\n        .su-service-image img {\n            width: 100% !important;\n            height: 250px !important;\n            object-fit: cover !important;\n            object-position: center !important;\n        }\n        \n        @media (max-width: 767px) {\n            .su-service-image img {\n                height: 180px !important;\n            }\n        }\n    </style>';\n}, 100); // Higher priority to override Elementor\n\n// JavaScript solution for dynamic sizing control\nadd_action('wp_footer', function() {\n    if (is_admin()) return; // Don't run in admin\n    \n    echo '<script>\n        document.addEventListener(\"DOMContentLoaded\", function() {\n            // Function to apply image sizing\n            function applySUImageSizing() {\n                // Find all images in Elementor widgets\n                const imageWidgets = document.querySelectorAll(\".elementor-widget-image, .elementor-widget-image-box\");\n                \n                imageWidgets.forEach(function(widget) {\n                    const img = widget.querySelector(\"img\");\n                    if (!img) return;\n                    \n                    // Check if this widget has SU dynamic content (you can identify by checking URL pattern)\n                    const imgSrc = img.src;\n                    if (imgSrc && imgSrc.includes(\"wp-content/uploads\")) {\n                        // Apply default sizing for dynamic images\n                        img.style.width = \"100%\";\n                        img.style.height = \"300px\";\n                        img.style.objectFit = \"cover\";\n                        img.style.objectPosition = \"center\";\n                        \n                        // Add class for easier targeting\n                        widget.classList.add(\"su-dynamic-sized\");\n                    }\n                });\n            }\n            \n            // Apply sizing immediately\n            applySUImageSizing();\n            \n            // Reapply after images load\n            setTimeout(applySUImageSizing, 1000);\n        });\n        \n        // Expose function globally for manual control\n        window.setSUImageSize = function(selector, height, fit) {\n            const elements = document.querySelectorAll(selector + \" img\");\n            elements.forEach(function(img) {\n                img.style.width = \"100%\";\n                img.style.height = height + \"px\";\n                img.style.objectFit = fit || \"cover\";\n                img.style.objectPosition = \"center\";\n            });\n        };\n    </script>';\n});\nPLUGIN3;\n\n@file_put_contents($muFile3, $dynamicTagsCode);\n@chmod($muFile3, 0644);\necho \"✅ SU Dynamic Tags MU plugin created.<br>\";\n\n// MU Plugin #4: SU Backup and Document Management API (NEW)\n$muFile4 = $muDir . '/su-backup-api.php';\n$backupApiCode = <<<'PLUGIN4'\n<?php\n/**\n * Plugin Name: SU Backup & Document Management API (MU)\n * Description: Complete backup system and document management for Elementor sites\n * Version: 1.0.0\n */\n\nif ( ! defined('ABSPATH') ) { return; }\n\nadd_action('rest_api_init', function () {\n\t// Original dynamic values endpoint\n\tregister_rest_route('su/v1', '/dynamic-values', [\n\t\t'methods'  => 'GET',\n\t\t'callback' => function () {\n\t\t\tglobal $wpdb;\n\t\t\t$options = $wpdb->get_results(\"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'dyn_%' AND option_value IS NOT NULL AND option_value != ''\");\n\t\t\t$out = [];\n\t\t\tforeach ($options as $o) {\n\t\t\t\t$v = maybe_unserialize($o->option_value);\n\t\t\t\t$out[$o->option_name] = is_string($v) ? wp_unslash($v) : $v;\n\t\t\t}\n\t\t\treturn new WP_REST_Response(['success'=>true,'values'=>$out], 200);\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// Original doc export endpoint\n\tregister_rest_route('su/v1', '/doc-export', [\n\t\t'methods'  => 'GET',\n\t\t'args'     => ['id' => ['type'=>'integer','required'=>true]],\n\t\t'callback' => function ($req) {\n\t\t\t$id = (int) $req->get_param('id');\n\t\t\t$elements = [];\n\t\t\t$settings = [];\n\t\t\tif (class_exists('\\Elementor\\Plugin')) {\n\t\t\t\t$doc = \\Elementor\\Plugin::$instance->documents->get($id);\n\t\t\t\tif ($doc) {\n\t\t\t\t\t$elements = method_exists($doc,'get_elements_raw_data') ? $doc->get_elements_raw_data(true) : (method_exists($doc,'get_elements_data') ? $doc->get_elements_data() : []);\n\t\t\t\t\t$settings = method_exists($doc,'get_settings') ? (array) $doc->get_settings() : [];\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (!$elements) {\n\t\t\t\t$raw = get_post_meta($id, '_elementor_data', true);\n\t\t\t\t$elements = json_decode(wp_unslash($raw), true) ?: [];\n\t\t\t}\n\t\t\tif (!$settings) {\n\t\t\t\t$raw = get_post_meta($id, '_elementor_page_settings', true);\n\t\t\t\t$settings = json_decode(wp_unslash($raw), true) ?: [];\n\t\t\t}\n\t\t\treturn new WP_REST_Response(['success'=>true,'post_id'=>$id,'elements'=>$elements,'settings'=>$settings], 200);\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// Original doc import endpoint\n\tregister_rest_route('su/v1', '/doc-import', [\n\t\t'methods'  => 'POST',\n\t\t'args'     => [\n\t\t\t'post_id'  => ['type'=>'integer','required'=>true],\n\t\t\t'elements' => ['required'=>true],\n\t\t\t'settings' => ['required'=>false],\n\t\t],\n\t\t'callback' => function ($req) {\n\t\t\t$id = (int) $req->get_param('post_id');\n\t\t\t$elements = $req->get_param('elements');\n\t\t\t$settings = $req->get_param('settings') ?: [];\n\n\t\t\tif (class_exists('\\Elementor\\Plugin')) {\n\t\t\t\t$doc = \\Elementor\\Plugin::$instance->documents->get($id);\n\t\t\t\tif ($doc && method_exists($doc,'save')) {\n\t\t\t\t\t$doc->save(['elements'=>$elements,'settings'=>$settings]);\n\t\t\t\t\tdelete_post_meta($id, '_elementor_css');\n\t\t\t\t\tif (isset(\\Elementor\\Plugin::$instance->files_manager) && method_exists(\\Elementor\\Plugin::$instance->files_manager, 'clear_cache_for_post')) {\n\t\t\t\t\t\t\\Elementor\\Plugin::$instance->files_manager->clear_cache_for_post($id);\n\t\t\t\t\t}\n\t\t\t\t\tif (method_exists($doc,'get_css_wrapper')) {\n\t\t\t\t\t\t$css = $doc->get_css_wrapper();\n\t\t\t\t\t\tif ($css && method_exists($css,'update')) $css->update();\n\t\t\t\t\t}\n\t\t\t\t\tclean_post_cache($id);\n\t\t\t\t\treturn new WP_REST_Response(['success'=>true], 200);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\t// Fallback\n\t\t\tupdate_post_meta($id, '_elementor_data', wp_slash(wp_json_encode($elements, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)));\n\t\t\tupdate_post_meta($id, '_elementor_page_settings', wp_slash(wp_json_encode($settings, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)));\n\t\t\tdelete_post_meta($id, '_elementor_css');\n\t\t\tclean_post_cache($id);\n\t\t\treturn new WP_REST_Response(['success'=>true,'fallback'=>true], 200);\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// NEW: Create backup endpoint\n\tregister_rest_route('su/v1', '/backup-create', [\n\t\t'methods'  => 'POST',\n\t\t'args'     => [\n\t\t\t'name' => ['type'=>'string','required'=>true],\n\t\t\t'timestamp' => ['type'=>'string','required'=>true],\n\t\t\t'post_ids' => ['type'=>'array','required'=>true],\n\t\t\t'posts' => ['type'=>'object','required'=>true],\n\t\t],\n\t\t'callback' => function ($req) {\n\t\t\t$backup_data = [\n\t\t\t\t'name' => sanitize_text_field($req->get_param('name')),\n\t\t\t\t'timestamp' => $req->get_param('timestamp'),\n\t\t\t\t'post_ids' => array_map('intval', $req->get_param('post_ids')),\n\t\t\t\t'posts' => $req->get_param('posts'),\n\t\t\t\t'created_by' => get_current_user_id(),\n\t\t\t];\n\t\t\t\n\t\t\t$option_name = 'su_backup_' . sanitize_key($backup_data['name']);\n\t\t\t\n\t\t\tif (get_option($option_name, false) !== false) {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => false,\n\t\t\t\t\t'message' => 'Backup with this name already exists'\n\t\t\t\t], 409);\n\t\t\t}\n\t\t\t\n\t\t\t$result = update_option($option_name, $backup_data, false);\n\t\t\t\n\t\t\tif ($result) {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => true,\n\t\t\t\t\t'backup_name' => $backup_data['name'],\n\t\t\t\t\t'post_count' => count($backup_data['post_ids'])\n\t\t\t\t], 200);\n\t\t\t} else {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => false,\n\t\t\t\t\t'message' => 'Failed to save backup'\n\t\t\t\t], 500);\n\t\t\t}\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// NEW: List backups endpoint\n\tregister_rest_route('su/v1', '/backup-list', [\n\t\t'methods'  => 'GET',\n\t\t'callback' => function () {\n\t\t\tglobal $wpdb;\n\t\t\t$results = $wpdb->get_results(\n\t\t\t\t\"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'su_backup_%'\"\n\t\t\t);\n\t\t\t\n\t\t\t$backups = [];\n\t\t\tforeach ($results as $row) {\n\t\t\t\t$backup = maybe_unserialize($row->option_value);\n\t\t\t\tif ($backup && is_array($backup)) {\n\t\t\t\t\t$backups[] = [\n\t\t\t\t\t\t'name' => $backup['name'],\n\t\t\t\t\t\t'timestamp' => $backup['timestamp'],\n\t\t\t\t\t\t'post_ids' => $backup['post_ids'],\n\t\t\t\t\t\t'post_count' => count($backup['post_ids']),\n\t\t\t\t\t\t'created_by' => $backup['created_by'] ?? 0,\n\t\t\t\t\t];\n\t\t\t\t}\n\t\t\t}\n\t\t\t\n\t\t\t// Sort by timestamp (newest first)\n\t\t\tusort($backups, function($a, $b) {\n\t\t\t\treturn strcmp($b['timestamp'], $a['timestamp']);\n\t\t\t});\n\t\t\t\n\t\t\treturn new WP_REST_Response([\n\t\t\t\t'success' => true,\n\t\t\t\t'backups' => $backups,\n\t\t\t\t'count' => count($backups)\n\t\t\t], 200);\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// NEW: Restore backup endpoint\n\tregister_rest_route('su/v1', '/backup-restore', [\n\t\t'methods'  => 'POST',\n\t\t'args'     => [\n\t\t\t'backup_name' => ['type'=>'string','required'=>true],\n\t\t\t'post_ids' => ['type'=>'array','required'=>false], // If specified, only restore these posts\n\t\t],\n\t\t'callback' => function ($req) {\n\t\t\t$backup_name = sanitize_text_field($req->get_param('backup_name'));\n\t\t\t$specific_post_ids = $req->get_param('post_ids');\n\t\t\t$option_name = 'su_backup_' . sanitize_key($backup_name);\n\t\t\t\n\t\t\t$backup_data = get_option($option_name, false);\n\t\t\tif (!$backup_data || !is_array($backup_data)) {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => false,\n\t\t\t\t\t'message' => 'Backup not found: ' . $backup_name\n\t\t\t\t], 404);\n\t\t\t}\n\t\t\t\n\t\t\t$posts_to_restore = $specific_post_ids ? array_intersect($backup_data['post_ids'], array_map('intval', $specific_post_ids)) : $backup_data['post_ids'];\n\t\t\t$restored_posts = [];\n\t\t\t$errors = [];\n\t\t\t\n\t\t\tforeach ($posts_to_restore as $post_id) {\n\t\t\t\tif (!isset($backup_data['posts'][$post_id])) {\n\t\t\t\t\t$errors[] = \"Post {$post_id} not found in backup\";\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t$post_backup = $backup_data['posts'][$post_id];\n\t\t\t\t$elements = $post_backup['elements'];\n\t\t\t\t$settings = $post_backup['settings'];\n\t\t\t\t\n\t\t\t\ttry {\n\t\t\t\t\t// Try using Elementor API first\n\t\t\t\t\tif (class_exists('\\Elementor\\Plugin')) {\n\t\t\t\t\t\t$doc = \\Elementor\\Plugin::$instance->documents->get($post_id);\n\t\t\t\t\t\tif ($doc && method_exists($doc,'save')) {\n\t\t\t\t\t\t\t$doc->save(['elements'=>$elements,'settings'=>$settings]);\n\t\t\t\t\t\t\tdelete_post_meta($post_id, '_elementor_css');\n\t\t\t\t\t\t\tif (isset(\\Elementor\\Plugin::$instance->files_manager) && method_exists(\\Elementor\\Plugin::$instance->files_manager, 'clear_cache_for_post')) {\n\t\t\t\t\t\t\t\t\\Elementor\\Plugin::$instance->files_manager->clear_cache_for_post($post_id);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (method_exists($doc,'get_css_wrapper')) {\n\t\t\t\t\t\t\t\t$css = $doc->get_css_wrapper();\n\t\t\t\t\t\t\t\tif ($css && method_exists($css,'update')) $css->update();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tclean_post_cache($post_id);\n\t\t\t\t\t\t\t$restored_posts[] = $post_id;\n\t\t\t\t\t\t\tcontinue;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t\n\t\t\t\t\t// Fallback to direct meta updates\n\t\t\t\t\tupdate_post_meta($post_id, '_elementor_data', wp_slash(wp_json_encode($elements, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)));\n\t\t\t\t\tupdate_post_meta($post_id, '_elementor_page_settings', wp_slash(wp_json_encode($settings, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)));\n\t\t\t\t\tdelete_post_meta($post_id, '_elementor_css');\n\t\t\t\t\tclean_post_cache($post_id);\n\t\t\t\t\t$restored_posts[] = $post_id;\n\t\t\t\t\t\n\t\t\t\t} catch (Exception $e) {\n\t\t\t\t\t$errors[] = \"Post {$post_id}: \" . $e->getMessage();\n\t\t\t\t}\n\t\t\t}\n\t\t\t\n\t\t\treturn new WP_REST_Response([\n\t\t\t\t'success' => true,\n\t\t\t\t'backup_name' => $backup_name,\n\t\t\t\t'restored_count' => count($restored_posts),\n\t\t\t\t'restored_posts' => $restored_posts,\n\t\t\t\t'errors' => $errors,\n\t\t\t\t'requested_count' => count($posts_to_restore)\n\t\t\t], 200);\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n\n\t// NEW: Delete backup endpoint\n\tregister_rest_route('su/v1', '/backup-delete', [\n\t\t'methods'  => 'POST',\n\t\t'args'     => [\n\t\t\t'backup_name' => ['type'=>'string','required'=>true],\n\t\t],\n\t\t'callback' => function ($req) {\n\t\t\t$backup_name = sanitize_text_field($req->get_param('backup_name'));\n\t\t\t$option_name = 'su_backup_' . sanitize_key($backup_name);\n\t\t\t\n\t\t\t$backup_data = get_option($option_name, false);\n\t\t\tif (!$backup_data) {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => false,\n\t\t\t\t\t'message' => 'Backup not found: ' . $backup_name\n\t\t\t\t], 404);\n\t\t\t}\n\t\t\t\n\t\t\t$result = delete_option($option_name);\n\t\t\t\n\t\t\tif ($result) {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => true,\n\t\t\t\t\t'message' => 'Backup deleted successfully'\n\t\t\t\t], 200);\n\t\t\t} else {\n\t\t\t\treturn new WP_REST_Response([\n\t\t\t\t\t'success' => false,\n\t\t\t\t\t'message' => 'Failed to delete backup'\n\t\t\t\t], 500);\n\t\t\t}\n\t\t},\n\t\t'permission_callback' => function(){ return current_user_can('manage_options'); },\n\t]);\n});\nPLUGIN4;\n\n@file_put_contents($muFile4, $backupApiCode);\n@chmod($muFile4, 0644);\necho \"✅ SU Backup & Document Management API MU plugin created.<br>\";\n\n// ====== CREATE OPS ENDPOINTS ======\necho \"📡 Creating ops endpoints...<br>\";\n\n// Create .htaccess\n@file_put_contents(\n    $opsDir . '/.htaccess',\n    \"Options -Indexes\\n\" .\n    \"RewriteEngine On\\n\" .\n    \"RewriteCond %{HTTP:Authorization} ^(.*)\\n\" .\n    \"RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]\"\n);\n\n// Placeholder values for replacement\n$placeholders = [\n    'USERNAME_PLACEHOLDER' => $username,\n    'PASSWORD_PLACEHOLDER' => $sqlPass,\n    'DATABASE_PLACEHOLDER' => $dbName,\n    'DBUSER_PLACEHOLDER' => $username . '_' . $sqlUser,\n    'DBPASS_PLACEHOLDER' => $sqlPass\n];\n\n// ====== IMPORT-START.PHP (FIXED FOR MAKE.COM) ======\n$importStartCode = <<<'IMPORTSTART'\n<?php\nheader('Content-Type: application/json');\n\n// Basic Auth\n$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';\nif (stripos($auth, 'basic ') !== 0) { \n    header('WWW-Authenticate: Basic realm=\"ops\"'); \n    http_response_code(401); \n    echo json_encode(['error' => 'Auth required']);\n    exit; \n}\n\nlist($u,$p) = array_pad(explode(':', base64_decode(substr($auth,6)), 2), 2, '');\nif (!hash_equals('USERNAME_PLACEHOLDER', $u) || !hash_equals('PASSWORD_PLACEHOLDER', $p)) { \n    http_response_code(403); \n    echo json_encode(['error' => 'Forbidden']);\n    exit; \n}\n\n// Database credentials\n$db_name = 'DATABASE_PLACEHOLDER';\n$db_user = 'DBUSER_PLACEHOLDER';\n$db_pass = 'DBPASS_PLACEHOLDER';\n$db_host = 'localhost';\n\nfunction jdie($code, $arr) { \n    http_response_code($code); \n    echo json_encode($arr);\n    exit; \n}\n\nfunction has_bin($name) { \n    $out = trim(shell_exec(\"command -v \".escapeshellarg($name).\" 2>/dev/null\")); \n    return $out !== ''; \n}\n\nfunction log_debug($message) {\n    error_log(\"[SQL Import] \" . $message);\n}\n\n$disabled = array_map('trim', explode(',', (string)ini_get('disable_functions')));\n$can_exec = !in_array('exec', $disabled, true) && !in_array('shell_exec', $disabled, true);\n\n$in = json_decode(file_get_contents('php://input'), true);\nif (!is_array($in)) jdie(400, ['error'=>'bad_json']);\n\n$wipe = !empty($in['wipe']);\n$packet = preg_replace('/[^0-9KMG]/i','', $in['max_allowed_packet'] ?? '512M');\n\n// Find SQL file in Make.com upload locations\n$webRoot = dirname(__DIR__);\n$tmpDir = $webRoot . '/tmp_imports';\nif (!is_dir($tmpDir)) mkdir($tmpDir, 0755, true);\n\n$mysqli = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);\nif (!$mysqli) jdie(500, ['error'=>'db_connect_failed','detail'=>mysqli_connect_error()]);\n\n// Wipe existing tables if requested\n$res = $mysqli->query(\"SELECT COUNT(*) AS c FROM information_schema.tables WHERE table_schema = '\".$mysqli->real_escape_string($db_name).\"'\");\n$db_table_count = (int)($res ? $res->fetch_assoc()['c'] : 0);\n\nif ($db_table_count > 0 && $wipe) {\n    $names = [];\n    $q = $mysqli->query(\"SELECT CONCAT('`', table_name, '`') AS t FROM information_schema.tables WHERE table_schema = '\".$mysqli->real_escape_string($db_name).\"'\");\n    while ($q && ($row = $q->fetch_assoc())) $names[] = $row['t'];\n    if ($names) {\n        $mysqli->query('SET FOREIGN_KEY_CHECKS=0');\n        $mysqli->query('DROP TABLE IF EXISTS '.implode(',', $names));\n        $mysqli->query('SET FOREIGN_KEY_CHECKS=1');\n    }\n}\n\n// Comprehensive SQL file search for Make.com\n$sqlFile = null;\n$searchPaths = [\n    $webRoot . '/database.sql',\n    $webRoot . '/backup.sql', \n    $webRoot . '/wordpress.sql',\n    $webRoot . '/website.sql',\n    $webRoot . '/dump.sql',\n    $webRoot . '/export.sql'\n];\n\n// Add any .sql files found in web root\n$foundSqlFiles = glob($webRoot . '/*.sql');\nif ($foundSqlFiles) $searchPaths = array_merge($searchPaths, $foundSqlFiles);\n\nforeach ($searchPaths as $path) {\n    if (file_exists($path) && filesize($path) > 1000) {\n        $sqlFile = $path;\n        log_debug(\"Found SQL file: $path (\" . filesize($path) . \" bytes)\");\n        break;\n    }\n}\n\nif (!$sqlFile) {\n    jdie(404, ['error'=>'sql_file_not_found','searched'=>$searchPaths,'found_files'=>glob($webRoot.'/*')]);\n}\n\n// Check MySQL availability\nif (!$can_exec) jdie(500, ['error'=>'exec_disabled']);\nif (!has_bin('mysql')) jdie(500, ['error'=>'mysql_cli_missing']);\n\n// Import SQL file SYNCHRONOUSLY for better error handling\nlog_debug(\"Starting MySQL import of: $sqlFile\");\n\n$pass_safe = str_replace(\"'\", \"'\\\"'\\\"'\", $db_pass);\n$cmd = sprintf(\n    \"mysql -u %s -p'%s' -h %s --max_allowed_packet=%s --default-character-set=utf8mb4 %s < %s 2>&1\",\n    escapeshellarg($db_user),\n    $pass_safe,\n    escapeshellarg($db_host), \n    escapeshellarg($packet),\n    escapeshellarg($db_name),\n    escapeshellarg($sqlFile)\n);\n\n$output = [];\n$returnCode = 0;\nexec($cmd, $output, $returnCode);\n\nif ($returnCode !== 0) {\n    $error = implode(\"\\n\", $output);\n    log_debug(\"Import failed: $error\");\n    jdie(500, ['error'=>'import_failed','return_code'=>$returnCode,'output'=>$error]);\n}\n\n// Verify tables were created\n$checkResult = $mysqli->query(\"SELECT COUNT(*) AS c FROM information_schema.tables WHERE table_schema = '\".$mysqli->real_escape_string($db_name).\"'\");\n$tableCount = (int)($checkResult ? $checkResult->fetch_assoc()['c'] : 0);\n\nif ($tableCount < 10) {\n    jdie(500, ['error'=>'import_incomplete','table_count'=>$tableCount,'output'=>implode(\"\\n\",$output)]);\n}\n\n// Clean up\n@unlink($sqlFile);\nlog_debug(\"Import successful: $tableCount tables\");\n\necho json_encode(['ok'=>true,'tables_imported'=>$tableCount,'sql_file'=>basename($sqlFile)]);\n?>\nIMPORTSTART;\n\n// Replace placeholders in import-start\nforeach ($placeholders as $placeholder => $value) {\n    $importStartCode = str_replace($placeholder, $value, $importStartCode);\n}\n@file_put_contents($opsDir . '/import-start.php', $importStartCode);\n@chmod($opsDir . '/import-start.php', 0644);\n\n// ====== IMPORT-STATUS.PHP ======\n$importStatusCode = <<<'IMPORTSTATUS'\n<?php\nheader('Content-Type: application/json');\n\n// Basic Auth\n$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';\nif (stripos($auth, 'basic ') !== 0) { \n    header('WWW-Authenticate: Basic realm=\"ops\"'); \n    http_response_code(401); \n    echo json_encode(['error' => 'Auth required']);\n    exit; \n}\n\nlist($u,$p) = array_pad(explode(':', base64_decode(substr($auth,6)), 2), 2, '');\nif (!hash_equals('USERNAME_PLACEHOLDER', $u) || !hash_equals('PASSWORD_PLACEHOLDER', $p)) { \n    http_response_code(403); \n    echo json_encode(['error' => 'Forbidden']);\n    exit; \n}\n\n$root   = dirname(__DIR__);\n$tmpDir = $root . '/tmp_imports';\n\n$job = preg_replace('/[^a-zA-Z0-9_:-]/','', $_GET['job'] ?? '');\n$pid = preg_replace('/\\D/','', $_GET['pid'] ?? '');\n$log = $tmpDir . '/' . basename($_GET['log'] ?? ($job ? $job.'.log' : ''));\n\n$running = $pid ? trim(shell_exec(\"ps -p $pid -o pid=\")) !== '' : false;\n$tail    = (file_exists($log) ? shell_exec(\"tail -n 50 \".escapeshellarg($log)) : '');\n\necho json_encode([\n  'running' => $running,\n  'done'    => !$running,\n  'tail'    => $tail,\n  'log'     => basename($log)\n]);\n?>\nIMPORTSTATUS;\n\n// Replace placeholders in import-status\nforeach ($placeholders as $placeholder => $value) {\n    $importStatusCode = str_replace($placeholder, $value, $importStatusCode);\n}\n@file_put_contents($opsDir . '/import-status.php', $importStatusCode);\n@chmod($opsDir . '/import-status.php', 0644);\n\n// ====== POST-IMPORT-FIX.PHP ======\n$postImportFixCode = <<<'POSTIMPORTFIX'\n<?php\nheader('Content-Type: application/json');\n\n// Basic Auth\n$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';\nif (stripos($auth, 'basic ') !== 0) { \n    header('WWW-Authenticate: Basic realm=\"ops\"'); \n    http_response_code(401); \n    echo json_encode(['error' => 'Auth required']);\n    exit; \n}\n\nlist($u,$p) = array_pad(explode(':', base64_decode(substr($auth,6)), 2), 2, '');\nif (!hash_equals('USERNAME_PLACEHOLDER', $u) || !hash_equals('PASSWORD_PLACEHOLDER', $p)) { \n    http_response_code(403); \n    echo json_encode(['error' => 'Forbidden']);\n    exit; \n}\n\ntry {\n    // Database credentials\n    $db_name = 'DATABASE_PLACEHOLDER';\n    $db_user = 'DBUSER_PLACEHOLDER';\n    $db_pass = 'DBPASS_PLACEHOLDER';\n    $db_host = 'localhost';\n    \n    $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_name);\n    if ($mysqli->connect_errno) {\n        http_response_code(500);\n        echo json_encode(['error'=>'db_connect_failed','detail'=>$mysqli->connect_error]);\n        exit;\n    }\n    $mysqli->set_charset('utf8mb4');\n    \n    // Auto-detect WordPress table prefix\n    $tables_result = $mysqli->query(\"SHOW TABLES\");\n    $prefix = 'wp_';\n    while ($row = $tables_result->fetch_array()) {\n        if (strpos($row[0], '_options') !== false) {\n            $prefix = str_replace('options', '', $row[0]);\n            break;\n        }\n    }\n    \n    $in_json = file_get_contents('php://input');\n    $in = json_decode($in_json, true) ?: [];\n    \n    $site_url = $in['siteurl'] ?? ('https://' . $_SERVER['HTTP_HOST']);\n    $home_url = $in['home'] ?? $site_url;\n    $admin_email = $in['admin_email'] ?? '';\n    $admin_pass = $in['admin_password'] ?? null;\n    $admin_user = $in['admin_user'] ?? null;\n    \n    $opt = $mysqli->real_escape_string($prefix.'options');\n    $usr = $mysqli->real_escape_string($prefix.'users');\n    \n    $updated = ['options'=>0,'user'=>false];\n    \n    // Update options\n    $q1 = $mysqli->query(\"UPDATE `$opt` SET option_value='\".$mysqli->real_escape_string($site_url).\"' WHERE option_name='siteurl'\");\n    $updated['options'] += ($mysqli->affected_rows >= 0 ? 1 : 0);\n    \n    $q2 = $mysqli->query(\"UPDATE `$opt` SET option_value='\".$mysqli->real_escape_string($home_url).\"' WHERE option_name='home'\");\n    $updated['options'] += ($mysqli->affected_rows >= 0 ? 1 : 0);\n    \n    if ($admin_email) {\n        $q3 = $mysqli->query(\"UPDATE `$opt` SET option_value='\".$mysqli->real_escape_string($admin_email).\"' WHERE option_name='admin_email'\");\n        $updated['options'] += ($mysqli->affected_rows >= 0 ? 1 : 0);\n    }\n    \n    // Update user if credentials provided\n    if ($admin_pass || $admin_user || $admin_email) {\n        // Find first user (admin)\n        $user_check = $mysqli->query(\"SELECT ID FROM `$usr` ORDER BY ID LIMIT 1\");\n        if ($user_check && $user_check->num_rows > 0) {\n            $user_row = $user_check->fetch_assoc();\n            $user_id = $user_row['ID'];\n            \n            $root = dirname(__DIR__);\n            $phpass = $root . '/wp-includes/class-phpass.php';\n            if (file_exists($phpass)) { require_once $phpass; }\n            \n            $sets = [];\n            if ($admin_pass && class_exists('PasswordHash')) {\n                $hasher = new PasswordHash(8, true);\n                $hash = $hasher->HashPassword($admin_pass);\n                $sets[] = \"user_pass='\".$mysqli->real_escape_string($hash).\"'\";\n            } elseif ($admin_pass) {\n                $hash = password_hash($admin_pass, PASSWORD_BCRYPT);\n                $sets[] = \"user_pass='\".$mysqli->real_escape_string($hash).\"'\";\n            }\n            \n            if ($admin_email) {\n                $email = $mysqli->real_escape_string($admin_email);\n                $nicen = $mysqli->real_escape_string(preg_replace('/@.*/','', $admin_email));\n                $sets[] = \"user_email='$email'\";\n                $sets[] = \"user_nicename='$nicen'\";\n            }\n            if ($admin_user || $admin_email) {\n                $login = $mysqli->real_escape_string($admin_user ?: $admin_email);\n                $sets[] = \"user_login='$login'\";\n            }\n            \n            if ($sets) {\n                $sql = \"UPDATE `$usr` SET \".implode(',', $sets).\" WHERE ID=$user_id\";\n                $result = $mysqli->query($sql);\n                if ($result && !$mysqli->errno) {\n                    $updated['user'] = true;\n                }\n            }\n        }\n    }\n    \n    echo json_encode(['ok'=>true,'updated'=>$updated]);\n    \n} catch (Exception $e) {\n    http_response_code(500);\n    echo json_encode(['error' => 'exception', 'message' => $e->getMessage()]);\n}\n?>\nPOSTIMPORTFIX;\n\n// Replace placeholders in post-import-fix\nforeach ($placeholders as $placeholder => $value) {\n    $postImportFixCode = str_replace($placeholder, $value, $postImportFixCode);\n}\n@file_put_contents($opsDir . '/post-import-fix.php', $postImportFixCode);\n@chmod($opsDir . '/post-import-fix.php', 0644);\n\necho \"✅ Ops endpoints created successfully.<br>\";\n\n// ====== CREATE CLEANUP SCRIPT ======\necho \"🧹 Creating cleanup script...<br>\";\n\n$cleanupScriptCode = <<<'CLEANUP'\n<?php\n// ====== MINIMAL CLEANUP SCRIPT FOR WORDPRESS SETUP ======\nerror_reporting(E_ALL);\nini_set('display_errors', 1);\n\necho \"🧹 Starting minimal WordPress setup cleanup...<br>\";\n\n// ====== CONFIGURATION ======\n$username = 'USERNAME_PLACEHOLDER';\n$targetDir = \"/home/$username/$rootDirectoryPath/\";\n\n$wpRoot = rtrim($targetDir, '/');\n$muDir = $wpRoot . '/wp-content/mu-plugins';\n$opsDir = $wpRoot . '/ops';\n\necho \"✅ Configuration loaded<br>\";\n\n// ====== SAFETY CHECKS ======\nif (!is_dir($wpRoot)) {\n    die(\"❌ WordPress root directory not found: $wpRoot<br>\");\n}\n\nif (!file_exists($wpRoot . '/wp-config.php')) {\n    die(\"❌ This doesn't appear to be a WordPress installation<br>\");\n}\n\necho \"✅ WordPress installation confirmed<br>\";\n\n// ====== REMOVE MU PLUGINS ======\necho \"🗑️ Removing MU plugins created by setup script...<br>\";\n\n$muPluginsToRemove = [\n    'elementor-cache-endpoint.php',\n    'site-updater-endpoint.php', \n    'su-dynamic-tags.php',\n    'su-backup-api.php'\n];\n\n$removedPlugins = 0;\nforeach ($muPluginsToRemove as $pluginFile) {\n    $pluginPath = $muDir . '/' . $pluginFile;\n    if (file_exists($pluginPath)) {\n        if (@unlink($pluginPath)) {\n            echo \"✅ Removed: $pluginFile<br>\";\n            $removedPlugins++;\n        } else {\n            echo \"❌ Failed to remove: $pluginFile<br>\";\n        }\n    } else {\n        echo \"ℹ️ Not found: $pluginFile<br>\";\n    }\n}\n\necho \"✅ Removed $removedPlugins MU plugins<br>\";\n\n// ====== REMOVE OPS DIRECTORY ======\necho \"🗑️ Removing ops directory...<br>\";\n\nfunction removeDirectory($dir) {\n    if (!is_dir($dir)) {\n        return false;\n    }\n    \n    $files = array_diff(scandir($dir), array('.', '..'));\n    foreach ($files as $file) {\n        $path = $dir . '/' . $file;\n        if (is_dir($path)) {\n            removeDirectory($path);\n        } else {\n            @unlink($path);\n        }\n    }\n    return @rmdir($dir);\n}\n\nif (is_dir($opsDir)) {\n    if (removeDirectory($opsDir)) {\n        echo \"✅ Ops directory removed completely<br>\";\n    } else {\n        echo \"⚠️ Ops directory partially removed or failed<br>\";\n    }\n} else {\n    echo \"ℹ️ Ops directory not found<br>\";\n}\n\n// ====== SUMMARY ======\necho \"<hr>📋 Cleanup Summary:<br>\";\necho \"✅ MU Plugins removed: $removedPlugins<br>\";\necho \"✅ Ops directory removed<br>\";\necho \"✅ No database or cache operations performed<br>\";\n\necho \"<br>🎉 Minimal cleanup completed successfully!<br>\";\necho \"🌟 Setup-related files have been removed safely.<br>\";\n\n// ====== SELF DELETE ======\n$scriptPath = __FILE__;\necho \"<br>🗑️ Attempting self-deletion...<br>\";\nif (@unlink($scriptPath)) {\n    echo \"✅ Cleanup script self-deleted successfully.<br>\";\n} else {\n    echo \"⚠️ Could not self-delete cleanup script.<br>\";\n}\n?>\nCLEANUP;\n\n// Replace placeholder in cleanup script\n$cleanupScriptCode = str_replace('USERNAME_PLACEHOLDER', $username, $cleanupScriptCode);\n\n$cleanupScriptPath = $targetDir . 'su-cleanup.php';\nif (@file_put_contents($cleanupScriptPath, $cleanupScriptCode)) {\n    @chmod($cleanupScriptPath, 0644);\n    echo \"✅ Cleanup script created: su-cleanup.php<br>\";\n} else {\n    echo \"❌ Failed to create cleanup script<br>\";\n}\n\n// ====== CLEANUP ======\necho \"🧹 Cleanup...<br>\";\nif (file_exists($zipFilePath)) {\n    @unlink($zipFilePath);\n    echo \"✅ ZIP deleted.<br>\";\n}\n\necho \"🎉 Complete WordPress setup finished successfully!<br>\";\necho \"📡 Available endpoints:<br>\";\necho \"• POST https://{$_SERVER['HTTP_HOST']}/ops/import-start.php<br>\";\necho \"• GET https://{$_SERVER['HTTP_HOST']}/ops/import-status.php<br>\";\necho \"• POST https://{$_SERVER['HTTP_HOST']}/ops/post-import-fix.php<br>\";\necho \"<br>📋 API Endpoints Available:<br>\";\necho \"• GET /wp-json/su/v1/dynamic-values<br>\";\necho \"• GET /wp-json/su/v1/doc-export<br>\";\necho \"• POST /wp-json/su/v1/doc-import<br>\";\necho \"• POST /wp-json/su/v1/backup-create<br>\";\necho \"• GET /wp-json/su/v1/backup-list<br>\";\necho \"• POST /wp-json/su/v1/backup-restore<br>\";\necho \"• POST /wp-json/su/v1/backup-delete<br>\";\necho \"<br>🧹 Cleanup Tool:<br>\";\necho \"• Run https://{$_SERVER['HTTP_HOST']}/su-cleanup.php when setup is complete<br>\";\necho \"<br>⚠️ IMPORTANT: The cleanup script will remove ALL MU plugins, APIs, and directories created by this setup.<br>\";\necho \"Only run it when you no longer need the management tools.<br>\";\n\n// ====== SELF DELETE ======\n$scriptPath = __FILE__;\necho \"🗑️ Attempting self-deletion...<br>\";\nif (@unlink($scriptPath)) {\n    echo \"✅ Script self-deleted successfully.<br>\";\n} else {\n    echo \"⚠️ Could not self-delete.<br>\";\n}\n?>",
+        "name": "import-sql.php",
+        "driveId": {
+          "__rl": true,
+          "value": "0AOMkMB_ymZHFUk9PVA",
+          "mode": "list",
+          "cachedResultName": "AI agent Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/0AOMkMB_ymZHFUk9PVA"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1yKC2KZtCkYQsUnIIxowYq52K5WjaHCRX",
+          "mode": "list",
+          "cachedResultName": "Website Agent",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1yKC2KZtCkYQsUnIIxowYq52K5WjaHCRX"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        672,
+        272
+      ],
+      "id": "490c6836-00d4-434b-8735-0022019a4c66",
+      "name": "Create PHP script V3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.cpanelDomain }}execute/Fileman/upload_files",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dir",
+              "value": "=/home/{{ $('Edit Fields').item.json.username }}2025_Templates/template13"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file-1",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        272
+      ],
+      "id": "98539e6d-7073-4617-bb19-508ae39612d3",
+      "name": "Upload PHP script to server"
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Download file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1344,
+        272
+      ],
+      "id": "324a3f56-1c5f-4b98-8b8f-ae781a26a405",
+      "name": "Delete PHP script from Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Edit Fields').item.json.domain }}/import-sql.php",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1568,
+        272
+      ],
+      "id": "be584227-3d6c-426f-b308-530130a0ad5e",
+      "name": "Execute PHP tp dump SQL"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.domain }}ops/import-start.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"dump_url\": \"{{ $('Edit Fields').item.json.domain }}websiteportal.sql\", \"max_allowed_packet\": \"512M\", \"db_name\": \"{{ $('Edit Fields').item.json.username }}_website\", \"db_user\": \"{{ $('Edit Fields').item.json.sqlUser }}\" } ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        512
+      ],
+      "id": "0bb763d8-b557-433f-9af8-7717fb4942ea",
+      "name": "Import-Start SQL file(Big dump)",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ZTwyTOO7Q5QO8gVW",
+          "name": "import  credential website agent"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Edit Fields').item.json.domain }}/ops/import-status.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "job",
+              "value": "="
+            },
+            {
+              "name": "pid",
+              "value": "="
+            },
+            {
+              "name": "pid",
+              "value": "="
+            },
+            {
+              "name": "log",
+              "value": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        512
+      ],
+      "id": "43624819-c0ce-407b-817e-8cd299887449",
+      "name": "Import-status SQL file (big dump)",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ZTwyTOO7Q5QO8gVW",
+          "name": "import  credential website agent"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.domain }}/ops/post-import-fix.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"siteurl\": \"{{ $('Edit Fields').item.json.domain}}\",\n  \"home\": \"{{ $('Edit Fields').item.json.domain}}\",\n  \"admin_email\": \"{{ $('Edit Fields').item.json.siteEmail}}\",\n  \"admin_password\": \"{{ $('Edit Fields').item.json.newPassword}}\",\n  \"admin_user\": \"{{ $('Edit Fields').item.json.siteEmail}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        512
+      ],
+      "id": "700c3304-8ccb-4809-a841-ee31dca258d2",
+      "name": "Import-fix SQL file (big dump)",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ZTwyTOO7Q5QO8gVW",
+          "name": "import  credential website agent"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const regex = /J.+/i;\n\n$input.item.json.regexTestResult = regex.test($input.item.json.name);\n\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        512
+      ],
+      "id": "c0436601-2e89-460b-9510-196241a63c0d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $('Edit Fields').item.json.aboutpage }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        512
+      ],
+      "id": "f6547381-9a97-4bab-8d13-0b3fcdb99050",
+      "name": "Get about page",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "dA6wpEM7oMHnMbK1",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $('Edit Fields').item.json.contactpage }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        448,
+        752
+      ],
+      "id": "2d1a5ef5-02ca-441c-9f62-431095b043fa",
+      "name": "Get Contact page",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "dA6wpEM7oMHnMbK1",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1kSoKuf8o5RMdP7Lj3q3Ugu231OKMBhgI",
+          "mode": "list",
+          "cachedResultName": "elementor-placeholder-image.png",
+          "cachedResultUrl": "https://drive.google.com/file/d/1kSoKuf8o5RMdP7Lj3q3Ugu231OKMBhgI/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        752
+      ],
+      "id": "b4a38d58-b0bf-481a-8659-80744d1c7bdd",
+      "name": "Get placeholder Picture",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.domain }}wp-json/wp/v2/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        976
+      ],
+      "id": "ba14d198-457a-4c37-8473-1d51cecb0ab4",
+      "name": "Upload Image to WP",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "J9qkJPffY2BugwYw",
+          "name": "website builder nanofit"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields').item.json.domain }}wp-json/site-updater/v2/update",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=   {{ JSON.stringify( $json.raw ) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1248,
+        976
+      ],
+      "id": "1dc28531-c9c2-443f-ab41-bdb5c8bb51b1",
+      "name": "Update all page tags",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "J9qkJPffY2BugwYw",
+          "name": "website builder nanofit"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        976
+      ],
+      "id": "7d676a38-3c55-472b-81e3-40111d89f61c",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6aeb9e8-abae-42db-b6ce-4cb3709f255a",
+              "name": "username",
+              "value": "={{ $json.username }}",
+              "type": "string"
+            },
+            {
+              "id": "0d47a218-247d-4f71-9579-411865e5ecfc",
+              "name": "sqlUser",
+              "value": "={{ $json['sql username'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e0e1936f-51ce-4d19-b2af-66f53cfe9290",
+              "name": "sqlPass",
+              "value": "={{ $json['sql pass'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3458b0af-5f00-4936-957f-d5ea8977b0db",
+              "name": "siteEmail",
+              "value": "={{ $json['founder email'] }}",
+              "type": "string"
+            },
+            {
+              "id": "64b8f52a-57a1-49b7-9cf0-b4fa6858752b",
+              "name": "newPassword",
+              "value": "={{ $json['founder password'] }}",
+              "type": "string"
+            },
+            {
+              "id": "de713f83-8424-4323-9b2d-45066670be46",
+              "name": "domain",
+              "value": "={{ $json['website domain'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4761c077-6f3e-430e-a955-03600e92897c",
+              "name": "zipFileName",
+              "value": "={{ $json['file name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c594183e-541a-40e8-a06c-8dfbcb0e8010",
+              "name": "apiToken",
+              "value": "={{ $json['API TOKEN'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00fbaf26-a0bd-4176-badd-24d6320c17a8",
+              "name": "cpanelDomain",
+              "value": "={{ $json['Cpanel Domain'] }}",
+              "type": "string"
+            },
+            {
+              "id": "dac9522a-b3b7-4dda-b7f0-e4975064840a",
+              "name": "applicationPassword",
+              "value": "REDACTED_APPLICATIONPASSWORD",
+              "type": "string"
+            },
+            {
+              "id": "035fa616-0889-4cbe-8d8b-735b874d88df",
+              "name": "homepage",
+              "value": "={{ $json['home page'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5aec0ad1-56b1-4e6c-9038-cdd1c46482e3",
+              "name": "aboutpage",
+              "value": "={{ $json['about page'] }}",
+              "type": "string"
+            },
+            {
+              "id": "58022205-292a-4e3d-ad1e-47ce76c966fd",
+              "name": "contactpage",
+              "value": "={{ $json['contact page '] }}",
+              "type": "string"
+            },
+            {
+              "id": "5d41a38e-5793-4225-8ddd-16b8bfcab639",
+              "name": "DOMAIN",
+              "value": "thedoingacademy.com",
+              "type": "string"
+            },
+            {
+              "id": "cdd45892-bb27-402a-ad2b-ab55967de6ff",
+              "name": "=Root directory",
+              "value": "={{ $json['root directory'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        272
+      ],
+      "id": "798217c2-fda1-45e6-91c2-a22decf263ca",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        896,
+        272
+      ],
+      "id": "d46eafa9-c40e-45e2-ad15-bbc5295d2c2a",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $('Edit Fields').item.json.homepage }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        752
+      ],
+      "id": "7f5c20a9-5f7e-45e9-84f1-321ba57d22ef",
+      "name": "Get Home",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "dA6wpEM7oMHnMbK1",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.content;\nconst delimiter = '|`|';\nconst parts = content.split(delimiter);\n\nreturn {\n  original: content,\n  delimiterExists: content.includes(delimiter),\n  numberOfParts: parts.length,\n  parts: parts,\n  firstPart: parts[0],\n  secondPart: parts[1] || 'not found',\n  thirdPart: parts[2] || 'not found'\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        512
+      ],
+      "id": "527b5ddc-4ed9-4469-96f2-de061e2e32de",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.secondPart }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        512
+      ],
+      "id": "d05a1d9c-fa1f-4792-99b9-59198bf08072",
+      "name": "About page"
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.content;\nconst delimiter = '|`|';\nconst parts = content.split(delimiter);\n\nreturn {\n  original: content,\n  delimiterExists: content.includes(delimiter),\n  numberOfParts: parts.length,\n  parts: parts,\n  firstPart: parts[0],\n  secondPart: parts[1] || 'not found',\n  thirdPart: parts[2] || 'not found'\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        752
+      ],
+      "id": "36420859-0667-42e9-afaa-954100ac4192",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.content;\nconst delimiter = '|`|';\nconst parts = content.split(delimiter);\n\nreturn {\n  original: content,\n  delimiterExists: content.includes(delimiter),\n  numberOfParts: parts.length,\n  parts: parts,\n  firstPart: parts[0],\n  secondPart: parts[1] || 'not found',\n  thirdPart: parts[2] || 'not found'\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        752
+      ],
+      "id": "08124a1b-5245-4623-8abc-7e6051d95375",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.secondPart }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        752
+      ],
+      "id": "7fd1d3b8-fb37-420d-a29d-ace414728600",
+      "name": "Contact Page"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.secondPart }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        752
+      ],
+      "id": "98afc28e-cee1-4c0b-90ef-a54f20bfd4f1",
+      "name": "Home Page"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://template13.thedoingacademy.com/wp-json/site-updater/v2/update",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1536,
+        976
+      ],
+      "id": "cc76ad39-84e6-4013-929c-9ef1bddfae1d",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "wK3IRR35ZlE2Jaly",
+          "name": "Website builder basic auth realestate"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "API TOKEN"
+            },
+            {
+              "name": "Cpanel Domain"
+            },
+            {
+              "name": "username"
+            },
+            {
+              "name": "sql username"
+            },
+            {
+              "name": "sql pass"
+            },
+            {
+              "name": "website domain"
+            },
+            {
+              "name": "file name"
+            },
+            {
+              "name": "founder email"
+            },
+            {
+              "name": "founder password"
+            },
+            {
+              "name": "application password"
+            },
+            {
+              "name": "industry"
+            },
+            {
+              "name": "home page"
+            },
+            {
+              "name": "about page"
+            },
+            {
+              "name": "contact page "
+            },
+            {
+              "name": "root directory"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        272
+      ],
+      "id": "93585d47-a64c-42d7-a167-af5ffbf47428",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "output into valid json only"
+            },
+            {
+              "content": "={\n  \"content\": {\n    \"hero\": {\n      \"home_title\": \"{{ $('Home Page').item.json.home_title1 }}\",\n      \"home_number_counter1\": \"{{ $('Home Page').item.json.home_number_counter1}}\",\n      \"home_number_counter2\": \"{{ $('Home Page').item.json.home_number_counter2}}\",\n      \"home_number_counter3\": \"{{ $('Home Page').item.json.home_number_counter3}}\",\n      \"home_number_counter4\": \"{{ $('Home Page').item.json.home_number_counter4}}\",\n      \"home_text_counter1\": \"{{ $('Home Page').item.json.home_text_counter1}}\",\n      \"home_text_counter2\": \"{{ $('Home Page').item.json.home_text_counter2}}\",\n      \"home_text_counter3\": \"{{ $('Home Page').item.json.home_text_counter3}}\",\n      \"home_text_counter4\": \"{{ $('Home Page').item.json.home_text_counter4}}\",\n      \"home_event\": \"{{ $('Home Page').item.json.home_event}}\"\n    },\n    \"header\": {\n      \"home_title\": \"{{ $('Home Page').item.json.home_title}}\",\n      \"home_summary\": \"{{ $('Home Page').item.json.home_summary}}\",\n      \"company_industry\": \"{{ $('Home Page').item.json.company_industry}}\",\n      \"button_text\": \"{{ $('Home Page').item.json.button_text}}\",\n      \"image1\": \"{{ $json.guid.rendered }}\"\n    },\n    \"services\": {\n      \"service1_title\": \"{{ $('Home Page').item.json.service1_title}}\",\n      \"service1_description\": \"{{ $('Home Page').item.json.service1_description}}\",\n      \"service2_title\": \"{{ $('Home Page').item.json.service2_title}}\",\n      \"service2_description\": \"{{ $('Home Page').item.json.service2_description}}\",\n      \"service3_title\": \"{{ $('Home Page').item.json.service3_title}}\",\n      \"service3_description\": \"{{ $('Home Page').item.json.service3_description}}\",\n      \"service4_title\": \"{{ $('Home Page').item.json.service4_title}}\",\n      \"service4_description\": \"{{ $('Home Page').item.json.service4_description}}\"\n    },\n    \"about\": {\n      \"checklist_title\": \"Why Choose Us\",\n      \"point1_title\": \"{{ $('Home Page').item.json.whyChooseUs.points[0].title }}\",\n      \"point1_description\": \"{{ $('Home Page').item.json.whyChooseUs.points[0].description }}\",\n      \"point2_title\": \"{{ $('Home Page').item.json.whyChooseUs.points[1].title }}\",\n      \"point2_description\": \"{{ $('Home Page').item.json.whyChooseUs.points[1].description }}\",\n      \"point3_title\": \"{{ $('Home Page').item.json.whyChooseUs.points[2].title }}\",\n      \"point3_description\": \"{{ $('Home Page').item.json.whyChooseUs.points[2].description }}\",\n      \"contact_description\": \"{{ $('Contact Page').item.json.contact_description }}\",\n      \"contact_email_phone\": \"{{ $('Contact Page').item.json.contact_email_phone}}\",\n      \"contact_email\": \"{{ $('Contact Page').item.json.contact_email}}\",\n      \"contact_phone\": \"{{ $('Contact Page').item.json.contact_phone}}\",\n      \"about_main_description\": \"{{ $('About page').item.json.about_main_description }}\",\n      \"about_sub_description1\": \"{{ $('About page').item.json.about_sub_description1}}\",\n      \"about_sub_description2\": \"{{ $('About page').item.json.about_sub_description2}}\",\n      \"about_sub_description3\": \"{{ $('About page').item.json.about_sub_description3}}\",\n      \"overview_title1\": \"{{ $('About page').item.json.overview_title1}}\",\n      \"overview_title2\": \"{{ $('About page').item.json.overview_title2}}\",\n      \"overview_title3\": \"{{ $('About page').item.json.overview_title3}}\",\n      \"overview_description1\": \"{{ $('About page').item.json.overview_description1 }}\",\n      \"overview_description2\": \"{{ $('About page').item.json.overview_description2 }}\",\n      \"overview_description3\": \"{{ $('About page').item.json.overview_description3 }}\"\n    },\n    \"company\": {\n      \"testimonial_title\": \"{{ $('Home Page').item.json.testimonial_title }}\",\n      \"testimonial_description1\": \"{{ $('Home Page').item.json.testimonial_description1 }}\",\n      \"testimonial_description2\": \"{{ $('Home Page').item.json.testimonial_description2 }}\",\n      \"testimonial_description3\": \"{{ $('Home Page').item.json.testimonial_description3 }}\\\",\n      \"testimonial_description4\": \"{{ $('Home Page').item.json.testimonial_description4 }}\",\n      \"program_cta\": \"{{ $('About page').item.json.program_cta}}\",\n      \"blog_title\": \"{{ $('About page').item.json.blog_title}}\",\n      \"mission_title\": \"{{ $('About page').item.json.mission_title}}\",\n      \"mission_description\": \"{{ $('About page').item.json.mission_description}}\",\n      \"founder_title\": \"{{ $('About page').item.json.founder_title}}\",\n      \"founder_subtitle\": \"{{ $('About page').item.json.foudner_subtitle}}\",\n      \"founder_description\": \"{{ $('About page').item.json.founder_description}}\",\n      \"mild_cta_one_liner\": \"{{ $('About page').item.json.mild_cta_one_liner}}\",\n      \"image_description\": \"Image description here\"\n    },\n    \"footer\": {\n      \"company_title\": \"{{ $('Home Page').item.json.company_title}}\",\n      \"company_description\": \"{{ $('Home Page').item.json.company_description}}\",\n      \"contact_information\": \"{{ $('Contact Page').item.json.contact_email}}\"\n    },\n    \"contact\": {\n      \"contact_title\": \"{{ $('Contact Page').item.json.contact_title}}\",\n      \"contact_request_to_follow\": \"{{ $('Contact Page').item.json.contact_request_to_follow}}\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        672,
+        976
+      ],
+      "id": "4141616c-ef55-4533-98ea-762708e69a7c",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw value safely\nconst raw = $input.first().json.output[0].content[0].text;\n\n// Ensure it's a string\nconst text = raw?.toString() ?? \"\";\n\n// Log for debugging (appears in n8n execution logs)\nconsole.log(\"RAW:\", text);\n\n// Clean wrappers like \"[ Object: ... ]\"\nconst cleaned = text\n  .replace(/^\\[\\s*Object:\\s*/, \"\")   // remove leading \"[ Object:\"\n  .replace(/\\]$/, \"\");               // remove trailing \"]\"\n\nconsole.log(\"CLEANED:\", cleaned);\n\nlet json;\n\ntry {\n  json = JSON.parse(cleaned);\n} catch (e) {\n  console.log(\"JSON parse failed:\", e.message);\n  json = cleaned; // fallback\n}\n\nreturn [\n  {\n    json: {\n      raw,\n      cleaned,\n      parsed: json,\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        976
+      ],
+      "id": "3ba1f807-6b10-496b-80df-d4a5ca068208",
+      "name": "Code in JavaScript6"
+    }
+  ],
+  "connections": {
+    "Create PHP script V3": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PHP script to server": {
+      "main": [
+        [
+          {
+            "node": "Delete PHP script from Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete PHP script from Drive": {
+      "main": [
+        [
+          {
+            "node": "Execute PHP tp dump SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute PHP tp dump SQL": {
+      "main": [
+        [
+          {
+            "node": "Import-Start SQL file(Big dump)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Import-Start SQL file(Big dump)": {
+      "main": [
+        [
+          {
+            "node": "Import-status SQL file (big dump)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Import-status SQL file (big dump)": {
+      "main": [
+        [
+          {
+            "node": "Import-fix SQL file (big dump)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Import-fix SQL file (big dump)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get about page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get about page": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact page": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get placeholder Picture": {
+      "main": [
+        [
+          {
+            "node": "Upload Image to WP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image to WP": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update all page tags": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create PHP script V3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload PHP script to server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Home": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "About page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "About page": {
+      "main": [
+        [
+          {
+            "node": "Get Contact page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Contact Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Home Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Page": {
+      "main": [
+        [
+          {
+            "node": "Get Home",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Home Page": {
+      "main": [
+        [
+          {
+            "node": "Get placeholder Picture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Update all page tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "API TOKEN": "REDACTED_API_TOKEN",
+          "Cpanel Domain": "https://glutenfree-gluon.metalseed.net:2083/",
+          "username": "thedoing",
+          "sql username": "thedoing_aibuilder01",
+          "sql pass": "REDACTED_SQL_PASS",
+          "website domain": "https://template13.thedoingacademy.com/",
+          "file name": "nanofit.tar.gz",
+          "founder email": "admin@thedoingacademy.com ",
+          "founder password": "REDACTED_FOUNDER_PASSWORD",
+          "application password": "REDACTED_APPLICATION_PASSWORD",
+          "industry": "Health",
+          "home page": "116YrIQkRUPFUh7V3KxEn2cvA4-w30BZIaoMmI6Ji2YI",
+          "about page": "1-hRc49GrTlDlvefHo4oRf7NBWznhsSQxTEPHUV3E3sM",
+          "contact page ": "1Jmf3h7gyr6xQxdk6oLJyD4dt9Rb2RUum6BT39wya-Yo",
+          "root directory": "2025_Templates/template13"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

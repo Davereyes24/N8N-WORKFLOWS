@@ -1,0 +1,4242 @@
+{
+  "name": "Social Media Agent Calendar  sub test",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5013ba06-d4b0-4763-be2b-35b7879d6182",
+              "name": "Founder name",
+              "value": "={{ $json.body.form_response.answers[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "8a74bec2-9e26-4ee2-97c6-6d3fe80e6bf2",
+              "name": "Doer email",
+              "value": "={{ $json.body.form_response.answers[1].email }}",
+              "type": "string"
+            },
+            {
+              "id": "aa563216-fd9e-4234-894b-48640bad871e",
+              "name": "Founder Bussines name",
+              "value": "={{ $json.body.form_response.answers[2].text }}",
+              "type": "string"
+            },
+            {
+              "id": "6fda1fc9-4e7d-4775-86e7-00aff9e5848f",
+              "name": "Doer name",
+              "value": "={{ $json.body.form_response.answers[2].text }}",
+              "type": "string"
+            },
+            {
+              "id": "8f182f69-ead6-41c2-bd67-0d2406b61948",
+              "name": "Brand",
+              "value": "={{ $json.body.form_response.answers[5].text }}",
+              "type": "string"
+            },
+            {
+              "id": "1206fe39-f76f-4198-9e5b-d6b8c7c11d8a",
+              "name": "Website",
+              "value": "={{ $json.body.form_response.answers[6].url }}",
+              "type": "string"
+            },
+            {
+              "id": "fa706c48-bedf-4f4a-8ed5-23faccaf629f",
+              "name": "Preferred page",
+              "value": "={{ $json.body.form_response.answers[7].choices.labels }}",
+              "type": "string"
+            },
+            {
+              "id": "ef2fb870-b45f-49f6-a4e2-e2fadf6c1cc1",
+              "name": "Facebook link",
+              "value": "={{ $json.body.form_response.answers[8].url }}",
+              "type": "string"
+            },
+            {
+              "id": "f5b01930-d8ed-41f8-86ed-f7e1fea13e85",
+              "name": "linkedin",
+              "value": "={{ $json.body.form_response.answers[9].url }}",
+              "type": "string"
+            },
+            {
+              "id": "da88b16c-1c70-4588-8abe-e15b559a2774",
+              "name": "Instagram",
+              "value": "={{ $json.body.form_response.answers[10].url }}",
+              "type": "string"
+            },
+            {
+              "id": "315608bf-726c-42c3-afc1-e7f7e41ffcbe",
+              "name": "Gdrive",
+              "value": "={{ $json.body.form_response.answers[12].url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        320
+      ],
+      "id": "d45a58df-2869-45fb-9899-54f6f2a95d04",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $json['Founder Bussines name'] }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1qoXkgKAPKIhip1WXe8dI4WPAqBHCW2rR",
+          "mode": "list",
+          "cachedResultName": "Social media agent",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1qoXkgKAPKIhip1WXe8dI4WPAqBHCW2rR"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        432,
+        320
+      ],
+      "id": "9bb32ddd-1155-4076-bc3e-f2b343da4d94",
+      "name": "Create Main folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $('Edit Fields').item.json.Gdrive }}",
+            "mode": "url"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        880,
+        320
+      ],
+      "id": "cf8553fb-738f-4922-bdfe-ad58a4850ad7",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "name": "={{ $json.name }}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Founder Image folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        320
+      ],
+      "id": "e7f4d196-5e99-408a-9657-3728dd4863d5",
+      "name": "Copy file",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Founder images",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        656,
+        320
+      ],
+      "id": "02ec83f6-ab07-4ed7-8786-c2eeaeddeb91",
+      "name": "Create Founder Image folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        320
+      ],
+      "id": "4a79499b-2956-4e5b-bd0b-2b2d4acda1bf",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "=1R7UH6G2GWZ5jYmWM7w8tN87TzPg5BygZHYHEIgWVy-w",
+          "mode": "id"
+        },
+        "name": "={{ $('Edit Fields').item.json['Founder Bussines name'] }} Keyword Research",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Main folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1552,
+        320
+      ],
+      "id": "2dd6b09e-135f-451a-b71d-50312c2988ec",
+      "name": "Create Main Sheet",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Edit Fields').item.json['Preferred page'] }}",
+                    "rightValue": "Facebook",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "b63f9ca2-6286-4f37-bba6-36ffb442f6bb"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5dab649c-38b0-484e-9148-a44c262107a3",
+                    "leftValue": "={{ $('Edit Fields').item.json['Preferred page'] }}",
+                    "rightValue": "Instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1776,
+        320
+      ],
+      "id": "7dc93bac-6199-4294-a7e3-329a6d0a9c16",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e8612c42-0d72-4ce6-a1a8-9a11d6039fd8",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a42741d5-c9b4-4035-9b8b-7d76e49d3858",
+              "name": "Facebook_url",
+              "value": "={{ $('Edit Fields').item.json['Facebook link'] }}",
+              "type": "string"
+            },
+            {
+              "id": "cde01c98-68d1-4050-b41b-25d7cd5d132f",
+              "name": "Folder_id",
+              "value": "={{ $('Create Main folder').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0a355299-1a0b-4f6c-ad7d-ec36deef5506",
+              "name": "Creator_image_id",
+              "value": "={{ $('Create Founder Image folder').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2e3da432-e797-4296-b22d-3b23254dc3ac",
+              "name": "Creator_name",
+              "value": "={{ $('Edit Fields').item.json['Founder Bussines name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9f40e580-fb59-40e8-8bb0-5441c63eb78e",
+              "name": "Sheet_id",
+              "value": "={{ $('Create Main Sheet').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e2eb6583-12f9-4de8-a2e2-b9c31d5f98a4",
+              "name": "Brand_style_id",
+              "value": "={{ $('Create Founder Image folder').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        -64
+      ],
+      "id": "c5507b5d-b594-4f46-ad6c-ea5c184a31f9",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "Creatives",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Main folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        -64
+      ],
+      "id": "b79d4077-7085-4597-94ef-fc96ce2169fb",
+      "name": "Create Creatives folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NZa2A8r5ynQWYZJi6ZewOX6MD2oNTDy_t_Xv-BPKmmo/edit#gid=305132819"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Creator image folder ID": "={{ $json.id }}",
+            "Sheet ID": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+            "Facebook Creatives folder ID": "={{ $('Create Founder Image folder').item.json.id }}"
+          },
+          "matchingColumns": [
+            "Creator image folder ID"
+          ],
+          "schema": [
+            {
+              "id": "Creator image folder ID",
+              "displayName": "Creator image folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sheet ID",
+              "displayName": "Sheet ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clickup task ID",
+              "displayName": "Clickup task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook Creatives folder ID",
+              "displayName": "Facebook Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn Creatives folder ID",
+              "displayName": "LinkedIn Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client's folder URL",
+              "displayName": "Client's folder URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand colors",
+              "displayName": "Brand colors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevant keywords",
+              "displayName": "Relevant keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "facebook keywords",
+              "displayName": "facebook keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn keywords",
+              "displayName": "LinkedIn keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Logo id",
+              "displayName": "Logo id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL id",
+              "displayName": "URL id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2448,
+        -64
+      ],
+      "id": "18139835-0179-45cf-85f5-a2ce0852d389",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# I will give you:\n\nSocial media tone and comment examples\n\nA detailed social media performance & content analysis\n\nTop-performing themes, CTAs, hashtags, and storytelling formats\n\nCompetitor post trends and platform behavior\n\nBusiness offer & funnel overview\n\nAudience engagement insights\n\nA list of trending hashtags\n\nBased on all this input, generate the following:\n\n # Key Takeaways\nOrganize them into categories like:\n\nTrending Topics & Conversations\n\nTop Engagement Themes\n\nSuccessful Post Formats\n\nCompetitor Content Trends\n\nAudience Insights\n\nHashtag Strategy Tips\n\nEach takeaway should be insightful, specific, and actionable — not just observations, but what they mean for future content.\n\n# Content Calendar Recommendations (Optimized for Engagement & Growth)\nCreate a 7-day weekly content plan recommendations with:\n\nPost Type (Reel, carousel, image, video, story, poll, etc.)\n\nDaily Theme (mindset tip, story, reflection, promotion, engagement, etc.)\n\nPost Format (text overlay video, quote post, Q&A, etc.)\n\nCTA (comment prompt, save, share, register, etc.)\n\nEach day’s plan should reflect:\n\nWhat works best based on current performance\n\nGPT’s creative recommendation to maximize growth\n\nTrends in the self-growth niche\n\nStrategic lead-generation integration (e.g., free masterclass CTA)\n\nThen, list additional strategy enhancements like:\n\nHow often to post Reels\n\nWays to reuse top content\n\nStory ideas\n\nHow to prompt more comments\n\nEmerging formats to test (e.g., storytelling + trending audio)\n\n#INPUT STARTS HERE:\n1. My business tone/style: \"{{ $('Get Bussines research').item.json['Social Media Tone/Voice/Language'] }}\"\n2. My business post examples: \"{{ $json['What are the trends used most by competitors:'] }}\"\n3. Business research ideas: \"{{ $('Get Bussines research').item.json['Business Research Ideas Summary'] }}\"\n4. Competitors research ideas: \"{{ $json['Trends Used: '] }}\"\n5. competitors popular types of content: \"{{ $json['What are the trends used most by competitors:'] }}\"\n6. Popular hashtags: \"{{ $('Get row(s) in sheet3').item.json['facebook keywords'] }}\"\n7. Platform trends research: \"{{ $('Message a model12').item.json.choices[0].message.content }}\"\n8. Social platform: {{ $('Edit Fields').item.json['Desired platforms'] }}\n\n\n✅ Result Format You Expect:\nJust like the “Key Takeaways & Content Calendar Recommendations” in this example:\n\nOrganized by sections\n\nEach section has bullet-point insights\n\nWeekly posting calendar follows a daily breakdown with CTAs\n\nEnds with Final Takeaways or Strategy Summary"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4240,
+        32
+      ],
+      "id": "7cb1830a-08ff-48a7-80eb-1d5cec03b94f",
+      "name": "Message a model10",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 554114681,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=554114681"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Hashtags": "={{ $json.message.content['Key Takeaways']['Hashtag Strategy Tips'] }}",
+            "a": "1",
+            "Post Link": "={{ $json.message.content['Key Takeaways']['Trending Topics & Conversations'] }}",
+            "Trend or Pattern": "={{ $json.message.content['Key Takeaways']['Top Engagement Themes'] }}{{ $json.message.content['Key Takeaways']['Successful Post Formats'] }}",
+            "Key Takeaways & Content Calendar Recommendations:": "={{ $json.message.content['Key Takeaways'] }}",
+            "Chat GPT Trend Search": "={{ $json.message.content['Final Strategy Summary'] }}"
+          },
+          "matchingColumns": [
+            "a"
+          ],
+          "schema": [
+            {
+              "id": "Hashtags",
+              "displayName": "Hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link",
+              "displayName": "Post Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trend or Pattern",
+              "displayName": "Trend or Pattern",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "        Post Link",
+              "displayName": "        Post Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Chat GPT Trend Search",
+              "displayName": "Chat GPT Trend Search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key Takeaways & Content Calendar Recommendations:",
+              "displayName": "Key Takeaways & Content Calendar Recommendations:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4656,
+        32
+      ],
+      "id": "9b3d9193-5751-4270-ac7a-f14c48f17418",
+      "name": "add Trends Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert-level Facebook content strategist, social media copywriter, brand storyteller, and creative director. Your role is to create a 30-day content calendar for a personal brand, optimized for growth, community engagement, authority building, and lead generation. There must be exactly 30 posts in it, not just till the end of the month.",
+              "role": "system"
+            },
+            {
+              "content": "=#OBJECTIVE:\nGenerate a highly actionable, growth-optimized, story-driven, and brand-aligned 30-day content calendar in JSON format, suitable for **Facebook**. There must be strictly and exactly 30 posts in it. This calendar will reflect the founder’s voice, resonate with their audience, follow platform algorithm best practices, and provide all components needed for execution without any extra edits. The calendar must be not a template for futher editing but ready to publish plan with all assets 100% ready (Image Captions, description and generation prompts fully written and ready to creation by AI). It must contain 30 posts for 30 days. Make sure that there are 30 posts created\n\n---\n\n## FORMAT\nThe output must be a **pure JSON object** with this exact schema:\n\n\n{\n  \"Posts\": [\n    {\n      \"Date\": \"post date (auto-calculate from current date)\",\n      \"Day\": \"day of the week\",\n      \"Time\": \"optimal time for posting\",\n      \"media_type\": \"Image, Carousel\",\n      \"creative\": \"\",\n      \"theme\": \"Quote - Sticky Note - w/Logo... etc\",\n      \"post_description\": \"Full caption for the post, in brand tone and voice, with emojis if appropriate\",\n      \"post_captions_or_text_overlays\": \"Specific text to be used as overlays on the image\",\n     \"AI_post_creation_instructions\": \"extremely detailed prompt for generating image, highlighting all requirements and details needed for maximum accuracy\",\n      \"audio\": \"Include only if media_type is video. Specify trending or brand-relevant audio, otherwise 'N/A'\",\n\"post_short_description\": \"give post short edscription in 5 words\"\n    },\n...\n{\n...\n}\n  ]\n}\n\n#CONTEXTUAL INPUTS (DYNAMIC VARIABLES)\nYou will tailor all post content, tone, CTA, format, and strategy to the following inputs:\n\nToday's Date: {{ $today }}\n\nPosting Frequency: every day\nAlways prioritize client's information over research information.\n#Client's information: \n{{ $('Webhook').item.json.body.form_response.answers[2].text }}{{ $('Webhook').item.json.body.form_response.answers[5].text }}\n{{ $('Webhook').item.json.body.form_response.answers[8].url }}\n#research information:\nTone and Voice: \"{{ $('Get Bussines Research').item.json['Social Media Tone/Voice/Language'] }}\"\nCreator previous posts: \"{{ $('Get Bussines Research').item.json['Link to post'] }}\"\nCompetitors research: \"{{ $('Aggregate2').item.json['Why this post worked: '] }}{{ $('Aggregate2').item.json['Why this post worked: '] }}\"\nBusiness research: \"{{ $('Get Bussines Research').item.json['Business Research Ideas Summary'] }}\"\nTrends research: \"{{ $('Get Trend Research').item.json['Trend or Pattern'] }}\"\ncalendar recomendations: \"{{ $json['Platform Conversations, Themes & Comments Discussed'] }}\"\nHashtag Trends: \"{{ $('Get Trend Research').item.json.Hashtags }}\"\nPost theme you must choose from the list: \"{{ $json['Platform Conversations, Themes & Comments Discussed'] }};\"\n\nMedia Type you must choose from the list: \"Image\". \n\nPost creative you must choose from the list: \"Generated Image\"\n\n\n🔍 STRATEGIC GUIDELINES\nEach post must:\n\nBe 100% actionable and ready for creating assets by ai and automatical posting — captions complete, audio assigned if needed.\n\nFall under one content category: Timely, Trending, Original, Snackable, Actionable\n\nServe one content goal: Educate, Entertain, Inspire, Build Trust, Convert\n\n\n📊 FORMAT-SPECIFIC INSTRUCTIONS\nAll the posts must fall into one of these post types from the list. Never create any other type of posts except these. Use instructions examples just to understand the general structure but not to fully copy it.\nrequirements: \n1. Make sure you utilize all of the types at least once.\n2. For quotes text color must be always White or Black (choose the one which will be more readable). Make sure text is highly readable against the background photo, must be ratio of at least 4.5:1. Add this into every prompt.\n3. Important! For all images where people are present founder's images are used. The generating tool is provided with founder image so the instruction you output in such cases always must contain text: \"use and edit provided founder image according to prompt\" and describe in details the clothing, pose and other details regarding founder on the image. Don't clarify the gender.\n4. Logo/URL must not interact with images itself but be more like watermark. Color is always White or black (choose the one whhich will be more readable). position always centered at the bottem of the image\n5. For sticky notes format use various images, not always solid brand color background, they shoud be realistic.\n6. Use different text positioning which will make images diverse but still match brand style.\n7. For URL posts never mention specific URL or example, Just claim URL, not logo.\n8. there must be equal number of posts with URL and logo.\n9. Fonts must always be taken from CONTEXTUAL INPUTS part, don't use other fonts except that.\n10. Try to use brand colors and style as much as possible but always remain text and logo/url color black or white.\n11. For images with gradient always claim that gradient must start from 1/3 of image and must have almost fully solid color at the bottom.\n\n\nMention appropriate requirements from above list in Image creation instructions.\n\npost types list:\n1. POST TYPE: Quote - Sticky Note - SanSerif w/Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post-it style image with colors and fonts from the Brand Standard Sheet that says, \"Quote that stuck with me: FEAR IS TEMPORARY, GROWTH IS FOREVOR. Logo centered at bottom.\n2.POST TYPE: Quote - Pure Solid - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with solid white background. Black text in San Serif font says, \"THE GOAL ISN'T PERFECTION - IT'S GROWTH, ONE STEP AT A TIME.\" Include URL centerd at the bottom in secondary (Serif) font.\n3.POST TYPE: Quote - Pure Solid - Serif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with solid white background. Black text in Serif font, sentence case says, \"Keep going - you're further than you were yesterday.\" Include URL centerd at the bottom in secondary (SanSerif) font in Italics.\n4.POST TYPE: Quote - Photo - SanSerif w/Logo. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of a professional working at their desk. Camera angle is coming from above the desk, slightly angled so we see the professional's hands at their laptop, and we see assorted desk items - a car key, a small spiral-bound personal planner. Text is centered and bold, and says, \"Success Begins with Self Belief.\" Text is white against the slightly muted background image. Logo is centered at the bottom of the post.\n5.POST TYPE: Quote - Photo - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post that features a photo realistic image of the Founder in action, speaking with a client with a table in the foreground. Image captures them mid-sentence, and the Founder is gesturing with their hands as they speak. Founder is smiling, and client looks focused, and is paying close attention to what the Founder is teaching them. Text in serif font says, \"ENERGY FLOWS WHERE FOCUS GOES.\" Website URL centered at bottom in serif font. Font color is either white or black, depending proper contract with background image.\n6.POST TYPE: Quote - Photo w/bottom gradient - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of the Founder working at a laptop. They are smiling, focused. Text is san serif, centered and says, \"YOUR MINDSET DETERMINES YOUR SUCCESS.\" URL is centered at the bottom in serif (secondary) font. image has a gradient fade, getting darker as it goes down, starting from the 1/3 of image height and almost fully dark at the bottom\n7.POST TYPE: Quote - Photo - Serif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post featuring a photo realistic image of a professional adult showing determination, resilience. Text says, \"When things get hard, your beliefs determine whether you give up or keep going.\" Text should be centered, and high contrast. Choose text color either white or black depending on contrast with background image. Include URL centered at bottom in secondary (serif) font.\n8.POST TYPE: Quote - Post Bubble - Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post that looks like a post-within-a-post. Background is a friendly professional woman, concentrating on her work, sitting at a small desk with her hands typing on a laptop keyboard. In the center, focus is a 2D text bubble that looks like a social media (Twitter) post, solid white fill. Bubble features the small thumbnail avatar of the Founder's Facebook page next to the Founder's name, along with the Blue Check that shows it is an authentic profile. Three menu dots to the right of the blue check, just like a social media post would have. Text says, \"Stop asking 'HOW' to achieve your dream. Instead, get emotionally involved with your big audacious goal.\" Logo is centered at the bottom. \n9.POST TYPE: Quote - Photo w/Bubble - Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with a photo realistic image of a professional woman working from a hip coffee shop. She has her laptop in front of her, and a cappucino in a white mug next to her on the table. Lighting has a warm glow. Text bubble in the center, with a dark fill, 50% opacity. White text says, \"No matter where you are, your success story is still being written.\" Line break, and the following text in BOLD, \"The key? Your mindset.\" Logo centered at the bottom.\n10.POST TYPE: Quote - Photo w/PopUp - Logo. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of the Founder looking out of an office window at a beautiful scenic landscape. Camera angle is a side view, showing us a profile of the Founder. The landscape is out-of-focus, and our attention is on the peaceful, confident and happy expression on the Founder's face. In the center, create an illustration of an iPhone popup reminder with two buttons along the bottom of the popup. Popup text says, \"LITTLE REMINDER\" Line break, next text is \"Consistency creates confidence, and confidence fuels progress.\" The left button says, \"Okay\" and the right button says, \"Got it!\" Logo centered at the bottom. \n\n\n\n📎 CAPTION REQUIREMENTS\nAll captions must:\n\nBe conversational, engaging, and warm\n\nEnd with a clear CTA\n\nInclude hooks in the first line\n\nAvoid robotic patterns (no excessive em dashes, awkward phrasing). Avoid using em dashes (—) in copy or UI text, as they can appear overly “AI-generated” or robotic. Instead, use simpler punctuation like commas, periods, or colons for a more natural and human tone.\n\nUse formatting strategically (emojis, line breaks, CAPS emphasis)\n\nAI post image creation instructions: \nClear and detailed prompt for creating  assets via AI tool. Include here brand voice and tone. Also consider client barnd colors. For images describe in details what must be on image. \nIf text or people are present on the image they must be closer to the center to prevent being cutted. Text and people heads must be at least 1/5 of image size away from any edge. . \nIt's crucial to mention in every prompt that image must be hyper-realistic and for social media\n\n ADDITIONAL OUTPUT INSTRUCTIONS\nAuto-calculate the date for each post, spaced 1 per day unless posting schedule states otherwise.\nAlways generate 30 posts\n\nDO NOT:\n1.Include any commentary outside the JSON like '''json\n\n2.Add placeholder text like \"Insert caption here\"\n\n3.Repeat buzzwords (authentic, inspiring, growth) without context\n\n4.Use generic CTAs like “Click the link” — always specify the CTA wording\n\n5.Suggest audio vaguely (never write \"trending sound\" — name the exact track or style)\n\n6. Do not generate AI image creation instructions with random people/person. Always founder image must be used if people/person present.\n\n\nFINAL REMINDER\nReturn only the structured JSON. All values must be fully completed, based on the above variables and strategy."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4592,
+        224
+      ],
+      "id": "1f7ca83d-8f10-4472-8c7b-1c8ceec20198",
+      "name": "Message a model11",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79d02c52-1848-4a06-ae74-46aa8e8e899c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2896,
+        -64
+      ],
+      "id": "7dcde8e4-81c4-4a9e-9892-ddb0031da4f8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1SOZ3JyM1hJVwjzpfgbEuuVFY4hqjTt0L4LZE5_Zm2Mc",
+          "mode": "id"
+        },
+        "name": "={{ $('Edit Fields1').item.json.Creator_name }} Calendar",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields1').item.json.Folder_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2672,
+        -64
+      ],
+      "id": "bff1ea34-e4e7-48bd-9b39-c118870aa4ee",
+      "name": "Copy file5",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Append or update row in sheet').item.json['Sheet ID'] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ADuVendrsmZpwCQtbzqZer_uK_XSlAm7LPcyJEHVIHg/edit#gid=305132819"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Creator image folder ID",
+              "lookupValue": "={{ $('Create Creatives folder').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        32
+      ],
+      "id": "ad191a47-342e-4a5f-a014-ff7a24fd1923",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "you are smart social media profiles analyses tool",
+              "role": "system"
+            },
+            {
+              "content": "=Please list the top 10 trends on social media right now, covering a mix of platforms. Trends can include editing styles, audio, templates, posting styles, challenges, or viral content formats—anything that is currently gaining traction and visibility.\n\nPlatforms to Search: {{ $json.Platform }}\nFor each trend, include:\n\n1. Trend Name or Description: A short, clear description of the trend.\n2. Platform(s): Where the trend is most popular.\n3. Why It’s Trending: Briefly explain why this trend is gaining attention.\n4. How to Use It: Suggestions on how this trend can be applied to content for greater exposure and audience reach.\n5. Hashtags to use when posting this trend\n\nConsider how these trends can be integrated into my content plan for my business. The goal is to provide actionable insights that allow the business to incorporate these trends into their content strategy, increasing engagement and visibility.\n\nMy busibess tone/style: \n{{ $json['Social Media Tone/Voice/Language'] }}\n\n My business post examples:\n{{ $json['Link to post'] }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3792,
+        32
+      ],
+      "id": "08ab7e21-7b93-4a4c-9c82-23125d0b8c4d",
+      "name": "Message a model12",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Append or update row in sheet').item.json['Sheet ID'] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ADuVendrsmZpwCQtbzqZer_uK_XSlAm7LPcyJEHVIHg/edit#gid=305132819"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Creator image folder ID",
+              "lookupValue": "={{ $('Create Creatives folder').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        224
+      ],
+      "id": "1d5021b3-5b40-4108-9b5c-68a9c5a0fa42",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.Posts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4944,
+        224
+      ],
+      "id": "ea7c2b18-5f1f-4582-807c-862cd49384fb",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "9c558453-641e-4bb0-9bf1-559a3d96849a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        320
+      ],
+      "id": "aa58f118-d814-4f41-8f95-63e2ce2380c5",
+      "name": "Webhook",
+      "webhookId": "9c558453-641e-4bb0-9bf1-559a3d96849a"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 938573277,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=938573277"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4304,
+        224
+      ],
+      "id": "ce66213f-166e-4cb4-b580-f6432ad39388",
+      "name": "Get Market Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952139343,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=952139343"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3568,
+        224
+      ],
+      "id": "b041c344-037f-40c3-9e0b-176d46e460d2",
+      "name": "Get Competitor Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 554114681,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=554114681"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4016,
+        224
+      ],
+      "id": "5fc94f40-d758-47bc-9b0d-4a21e1e81453",
+      "name": "Get Trend Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755145055,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=755145055"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Follower history",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3344,
+        224
+      ],
+      "id": "7aefcde5-da1a-45e4-bbaf-d04d19dbb907",
+      "name": "Get Bussines Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 938573277,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=938573277"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Post Link Market Trends & Patterns": "={{ $('Message a model12').item.json.choices[0].message.content }}",
+            "Trend Description & Hashtags Used Market Trends & Patterns": "={{ $('Message a model36').item.json.choices[0].message.content }}",
+            "a": "1"
+          },
+          "matchingColumns": [
+            "a"
+          ],
+          "schema": [
+            {
+              "id": "Platform Market Trends & Patterns",
+              "displayName": "Platform Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trend Description & Hashtags Used Market Trends & Patterns",
+              "displayName": "Trend Description & Hashtags Used Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link Market Trends & Patterns",
+              "displayName": "Post Link Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Platform Conversations, Themes & Comments Discussed",
+              "displayName": "Platform Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "displayName": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link Conversations, Themes & Comments Discussed",
+              "displayName": "Post Link Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4944,
+        32
+      ],
+      "id": "37d13389-e85c-4764-aa0b-05284c16a489",
+      "name": "add Market Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e8612c42-0d72-4ce6-a1a8-9a11d6039fd8",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a42741d5-c9b4-4035-9b8b-7d76e49d3858",
+              "name": "Facebook_url",
+              "value": "={{ $('Edit Fields').item.json.Instagram }}",
+              "type": "string"
+            },
+            {
+              "id": "cde01c98-68d1-4050-b41b-25d7cd5d132f",
+              "name": "Folder_id",
+              "value": "={{ $('Create Main folder').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0a355299-1a0b-4f6c-ad7d-ec36deef5506",
+              "name": "Creator_image_id",
+              "value": "={{ $('Create Founder Image folder').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2e3da432-e797-4296-b22d-3b23254dc3ac",
+              "name": "Creator_name",
+              "value": "={{ $('Edit Fields').item.json['Founder Bussines name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9f40e580-fb59-40e8-8bb0-5441c63eb78e",
+              "name": "Sheet_id",
+              "value": "={{ $('Create Main Sheet').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e2eb6583-12f9-4de8-a2e2-b9c31d5f98a4",
+              "name": "Brand_style_id",
+              "value": "={{ $('Create Founder Image folder').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        704
+      ],
+      "id": "1325cfbc-abb5-46b1-b0d3-f56f195054db",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "Creatives",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Main folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        704
+      ],
+      "id": "c3f71a07-26ff-4651-abdd-0c052b8c01bc",
+      "name": "Create Creatives folder1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=Provide a research about this company from link and decide which 5 hashtags are most trending and relevant for them in this platform: Instagram\nLink: {{ $('Edit Fields2').item.json.Facebook_url }}\n\nyour output must be a valid JSON object in such format:\n{\n\"hashtags\": [\"first\",\"second\",...]\n}\n\nNever ever add additional text except JSON. I don't need explanations, just JSON.\nNever ever use ```json or another signs before JSON. Output must start from { and end by } and contain only JSON without any additional text, axplanations or service text. "
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3344,
+        800
+      ],
+      "id": "0ace6555-277a-44e9-9fc9-9d0f45fe74e2",
+      "name": "Message a model17",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755145055,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=755145055"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Follower history",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3568,
+        800
+      ],
+      "id": "f12ce89f-3d0f-4c6a-866c-ced533a7e00a",
+      "name": "Get POst example, Tone,Ideas, types research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# I will give you:\n\nSocial media tone and comment examples\n\nA detailed social media performance & content analysis\n\nTop-performing themes, CTAs, hashtags, and storytelling formats\n\nCompetitor post trends and platform behavior\n\nBusiness offer & funnel overview\n\nAudience engagement insights\n\nA list of trending hashtags\n\nBased on all this input, generate the following:\n\n # Key Takeaways\nOrganize them into categories like:\n\nTrending Topics & Conversations\n\nTop Engagement Themes\n\nSuccessful Post Formats\n\nCompetitor Content Trends\n\nAudience Insights\n\nHashtag Strategy Tips\n\nEach takeaway should be insightful, specific, and actionable — not just observations, but what they mean for future content.\n\n# Content Calendar Recommendations (Optimized for Engagement & Growth)\nCreate a 7-day weekly content plan recommendations with:\n\nPost Type (Reel, carousel, image, video, story, poll, etc.)\n\nDaily Theme (mindset tip, story, reflection, promotion, engagement, etc.)\n\nPost Format (text overlay video, quote post, Q&A, etc.)\n\nCTA (comment prompt, save, share, register, etc.)\n\nEach day’s plan should reflect:\n\nWhat works best based on current performance\n\nGPT’s creative recommendation to maximize growth\n\nTrends in the self-growth niche\n\nStrategic lead-generation integration (e.g., free masterclass CTA)\n\nThen, list additional strategy enhancements like:\n\nHow often to post Reels\n\nWays to reuse top content\n\nStory ideas\n\nHow to prompt more comments\n\nEmerging formats to test (e.g., storytelling + trending audio)\n\n#INPUT STARTS HERE:\n1. My business tone/style: \"{{ $('Get POst example, Tone,Ideas, types research1').item.json['Social Media Tone/Voice/Language'] }}\"\n2. My business post examples: \"{{ $('Get POst example, Tone,Ideas, types research1').item.json['Link to post'] }}\"\n3. Business research ideas: \"{{ $('Get POst example, Tone,Ideas, types research1').item.json['Business Research Ideas Summary'] }}\"\n4. Competitors research ideas: \"{{ $json['Trends Used: '] }}\"\n5. competitors popular types of content: \"{{ $json['What are the trends used most by competitors:'] }}\"\n6. Popular hashtags: \"{{ $('Message a model17').item.json.choices[0].message.content }}\"\n7. Platform trends research: \"{{ $('Message a model23').item.json.choices[0].message.content }}\n8. Social platform: {{ $('Edit Fields').item.json['Desired platforms'] }}\n\n\n✅ Result Format You Expect:\nJust like the “Key Takeaways & Content Calendar Recommendations” in this example:\n\nOrganized by sections\n\nEach section has bullet-point insights\n\nWeekly posting calendar follows a daily breakdown with CTAs\n\nEnds with Final Takeaways or Strategy Summary"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4240,
+        800
+      ],
+      "id": "d4112d46-74f8-4d4a-bb85-181689223f9e",
+      "name": "Message a model18",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 554114681,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=554114681"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "a": "1",
+            "Hashtags": "={{ $('Message a model17').item.json.choices[0].message.content }}",
+            "Chat GPT Trend Search": "={{ $('Message a model23').item.json.choices[0].message.content }}",
+            "Key Takeaways & Content Calendar Recommendations:": "={{ $json.message.content.Key_Takeaways }}"
+          },
+          "matchingColumns": [
+            "a"
+          ],
+          "schema": [
+            {
+              "id": "Hashtags",
+              "displayName": "Hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link",
+              "displayName": "Post Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trend or Pattern",
+              "displayName": "Trend or Pattern",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "        Post Link",
+              "displayName": "        Post Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Chat GPT Trend Search",
+              "displayName": "Chat GPT Trend Search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key Takeaways & Content Calendar Recommendations:",
+              "displayName": "Key Takeaways & Content Calendar Recommendations:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4656,
+        800
+      ],
+      "id": "ebe1063a-cc37-431e-af25-4e74b047d0b3",
+      "name": "add Trends Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert-levelInstagram content strategist, social media copywriter, brand storyteller, and creative director. Your role is to create a 30-day content calendar for a personal brand, optimized for growth, community engagement, authority building, and lead generation. There must be exactly 30 posts in it, not just till the end of the month.",
+              "role": "system"
+            },
+            {
+              "content": "=#OBJECTIVE:\nGenerate a highly actionable, growth-optimized, story-driven, and brand-aligned 30-day content calendar in JSON format, suitable for {{ $('Edit Fields').item.json['Preferred page'] }}**. There must be strictly and exactly 30 posts in it. This calendar will reflect the founder’s voice, resonate with their audience, follow platform algorithm best practices, and provide all components needed for execution without any extra edits. The calendar must be not a template for futher editing but ready to publish plan with all assets 100% ready (Image Captions, description and generation prompts fully written and ready to creation by AI). It must contain 30 posts for 30 days. Make sure that there are 30 posts created\n\n---\n\n## FORMAT\nThe output must be a **pure JSON object** with this exact schema:\n\n\n{\n  \"Posts\": [\n    {\n      \"Date\": \"post date (auto-calculate from current date)\",\n      \"Day\": \"day of the week\",\n      \"Time\": \"optimal time for posting\",\n      \"media_type\": \"Image, Carousel\",\n      \"creative\": \"\",\n      \"theme\": \"Quote - Sticky Note - w/Logo... etc\",\n      \"post_description\": \"Full caption for the post, in brand tone and voice, with emojis if appropriate\",\n      \"post_captions_or_text_overlays\": \"Specific text to be used as overlays on the image\",\n     \"AI_post_creation_instructions\": \"extremely detailed prompt for generating image, highlighting all requirements and details needed for maximum accuracy\",\n      \"audio\": \"Include only if media_type is video. Specify trending or brand-relevant audio, otherwise 'N/A'\",\n\"post_short_description\": \"give post short edscription in 5 words\"\n    },\n...\n{\n...\n}\n  ]\n}\n\n#CONTEXTUAL INPUTS (DYNAMIC VARIABLES)\nYou will tailor all post content, tone, CTA, format, and strategy to the following inputs:\n\nToday's Date: {{ $today }}\n\nPosting Frequency: every day\nAlways prioritize client's information over research information.\n#Client's information: \n{{ $('Webhook').item.json.body.form_response.answers[2].text }}{{ $('Webhook').item.json.body.form_response.answers[5].text }}\n{{ $('Webhook').item.json.body.form_response.answers[8].url }}\n#research information:\nTone and Voice: \"{{ $('Get Bussines Research1').item.json['Social Media Tone/Voice/Language'] }}\"\nCreator previous posts: \"{{ $('Get Bussines Research1').item.json['Link to post'] }}\"\nCompetitors research: \"{{ $('Get Competitor Research1').item.json['What are the trends used most by competitors:'] }}\"\nBusiness research: \"{{ $('Get Bussines Research1').item.json['Business Research Ideas Summary'] }}\"\nTrends research: \"{{ $('Get Trend Research1').item.json['Trend or Pattern'] }}\"\ncalendar recomendations: \"{{ $json['Platform Conversations, Themes & Comments Discussed'] }}\"\nHashtag Trends: \"{{ $('Get Trend Research1').item.json.Hashtags }}\"\nPost theme you must choose from the list: \"{{ $('Get Competitor Research1').item.json['What are the most common posts used by competitors'] }};\"\n\nMedia Type you must choose from the list: \"Image\". \n\nPost creative you must choose from the list: \"Generated Image\"\n\n\n🔍 STRATEGIC GUIDELINES\nEach post must:\n\nBe 100% actionable and ready for creating assets by ai and automatical posting — captions complete, audio assigned if needed.\n\nFall under one content category: Timely, Trending, Original, Snackable, Actionable\n\nServe one content goal: Educate, Entertain, Inspire, Build Trust, Convert\n\n\n📊 FORMAT-SPECIFIC INSTRUCTIONS\nAll the posts must fall into one of these post types from the list. Never create any other type of posts except these. Use instructions examples just to understand the general structure but not to fully copy it.\nrequirements: \n1. Make sure you utilize all of the types at least once.\n2. For quotes text color must be always White or Black (choose the one which will be more readable). Make sure text is highly readable against the background photo, must be ratio of at least 4.5:1. Add this into every prompt.\n3. Important! For all images where people are present founder's images are used. The generating tool is provided with founder image so the instruction you output in such cases always must contain text: \"use and edit provided founder image according to prompt\" and describe in details the clothing, pose and other details regarding founder on the image. Don't clarify the gender.\n4. Logo/URL must not interact with images itself but be more like watermark. Color is always White or black (choose the one whhich will be more readable). position always centered at the bottem of the image\n5. For sticky notes format use various images, not always solid brand color background, they shoud be realistic.\n6. Use different text positioning which will make images diverse but still match brand style.\n7. For URL posts never mention specific URL or example, Just claim URL, not logo.\n8. there must be equal number of posts with URL and logo.\n9. Fonts must always be taken from CONTEXTUAL INPUTS part, don't use other fonts except that.\n10. Try to use brand colors and style as much as possible but always remain text and logo/url color black or white.\n11. For images with gradient always claim that gradient must start from 1/3 of image and must have almost fully solid color at the bottom.\n\n\nMention appropriate requirements from above list in Image creation instructions.\n\npost types list:\n1. POST TYPE: Quote - Sticky Note - SanSerif w/Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post-it style image with colors and fonts from the Brand Standard Sheet that says, \"Quote that stuck with me: FEAR IS TEMPORARY, GROWTH IS FOREVOR. Logo centered at bottom.\n2.POST TYPE: Quote - Pure Solid - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with solid white background. Black text in San Serif font says, \"THE GOAL ISN'T PERFECTION - IT'S GROWTH, ONE STEP AT A TIME.\" Include URL centerd at the bottom in secondary (Serif) font.\n3.POST TYPE: Quote - Pure Solid - Serif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with solid white background. Black text in Serif font, sentence case says, \"Keep going - you're further than you were yesterday.\" Include URL centerd at the bottom in secondary (SanSerif) font in Italics.\n4.POST TYPE: Quote - Photo - SanSerif w/Logo. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of a professional working at their desk. Camera angle is coming from above the desk, slightly angled so we see the professional's hands at their laptop, and we see assorted desk items - a car key, a small spiral-bound personal planner. Text is centered and bold, and says, \"Success Begins with Self Belief.\" Text is white against the slightly muted background image. Logo is centered at the bottom of the post.\n5.POST TYPE: Quote - Photo - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post that features a photo realistic image of the Founder in action, speaking with a client with a table in the foreground. Image captures them mid-sentence, and the Founder is gesturing with their hands as they speak. Founder is smiling, and client looks focused, and is paying close attention to what the Founder is teaching them. Text in serif font says, \"ENERGY FLOWS WHERE FOCUS GOES.\" Website URL centered at bottom in serif font. Font color is either white or black, depending proper contract with background image.\n6.POST TYPE: Quote - Photo w/bottom gradient - SanSerif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of the Founder working at a laptop. They are smiling, focused. Text is san serif, centered and says, \"YOUR MINDSET DETERMINES YOUR SUCCESS.\" URL is centered at the bottom in serif (secondary) font. image has a gradient fade, getting darker as it goes down, starting from the 1/3 of image height and almost fully dark at the bottom\n7.POST TYPE: Quote - Photo - Serif w/URL. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post featuring a photo realistic image of a professional adult showing determination, resilience. Text says, \"When things get hard, your beliefs determine whether you give up or keep going.\" Text should be centered, and high contrast. Choose text color either white or black depending on contrast with background image. Include URL centered at bottom in secondary (serif) font.\n8.POST TYPE: Quote - Post Bubble - Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post that looks like a post-within-a-post. Background is a friendly professional woman, concentrating on her work, sitting at a small desk with her hands typing on a laptop keyboard. In the center, focus is a 2D text bubble that looks like a social media (Twitter) post, solid white fill. Bubble features the small thumbnail avatar of the Founder's Facebook page next to the Founder's name, along with the Blue Check that shows it is an authentic profile. Three menu dots to the right of the blue check, just like a social media post would have. Text says, \"Stop asking 'HOW' to achieve your dream. Instead, get emotionally involved with your big audacious goal.\" Logo is centered at the bottom. \n9.POST TYPE: Quote - Photo w/Bubble - Logo. MEDIA TYPE: Image. INSTRUCTIONS example: Create a post with a photo realistic image of a professional woman working from a hip coffee shop. She has her laptop in front of her, and a cappucino in a white mug next to her on the table. Lighting has a warm glow. Text bubble in the center, with a dark fill, 50% opacity. White text says, \"No matter where you are, your success story is still being written.\" Line break, and the following text in BOLD, \"The key? Your mindset.\" Logo centered at the bottom.\n10.POST TYPE: Quote - Photo w/PopUp - Logo. MEDIA TYPE: Image. INSTRUCTIONS example:Create a post with a photo realistic image of the Founder looking out of an office window at a beautiful scenic landscape. Camera angle is a side view, showing us a profile of the Founder. The landscape is out-of-focus, and our attention is on the peaceful, confident and happy expression on the Founder's face. In the center, create an illustration of an iPhone popup reminder with two buttons along the bottom of the popup. Popup text says, \"LITTLE REMINDER\" Line break, next text is \"Consistency creates confidence, and confidence fuels progress.\" The left button says, \"Okay\" and the right button says, \"Got it!\" Logo centered at the bottom. \n\n\n\n📎 CAPTION REQUIREMENTS\nAll captions must:\n\nBe conversational, engaging, and warm\n\nEnd with a clear CTA\n\nInclude hooks in the first line\n\nAvoid robotic patterns (no excessive em dashes, awkward phrasing). Avoid using em dashes (—) in copy or UI text, as they can appear overly “AI-generated” or robotic. Instead, use simpler punctuation like commas, periods, or colons for a more natural and human tone.\n\nUse formatting strategically (emojis, line breaks, CAPS emphasis)\n\nAI post image creation instructions: \nClear and detailed prompt for creating  assets via AI tool. Include here brand voice and tone. Also consider client barnd colors. For images describe in details what must be on image. \nIf text or people are present on the image they must be closer to the center to prevent being cutted. Text and people heads must be at least 1/5 of image size away from any edge. . \nIt's crucial to mention in every prompt that image must be hyper-realistic and for social media\n\n ADDITIONAL OUTPUT INSTRUCTIONS\nAuto-calculate the date for each post, spaced 1 per day unless posting schedule states otherwise.\nAlways generate 30 posts\n\nDO NOT:\n1.Include any commentary outside the JSON like '''json\n\n2.Add placeholder text like \"Insert caption here\"\n\n3.Repeat buzzwords (authentic, inspiring, growth) without context\n\n4.Use generic CTAs like “Click the link” — always specify the CTA wording\n\n5.Suggest audio vaguely (never write \"trending sound\" — name the exact track or style)\n\n6. Do not generate AI image creation instructions with random people/person. Always founder image must be used if people/person present.\n\n\nFINAL REMINDER\nReturn only the structured JSON. All values must be fully completed, based on the above variables and strategy."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4240,
+        1088
+      ],
+      "id": "2014fd35-5679-4c60-8e84-fe0e4b7eb746",
+      "name": "Message a model19",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79d02c52-1848-4a06-ae74-46aa8e8e899c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2896,
+        704
+      ],
+      "id": "34358a7f-bbcd-4292-a116-4edbb9ec1691",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1SOZ3JyM1hJVwjzpfgbEuuVFY4hqjTt0L4LZE5_Zm2Mc",
+          "mode": "id"
+        },
+        "name": "={{ $('Edit Fields2').item.json.Creator_name }} Calendar",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields2').item.json.Folder_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2672,
+        704
+      ],
+      "id": "0073a7f4-1e1e-4972-af24-297623b00945",
+      "name": "Copy file6",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Append or update row in sheet2').item.json['Sheet ID'] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DlUyaS5J-A_HUsBCgqBrOsMXo1hbYqGWFuPajcuITA4/edit#gid=305132819"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Creator image folder ID",
+              "lookupValue": "={{ $('Create Creatives folder1').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        800
+      ],
+      "id": "bfa8f060-3140-46fe-acc4-a717cff82314",
+      "name": "Get row(s) in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952139343,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=952139343"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4016,
+        800
+      ],
+      "id": "1e16176b-7cad-4427-a290-b9ba0f702fcd",
+      "name": "Get POst example, Tone,Ideas, types research4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "you are smart social media profiles analyses tool",
+              "role": "system"
+            },
+            {
+              "content": "=Please list the top 10 trends on social media right now, covering a mix of platforms. Trends can include editing styles, audio, templates, posting styles, challenges, or viral content formats—anything that is currently gaining traction and visibility.\n\nPlatforms to Search: Instagram\nFor each trend, include:\n\n1. Trend Name or Description: A short, clear description of the trend.\n2. Platform(s): Where the trend is most popular.\n3. Why It’s Trending: Briefly explain why this trend is gaining attention.\n4. How to Use It: Suggestions on how this trend can be applied to content for greater exposure and audience reach.\n5. Hashtags to use when posting this trend\n\nConsider how these trends can be integrated into my content plan for my business. The goal is to provide actionable insights that allow the business to incorporate these trends into their content strategy, increasing engagement and visibility.\n\nMy busibess tone/style: \n{{ $json['Social Media Tone/Voice/Language'] }}\n\n My business post examples:\n{{ $json['Link to post'] }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3792,
+        800
+      ],
+      "id": "337c3b19-cbb4-40ac-bd72-65fa133f09d8",
+      "name": "Message a model23",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Append or update row in sheet2').item.json['Sheet ID'] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DlUyaS5J-A_HUsBCgqBrOsMXo1hbYqGWFuPajcuITA4/edit#gid=305132819"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Creator image folder ID",
+              "lookupValue": "={{ $('Create Creatives folder1').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        1088
+      ],
+      "id": "0d64dd96-cdc5-48ed-9290-a4c39d2225d0",
+      "name": "Get row(s) in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.Posts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4656,
+        1088
+      ],
+      "id": "548a798f-d6ed-454b-94e9-0e3273b4955d",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 938573277,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=938573277"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4016,
+        1088
+      ],
+      "id": "4248fcd5-55a8-4721-9579-4c77fd210433",
+      "name": "Get Market Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952139343,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=952139343"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3568,
+        1088
+      ],
+      "id": "da7ccb67-51f9-406b-858c-94cf72e579c0",
+      "name": "Get Competitor Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 554114681,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=554114681"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "a",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3792,
+        1088
+      ],
+      "id": "2c527eaf-3ee3-4528-9e93-3a5f4f54dd6d",
+      "name": "Get Trend Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755145055,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=755145055"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Follower history",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3344,
+        1088
+      ],
+      "id": "65c2dc2b-d57f-40bd-929a-05b72baf3ea3",
+      "name": "Get Bussines Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file6').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 938573277,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PxnEPag4d8VNmsPFz8ICIrLfoPRFoiEt5EaRfUcEug8/edit#gid=938573277"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Trend Description & Hashtags Used Market Trends & Patterns": "={{ $('Message a model18').item.json.message.content.Key_Takeaways['Trending Topics & Conversations'] }}",
+            "Post Link Market Trends & Patterns": "={{ $('Message a model18').item.json.message.content.Key_Takeaways['Successful Post Formats'] }}",
+            "Platform Conversations, Themes & Comments Discussed": "={{ $('Message a model18').item.json.message.content.Key_Takeaways['Audience Insights'] }}",
+            "Conversation, Theme or Comment Conversations, Themes & Comments Discussed": "={{ $('Message a model18').item.json.message.content.Key_Takeaways['Competitor Content Trends'] }}",
+            "a": "1"
+          },
+          "matchingColumns": [
+            "a"
+          ],
+          "schema": [
+            {
+              "id": "Platform Market Trends & Patterns",
+              "displayName": "Platform Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Trend Description & Hashtags Used Market Trends & Patterns",
+              "displayName": "Trend Description & Hashtags Used Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link Market Trends & Patterns",
+              "displayName": "Post Link Market Trends & Patterns",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Platform Conversations, Themes & Comments Discussed",
+              "displayName": "Platform Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "displayName": "Conversation, Theme or Comment Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link Conversations, Themes & Comments Discussed",
+              "displayName": "Post Link Conversations, Themes & Comments Discussed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "a",
+              "displayName": "a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4944,
+        800
+      ],
+      "id": "65917b34-9c98-443a-9285-ef03be16df4d",
+      "name": "add Market Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "=Provide a research about this company from link and decide which 5 hashtags are most trending and relevant for them in this platform: {{ $('Edit Fields').item.json['Preferred page'] }}\nLink: {{ $('Edit Fields').item.json['Facebook link'] }}\n\nyour output must be a valid JSON object in such format:\n{\n\"hashtags\": [\"first\",\"second\",...]\n}\n\nNever ever add additional text except JSON. I don't need explanations, just JSON.\nNever ever use ```json or another signs before JSON. Output must start from { and end by } and contain only JSON without any additional text, axplanations or service text. "
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3344,
+        32
+      ],
+      "id": "eb448425-a7a0-4e27-afc6-98680b0d0abe",
+      "name": "Message a model36",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Date"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4944,
+        992
+      ],
+      "id": "671f9576-7f8c-43b2-80a3-a0cde6f1781d",
+      "name": "Aggregate15"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        5168,
+        128
+      ],
+      "id": "ff3adc21-4af6-4d82-974b-87feca141a14",
+      "name": "Aggregate16"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields2').item.json.Sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qQZtcS9ugQqM-cwTS__8QedpaknVxx7SX9XvPWyAa7M/edit#gid=305132819"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Creator image folder ID": "={{ $json.id }}",
+            "Sheet ID": "={{ $('Create Main Sheet').item.json.id }}",
+            "Facebook Creatives folder ID": "={{ $('Create Founder Image folder').item.json.id }}",
+            "LinkedIn Creatives folder ID": "=",
+            "Client's folder URL": "={{ $('Edit Fields').item.json.Gdrive }}"
+          },
+          "matchingColumns": [
+            "Creator image folder ID"
+          ],
+          "schema": [
+            {
+              "id": "Creator image folder ID",
+              "displayName": "Creator image folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sheet ID",
+              "displayName": "Sheet ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clickup task ID",
+              "displayName": "Clickup task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook Creatives folder ID",
+              "displayName": "Facebook Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn Creatives folder ID",
+              "displayName": "LinkedIn Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client's folder URL",
+              "displayName": "Client's folder URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand colors",
+              "displayName": "Brand colors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevant keywords",
+              "displayName": "Relevant keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "facebook keywords",
+              "displayName": "facebook keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn keywords",
+              "displayName": "LinkedIn keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Logo id",
+              "displayName": "Logo id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL id",
+              "displayName": "URL id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2448,
+        704
+      ],
+      "id": "555e8a93-07e1-42c6-a8b8-e98bc15d9b76",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xQ88WQByK84WfWJs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xQ88WQByK84WfWJs",
+          "cachedResultName": "IG Business Research - GGmod"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "isTest": true,
+            "instagram_profile_url": "={{ $('Edit Fields2').item.json.Facebook_url }}",
+            "instagram_username": "={{ $('Edit Fields2').item.json.Facebook_url.replace('https://www.facebook.com/', '').replace('https://facebook.com/', '').replace('https://www.instagram.com/', '').replace('https://instagram.com/', '').replace('/', '') }}",
+            "id": "={{ $('Edit Fields2').item.json.Creator_name }}",
+            "sheetDocId": "={{ $('Edit Fields2').item.json.Sheet_id }}",
+            "Facebook_url": "={{ $('Edit Fields').item.json['Facebook link'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "instagram_username",
+              "displayName": "instagram_username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "instagram_profile_url",
+              "displayName": "instagram_profile_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean"
+            },
+            {
+              "id": "sheetDocId",
+              "displayName": "sheetDocId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Facebook_url",
+              "displayName": "Facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        608
+      ],
+      "name": "Call Competitor Research",
+      "id": "c6385014-d662-4e76-b945-c7a4d2bd4c9e"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GR7QnSxIYHkLlKyd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GR7QnSxIYHkLlKyd",
+          "cachedResultName": "Keyword Research - GGmod"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Facebook_url": "={{ $('Edit Fields1').item.json.Facebook_url }}",
+            "Sheet_id": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+            "Creator_image_id": "={{ $('Edit Fields1').item.json.Creator_image_id }}",
+            "clientId": "={{ $('Edit Fields1').item.json.Creator_name }}",
+            "sheetDocId": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+            "instagram_username": "={{ $('Edit Fields').item.json.Instagram.replace('https://www.facebook.com/', '').replace('https://facebook.com/', '').replace('https://www.instagram.com/', '').replace('https://instagram.com/', '').replace('/', '') }}",
+            "instagram_profile_url": "={{ $('Edit Fields').item.json.Instagram }}",
+            "platform": "={{ $('Edit Fields').item.json['Preferred page'] }}",
+            "keywordLocale": "en-US",
+            "runLabel": "1",
+            "creatorImageFolderId": "={{ $('Edit Fields1').item.json.Creator_image_id }}"
+          },
+          "matchingColumns": [
+            "Facebook_url",
+            "Sheet_id",
+            "Creator_image_id"
+          ],
+          "schema": [
+            {
+              "id": "Facebook_url",
+              "displayName": "Facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sheet_id",
+              "displayName": "Sheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Creator_image_id",
+              "displayName": "Creator_image_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "clientId",
+              "displayName": "clientId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sheetDocId",
+              "displayName": "sheetDocId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "creatorImageFolderId",
+              "displayName": "creatorImageFolderId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "instagram_username",
+              "displayName": "instagram_username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "instagram_profile_url",
+              "displayName": "instagram_profile_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            },
+            {
+              "id": "keywordLocale",
+              "displayName": "keywordLocale",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "runLabel",
+              "displayName": "runLabel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        -352
+      ],
+      "name": "Call Facebook Keyword Research",
+      "id": "522eaea3-a92f-42ef-8084-babeb9ea17b4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Copy file5').item.json.id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 755145055,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcL5J_9DN-r9-bRWo8tu5OF5AhBfQyISh7Anab2qxgM/edit#gid=755145055"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Follower history",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3568,
+        32
+      ],
+      "id": "4b0fb909-3ec7-4fc4-8335-c39bd88afadd",
+      "name": "Get Bussines research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ADuVendrsmZpwCQtbzqZer_uK_XSlAm7LPcyJEHVIHg/edit#gid=305132819"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Creator image folder ID",
+              "lookupValue": "={{ $('Create Creatives folder').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4016,
+        32
+      ],
+      "id": "8c19e298-6757-4008-8f96-74534905242e",
+      "name": "Get Competitors Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Page Name"
+            },
+            {
+              "fieldToAggregate": "Page URL"
+            },
+            {
+              "fieldToAggregate": "Post"
+            },
+            {
+              "fieldToAggregate": "Post URL"
+            },
+            {
+              "fieldToAggregate": "Why this post worked: "
+            },
+            {
+              "fieldToAggregate": "Trends Used: "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3792,
+        224
+      ],
+      "id": "c22a1c62-f96c-412d-9955-fee2e96e03af",
+      "name": "Aggregate2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "qquKX8sccsq3PGkF",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/qquKX8sccsq3PGkF",
+          "cachedResultName": "Facebook Bussiness Research - GGmod"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Facebook_url": "={{ $('Edit Fields1').item.json.Facebook_url }}",
+            "id": "={{ $('Copy file5').item.json.id }}",
+            "facebook_page_slug": "={{ $('Edit Fields1').item.json.Facebook_url.replace('https://www.facebook.com/', '').replace('https://facebook.com/', '').replace('https://www.instagram.com/', '').replace('https://instagram.com/', '').replace('/', '') }}",
+            "sheetDocId": "={{ $('Edit Fields1').item.json.Sheet_id }}",
+            "facebook_page_url": "={{ $('Edit Fields1').item.json['Facebook_url'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "facebook_page_url",
+              "displayName": "facebook_page_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Facebook_url",
+              "displayName": "Facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "facebook_page_slug",
+              "displayName": "facebook_page_slug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            },
+            {
+              "id": "sheetDocId",
+              "displayName": "sheetDocId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        -160
+      ],
+      "name": "Call FB Business Research",
+      "id": "78a78354-bbd1-464e-a9bb-e65820af9671"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "3q6GNSFSX4wMHPzI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/3q6GNSFSX4wMHPzI",
+          "cachedResultName": "IG calendar add"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Copy file6').item.json.id }}",
+            "Date": "={{ $json.Date }}",
+            "Day": "={{ $json.Day }}",
+            "Time": "={{ $json.Time }}",
+            "media_type": "={{ $json.media_type }}",
+            "creative": "={{ $json.creative }}",
+            "theme": "={{ $json.theme }}",
+            "post_captions_or_text_overlays": "={{ $json.post_captions_or_text_overlays }}",
+            "post_description": "={{ $json.post_description }}",
+            "AI_post_creation_instructions": "={{ $json.AI_post_creation_instructions }}",
+            "audio": "={{ $json.audio }}"
+          },
+          "matchingColumns": [
+            "id",
+            "Date",
+            "Day",
+            "Time",
+            "media_type",
+            "creative",
+            "theme",
+            "post_captions_or_text_overlays",
+            "post_description",
+            "AI_post_creation_instructions",
+            "audio"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_type",
+              "displayName": "media_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "creative",
+              "displayName": "creative",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "theme",
+              "displayName": "theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_captions_or_text_overlays",
+              "displayName": "post_captions_or_text_overlays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_description",
+              "displayName": "post_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI_post_creation_instructions",
+              "displayName": "AI_post_creation_instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "audio",
+              "displayName": "audio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        4944,
+        1184
+      ],
+      "name": "Call My Sub-workflow",
+      "id": "b6e513e9-8077-4fdd-b6bc-78bb124e0683"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "P6nr9H0jePdFXwq4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/P6nr9H0jePdFXwq4",
+          "cachedResultName": "FB calendar Sheet"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Copy file5').item.json.id }}",
+            "Date": "={{ $json.Date }}",
+            "Day": "={{ $json.Day }}",
+            "Time": "={{ $json.Time }}",
+            "media_type": "={{ $json.media_type }}",
+            "theme": "={{ $json.theme }}",
+            "post_description": "={{ $json.post_description }}",
+            "post_captions_or_text_overlays": "={{ $json.post_captions_or_text_overlays }}",
+            "AI_post_creation_instructions": "={{ $json.AI_post_creation_instructions }}"
+          },
+          "matchingColumns": [
+            "id",
+            "Date",
+            "Day",
+            "Time",
+            "media_type",
+            "theme",
+            "post_description",
+            "post_captions_or_text_overlays",
+            "AI_post_creation_instructions"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_type",
+              "displayName": "media_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "theme",
+              "displayName": "theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_description",
+              "displayName": "post_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_captions_or_text_overlays",
+              "displayName": "post_captions_or_text_overlays",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI_post_creation_instructions",
+              "displayName": "AI_post_creation_instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        5168,
+        512
+      ],
+      "name": "Call My Sub-workflow_1",
+      "id": "adfb7111-4f92-40d5-ac87-1b39328c511f"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GR7QnSxIYHkLlKyd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GR7QnSxIYHkLlKyd",
+          "cachedResultName": "Keyword Research - GGmod"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Facebook_url": "={{ $('Edit Fields2').item.json.Facebook_url }}",
+            "Sheet_id": "={{ $('Edit Fields2').item.json.Sheet_id }}",
+            "Creator_image_id": "={{ $('Edit Fields2').item.json.Creator_image_id }}",
+            "clientId": "={{ $('Edit Fields2').item.json.Creator_name }}",
+            "sheetDocId": "={{ $('Edit Fields2').item.json.Sheet_id }}",
+            "instagram_username": "={{ $('Edit Fields').item.json.Instagram.replace('https://www.facebook.com/', '').replace('https://facebook.com/', '').replace('https://www.instagram.com/', '').replace('https://instagram.com/', '').replace('/', '') }}",
+            "instagram_profile_url": "={{ $('Edit Fields').item.json.Instagram }}",
+            "platform": "={{ $('Edit Fields').item.json['Preferred page'] }}",
+            "keywordLocale": "en-US",
+            "runLabel": "1",
+            "creatorImageFolderId": "={{ $('Edit Fields2').item.json.Creator_image_id }}"
+          },
+          "matchingColumns": [
+            "Facebook_url",
+            "Sheet_id",
+            "Creator_image_id"
+          ],
+          "schema": [
+            {
+              "id": "Facebook_url",
+              "displayName": "Facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sheet_id",
+              "displayName": "Sheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Creator_image_id",
+              "displayName": "Creator_image_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "clientId",
+              "displayName": "clientId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sheetDocId",
+              "displayName": "sheetDocId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "creatorImageFolderId",
+              "displayName": "creatorImageFolderId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "instagram_username",
+              "displayName": "instagram_username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "instagram_profile_url",
+              "displayName": "instagram_profile_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            },
+            {
+              "id": "keywordLocale",
+              "displayName": "keywordLocale",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "runLabel",
+              "displayName": "runLabel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        432
+      ],
+      "name": "Call Facebook Keyword Research1",
+      "id": "583235da-7940-4b44-9fb0-c590278e6ca8"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "=doing-teams-social-media",
+          "mode": "name"
+        },
+        "text": "={{ $('Edit Fields').item.json['Founder Bussines name'] }} 30 day Calendar\nFolder Link: https://drive.google.com/drive/folders/{{ $('Create Main folder').item.json.id }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        5376,
+        992
+      ],
+      "id": "260b3b14-46dd-4821-bb9b-3dc496863c6f",
+      "name": "Send a message",
+      "webhookId": "78a38657-01ac-4ed6-935f-78457dbaecab",
+      "credentials": {
+        "slackApi": {
+          "id": "C9XFU5nbyDdTE1CJ",
+          "name": "Slack account 4"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "=doing-teams-social-media",
+          "mode": "name"
+        },
+        "text": "={{ $('Edit Fields').item.json['Founder Bussines name'] }} 30 day Calendar\nFolder Link: https://drive.google.com/drive/folders/{{ $('Create Main folder').item.json.id }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        5408,
+        128
+      ],
+      "id": "607e3a98-162e-4c60-a589-bb5b27b8c22a",
+      "name": "Send a message1",
+      "webhookId": "78a38657-01ac-4ed6-935f-78457dbaecab",
+      "credentials": {
+        "slackApi": {
+          "id": "C9XFU5nbyDdTE1CJ",
+          "name": "Slack account 4"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Main folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Main folder": {
+      "main": [
+        [
+          {
+            "node": "Create Founder Image folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Founder Image folder": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Create Main Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Main Sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Create Creatives folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Creatives folder": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Copy file5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model10": {
+      "main": [
+        [
+          {
+            "node": "add Trends Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model11": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call Facebook Keyword Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call FB Business Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file5": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Message a model36",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model12": {
+      "main": [
+        [
+          {
+            "node": "Get Competitors Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add Trends Research": {
+      "main": [
+        [
+          {
+            "node": "add Market Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Get Bussines Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate16",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call My Sub-workflow_1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Market Research": {
+      "main": [
+        [
+          {
+            "node": "Message a model11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitor Research": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trend Research": {
+      "main": [
+        [
+          {
+            "node": "Get Market Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Bussines Research": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create Creatives folder1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Creatives folder1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model17": {
+      "main": [
+        [
+          {
+            "node": "Get POst example, Tone,Ideas, types research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get POst example, Tone,Ideas, types research1": {
+      "main": [
+        [
+          {
+            "node": "Message a model23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model18": {
+      "main": [
+        [
+          {
+            "node": "add Trends Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add Trends Research1": {
+      "main": [
+        [
+          {
+            "node": "add Market Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model19": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call Competitor Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call Facebook Keyword Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file6": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet5": {
+      "main": [
+        [
+          {
+            "node": "Message a model17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get POst example, Tone,Ideas, types research4": {
+      "main": [
+        [
+          {
+            "node": "Message a model18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model23": {
+      "main": [
+        [
+          {
+            "node": "Get POst example, Tone,Ideas, types research4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet6": {
+      "main": [
+        [
+          {
+            "node": "Get Bussines Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate15",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Call My Sub-workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Market Research1": {
+      "main": [
+        [
+          {
+            "node": "Message a model19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitor Research1": {
+      "main": [
+        [
+          {
+            "node": "Get Trend Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trend Research1": {
+      "main": [
+        [
+          {
+            "node": "Get Market Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Bussines Research1": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model36": {
+      "main": [
+        [
+          {
+            "node": "Get Bussines research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate15": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate16": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Copy file6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Bussines research": {
+      "main": [
+        [
+          {
+            "node": "Message a model12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitors Research": {
+      "main": [
+        [
+          {
+            "node": "Message a model10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "Get Trend Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "doneverse.app.n8n.cloud",
+            "user-agent": "Typeform Webhooks",
+            "content-length": "6592",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "18.210.136.162",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9854cbaeb36cc9a4-IAD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "traceparent": "00-b23bdea10186aed1c6326ad0951083c9-14de7c0bdbb58d14-01",
+            "x-forwarded-for": "18.210.136.162, 172.68.245.231",
+            "x-forwarded-host": "doneverse.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-7b6dc7c86c-dbhqg",
+            "x-is-trusted": "yes",
+            "x-real-ip": "18.210.136.162"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event_id": "01K63M91RWZVP4YYCWH4R2Z1X5",
+            "event_type": "form_response",
+            "form_response": {
+              "form_id": "mQcBLIIb",
+              "token": "REDACTED_TOKEN",
+              "landed_at": "2025-09-26T18:20:10Z",
+              "submitted_at": "2025-09-26T18:23:59Z",
+              "definition": {
+                "id": "mQcBLIIb",
+                "title": "Doing Teams - Social Media 30-Day Calendar",
+                "fields": [
+                  {
+                    "id": "emmvlhxlovEm",
+                    "ref": "0ca292a5-cc53-4a11-a490-322b789d903d",
+                    "type": "short_text",
+                    "title": "Founder's Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "derIlcnkih8k",
+                    "ref": "6c1c02b2-84e0-465e-9519-f093c2634741",
+                    "type": "email",
+                    "title": "Founder's Email",
+                    "properties": {}
+                  },
+                  {
+                    "id": "yLIHE7fgzZSn",
+                    "ref": "63773f0c-64bb-4031-86ba-4235f2819b86",
+                    "type": "short_text",
+                    "title": "Founder's Business Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "yHwPAdRZnsNh",
+                    "ref": "334b0f5c-3117-46f8-ae55-852c2bc259de",
+                    "type": "short_text",
+                    "title": "Doer's Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "WZFwO3PbY9PU",
+                    "ref": "160bb33a-7d71-4598-aec8-7c278b67102f",
+                    "type": "email",
+                    "title": "Doer's Email",
+                    "properties": {}
+                  },
+                  {
+                    "id": "hCuHFvPA7IiY",
+                    "ref": "76cc5c49-a2a9-48b9-aef5-738a14f40c21",
+                    "type": "short_text",
+                    "title": "What is your Founder's Business Statement?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "Q3VoGrPNVBRX",
+                    "ref": "8cf47e59-89a8-4a51-8d1a-2093a054cc31",
+                    "type": "website",
+                    "title": "What is the URL to your Founder's Website?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "taQX1ZWwuHUe",
+                    "ref": "1d6c9971-d0ca-4fcd-ab95-a5b9813d21f2",
+                    "type": "multiple_choice",
+                    "title": "Which social platforms would you like posts created for?",
+                    "properties": {},
+                    "allow_multiple_selections": true,
+                    "allow_other_choice": true,
+                    "choices": [
+                      {
+                        "id": "Fu296reAhI1z",
+                        "ref": "4ac27159-2ee7-438e-b86d-941878bcac20",
+                        "label": "Facebook Page"
+                      },
+                      {
+                        "id": "HrZ3DB8oD27p",
+                        "ref": "27929abf-c2ae-4e3e-a6e8-fecc8f55f27e",
+                        "label": "LinkedIn Profile"
+                      },
+                      {
+                        "id": "aW3jojz8ETuD",
+                        "ref": "6c55adc2-184f-4308-b9b1-2405020dde2a",
+                        "label": "Instagram Profile"
+                      },
+                      {
+                        "id": "g9QBwNaWcYke",
+                        "ref": "1b3a1c9b-e186-4830-b778-fb3b80180927",
+                        "label": "Pinterest"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "69bewQHF0wnH",
+                    "ref": "11680cd3-d03e-48df-b6c9-e4a09e4d0613",
+                    "type": "website",
+                    "title": "What is the URL to your Founder's Facebook page?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "jQaO4LuMYOUb",
+                    "ref": "d40233ac-7309-4299-bad4-e1b2df7fe828",
+                    "type": "website",
+                    "title": "What is the URL to your Founder's LinkedIn page?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "1bKo7B4lfCZS",
+                    "ref": "8cca8406-fef9-4846-898f-098c3c6f65ab",
+                    "type": "website",
+                    "title": "What is the URL to your Founder's Instagram page?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "qEUzL7K27XVJ",
+                    "ref": "03b2e739-771b-4249-b318-aabcd9349d55",
+                    "type": "website",
+                    "title": "What is the URL to your Founder's Pinterest page?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "TPFsRcggxWhh",
+                    "ref": "7616bf3a-975f-4881-ac44-585e9b66a23c",
+                    "type": "website",
+                    "title": "Please provide a link to a folder containing any images your Founder has given you.",
+                    "properties": {}
+                  }
+                ],
+                "endings": [
+                  {
+                    "id": "ituGsi45kJ0O",
+                    "ref": "5f568550-1867-40dc-bcf5-67480e5ef9b2",
+                    "title": "Thank you for submitting your Design Brief, we'll be in touch within 2 business days.",
+                    "type": "thankyou_screen",
+                    "properties": {
+                      "button_text": "again",
+                      "show_button": false,
+                      "share_icons": false,
+                      "button_mode": "default_redirect"
+                    },
+                    "attachment": {
+                      "type": "image",
+                      "href": "https://images.typeform.com/images/NcLLBmUzS8Xq",
+                      "properties": {
+                        "description": "46. Thank you for submitting your Funnel Brief! (1)"
+                      }
+                    },
+                    "layout": {
+                      "type": "stack",
+                      "attachment": {
+                        "type": "image",
+                        "href": "https://images.typeform.com/images/NcLLBmUzS8Xq",
+                        "properties": {
+                          "description": "46. Thank you for submitting your Funnel Brief! (1)"
+                        }
+                      },
+                      "viewport_overrides": {
+                        "small": {
+                          "type": "stack"
+                        },
+                        "large": {
+                          "type": "split",
+                          "placement": "right"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "settings": {
+                  "partial_responses_to_all_integrations": false
+                }
+              },
+              "answers": [
+                {
+                  "type": "text",
+                  "text": "Dave Reyes",
+                  "field": {
+                    "id": "emmvlhxlovEm",
+                    "type": "short_text",
+                    "ref": "0ca292a5-cc53-4a11-a490-322b789d903d"
+                  }
+                },
+                {
+                  "type": "email",
+                  "email": "rommeldave.reyes@doneverse.com",
+                  "field": {
+                    "id": "derIlcnkih8k",
+                    "type": "email",
+                    "ref": "6c1c02b2-84e0-465e-9519-f093c2634741"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Haraya Coaching",
+                  "field": {
+                    "id": "yLIHE7fgzZSn",
+                    "type": "short_text",
+                    "ref": "63773f0c-64bb-4031-86ba-4235f2819b86"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "da",
+                  "field": {
+                    "id": "yHwPAdRZnsNh",
+                    "type": "short_text",
+                    "ref": "334b0f5c-3117-46f8-ae55-852c2bc259de"
+                  }
+                },
+                {
+                  "type": "email",
+                  "email": "ask@outsourceddoers.com",
+                  "field": {
+                    "id": "WZFwO3PbY9PU",
+                    "type": "email",
+                    "ref": "160bb33a-7d71-4598-aec8-7c278b67102f"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "We are Haraya We are a confluence of people from different fields of expertise brought together by the same set of shared values and advocacies. What started as a desire of five leaders to help people rise above their challenges, fulfill their highest potential, and see through their best outcomes has grown into this family, this community we now call home - We are now over 30 coaches strong in our Balay Haraya.  We hold 10 programs and circles to support you.  We co-create safe spaces for all the stories you hold.  We nudge you forward.  We live for the lives we touch - almost 10,000 and counting.  We believe you can live your very best life.  No matter where you are in the journey, you will find your place here.  Tuloy po kayo!  Live your imaginable.",
+                  "field": {
+                    "id": "hCuHFvPA7IiY",
+                    "type": "short_text",
+                    "ref": "76cc5c49-a2a9-48b9-aef5-738a14f40c21"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://harayacoaching.com/",
+                  "field": {
+                    "id": "Q3VoGrPNVBRX",
+                    "type": "website",
+                    "ref": "8cf47e59-89a8-4a51-8d1a-2093a054cc31"
+                  }
+                },
+                {
+                  "type": "choices",
+                  "choices": {
+                    "ids": [
+                      "Fu296reAhI1z",
+                      "HrZ3DB8oD27p",
+                      "aW3jojz8ETuD",
+                      "g9QBwNaWcYke"
+                    ],
+                    "labels": [
+                      "asd",
+                      "LinkedIn Profile",
+                      "Instagram Profile",
+                      "Pinterest"
+                    ],
+                    "refs": [
+                      "4ac27159-2ee7-438e-b86d-941878bcac20",
+                      "27929abf-c2ae-4e3e-a6e8-fecc8f55f27e",
+                      "6c55adc2-184f-4308-b9b1-2405020dde2a",
+                      "1b3a1c9b-e186-4830-b778-fb3b80180927"
+                    ]
+                  },
+                  "field": {
+                    "id": "taQX1ZWwuHUe",
+                    "type": "multiple_choice",
+                    "ref": "1d6c9971-d0ca-4fcd-ab95-a5b9813d21f2"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://www.facebook.com/harayacoaching",
+                  "field": {
+                    "id": "69bewQHF0wnH",
+                    "type": "website",
+                    "ref": "11680cd3-d03e-48df-b6c9-e4a09e4d0613"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://ph.linkedin.com/company/harayacoaching2",
+                  "field": {
+                    "id": "jQaO4LuMYOUb",
+                    "type": "website",
+                    "ref": "d40233ac-7309-4299-bad4-e1b2df7fe828"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://www.instagram.com/harayacoaching/",
+                  "field": {
+                    "id": "1bKo7B4lfCZS",
+                    "type": "website",
+                    "ref": "8cca8406-fef9-4846-898f-098c3c6f65ab"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://x.com/harayacoaching",
+                  "field": {
+                    "id": "qEUzL7K27XVJ",
+                    "type": "website",
+                    "ref": "03b2e739-771b-4249-b318-aabcd9349d55"
+                  }
+                },
+                {
+                  "type": "url",
+                  "url": "https://drive.google.com/drive/folders/1-EpYNZuKszJS2Gu94FPiQj9wB2tXV9tr?usp=sharing",
+                  "field": {
+                    "id": "TPFsRcggxWhh",
+                    "type": "website",
+                    "ref": "7616bf3a-975f-4881-ac44-585e9b66a23c"
+                  }
+                }
+              ],
+              "ending": {
+                "id": "ituGsi45kJ0O",
+                "ref": "5f568550-1867-40dc-bcf5-67480e5ef9b2"
+              }
+            }
+          },
+          "webhookUrl": "https://doneverse.app.n8n.cloud/webhook/9dce5ddb-48af-423d-8f6d-f3309ea63b1e",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "name": "ISSUE-57 — Staging Founder Retrieval Producer",
+  "nodes": [
+    {
+      "id": "c1a8e78c-609d-4b4d-92ef-d42bb583a46d",
+      "name": "Receive controlled founder retrieval",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "issue-57-staging-founder-retrieval",
+        "authentication": "none",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": {
+            "values": {
+              "responseCode": 200
+            }
+          },
+          "responseData": "{\"accepted\":true}"
+        }
+      },
+      "webhookId": "cb914c19-c0ce-41f5-a5ce-8eb45496b7fc"
+    },
+    {
+      "id": "8d4847c1-1f98-4563-97ce-24876ea4a6f6",
+      "name": "Build controlled callback",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "requested-id",
+              "name": "requested_external_id",
+              "value": "={{ $json.body?.external_id ?? $json.external_id ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "founder-id",
+              "name": "founder_id",
+              "value": "={{ 'FC-' + ($json.body?.external_id ?? $json.external_id ?? '') }}",
+              "type": "string"
+            },
+            {
+              "id": "description",
+              "name": "business_description",
+              "value": "ISSUE-57 controlled staging retrieval",
+              "type": "string"
+            },
+            {
+              "id": "tools",
+              "name": "tools_required",
+              "value": "ISSUE-57 staging verification tool",
+              "type": "string"
+            },
+            {
+              "id": "industry",
+              "name": "industry",
+              "value": "Controlled Test",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "41b6893a-7020-4993-8167-d3534e19b17e",
+      "name": "Deliver callback to staging API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://doneverse-api-dev-yt4cybyp4a-uc.a.run.app/v1/allocation/founders/retrieve-callback",
+        "authentication": "none",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "REDACTED_X_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { requested_external_id: $json.requested_external_id, founders: [{ founder_id: $json.founder_id, business_description: $json.business_description, tools_required: $json.tools_required, industry: $json.industry }] } }}",
+        "options": {
+          "timeout": 10000
+        },
+        "response": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive controlled founder retrieval": {
+      "main": [
+        [
+          {
+            "node": "Build controlled callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build controlled callback": {
+      "main": [
+        [
+          {
+            "node": "Deliver callback to staging API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}

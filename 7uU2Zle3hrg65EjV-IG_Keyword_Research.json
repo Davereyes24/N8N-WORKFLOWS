@@ -1,0 +1,416 @@
+{
+  "name": "IG Keyword Research",
+  "nodes": [
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "You are an expert SEO strategist specializing in keyword extraction and social media analysis.",
+              "role": "system"
+            },
+            {
+              "content": "=Objective: Your goal is to extract 10 the most relevant and high-impact keywords or short keyphrases (up to 3 words) based on the content and context of a public social media profile. These keywords will be used for future SEO-optimized content creation.\n\nInput: \nlink to a public social media profile: \n{{ $('Start').item.json.Facebook_url }}\nProcess:\n\n1. Scrape and analyze the entire visible profile including:\n\nbio/description,\n\nrecent posts (captions, hashtags, engagement patterns),\n\nvisual or textual content themes,\n\nany location/business tags,\n\ntone and style.\n\n2. Understand the target audience implicitly from the type of content and interactions.\n\n3. Identify topics, problems, benefits, and interests that appear frequently or are implied.\n\n📤 Output Requirements:\n\nReturn exactly 10 keywords or keyphrases, separated by commas.\n\nUse words relevant for SEO (topics people might search for), not hashtags or generic phrases.\n\nEach keyword/keyphrase should be up to 3 words long, concise and content-driven.\n\nFocus on high relevance and high intent based on what the target audience would likely engage with or search.\n\nOutput Format:\n\nkeyword1, keyword2\n\ndon't add any additional text or explanations in the output."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3120,
+        1328
+      ],
+      "id": "fd264db2-90c3-4d5e-8ef5-ba697807aeda",
+      "name": "Message a model7",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "You are an expert company reasearch tool",
+              "role": "system"
+            },
+            {
+              "content": "=Objective: Your goal is to make a reasearch about company provided.\nProcess:\n\n1. Scrape and analyze the entire visible profile including:\n\nbio/description,\n\nrecent posts (captions, hashtags, engagement patterns),\n\nvisual or textual content themes,\n\nany location/business tags,\n\ntone and style.\n\n2. Understand the target audience implicitly from the type of content and interactions.\n\n3. Identify topics, problems, benefits, and interests that appear frequently or are implied.\n\n4. Give general important information about company.\n\nInput: \nlink to a public social media profile: {{ $('Start').item.json.Facebook_url }}\n\n📤 Output Requirements:\n\nReturn generated report about company\n\ndon't add any additional text or explanations in the output."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        3408,
+        1328
+      ],
+      "id": "fa7b542c-6abf-4749-9b2c-d2337e38bdc6",
+      "name": "Message a model13",
+      "credentials": {
+        "perplexityApi": {
+          "id": "mYzfIxnnZmPAmYpq",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/related_keywords/live",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\"keyword\":\"{{ $('Message a model7').item.json.choices[0].message.content }}\", \"location_code\":2840, \"language_code\":\"en\", \"depth\":1, \"include_seed_keyword\":false, \"include_serp_info\":false, \"ignore_synonyms\":false, \"include_clickstream_data\":false, \"replace_with_core_keyword\":false, \"limit\":4, \"filters\":[[\"keyword_data.keyword_info.competition_level\", \"=\", \"LOW\"], \"and\",[\"keyword_data.keyword_info.search_volume\", \">\",100]], \"order_by\":[\"keyword_data.keyword_info.search_volume,asc\"]}]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3696,
+        1328
+      ],
+      "id": "c282acf7-1c44-4d6e-8f80-d98ecb767752",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "tasks[0].data.keyword"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3920,
+        1328
+      ],
+      "id": "e769b23b-8a8f-4d41-b7d4-09605bd3b193",
+      "name": "Aggregate6"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-2024-08-06",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-2024-08-06"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Your task is to analyze keywords found for client and filter out not relevant.\nThis keywords are used for social media posts creation and must be highly relevant to client's business.\nHere is the list of keywords:\n{{ $json.keyword[0] }}\n\nHere is client's business description:\n{{ $('Message a model7').item.json.choices[0].message.content }}\n\nYou also must insert chosen keywords in the table in markdown format and return formated table with keywords inside in  markdown. You must return only filled table without the template:\n  \n## Keywords\n\n| Keywords #1 |  |\n| ---| --- |\n| Keywords #2 |  |\n| Keywords #3 |  |\n| Keywords #4 |  |\n| Keywords #5 |  |\n| Keywords #6 |  |\n| Keywords #7 |  |\n| Keywords #8 |  |\n| Keywords #9 |  |\n| Keywords #10 |  |\n\nOutput format must be a JSON object in such structure:\n\"Related_keywords\": \"keywords devided by coma\",\n\"Table_markdown\": \"Formated table with keywords only\" "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        4144,
+        1328
+      ],
+      "id": "80bc3848-9c3e-4158-8390-747eb5eb7334",
+      "name": "Message a model30",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.Sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 305132819,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qQZtcS9ugQqM-cwTS__8QedpaknVxx7SX9XvPWyAa7M/edit#gid=305132819"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Creator image folder ID": "={{ $('Start').item.json.Creator_image_id }}",
+            "Sheet ID": "={{ $('Start').item.json.Sheet_id }}",
+            "Relevant keywords": "={{ $('HTTP Request1').item.json.tasks[0].data.keyword }}"
+          },
+          "matchingColumns": [
+            "Creator image folder ID"
+          ],
+          "schema": [
+            {
+              "id": "Creator image folder ID",
+              "displayName": "Creator image folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sheet ID",
+              "displayName": "Sheet ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clickup task ID",
+              "displayName": "Clickup task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook Creatives folder ID",
+              "displayName": "Facebook Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn Creatives folder ID",
+              "displayName": "LinkedIn Creatives folder ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client's folder URL",
+              "displayName": "Client's folder URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand colors",
+              "displayName": "Brand colors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevant keywords",
+              "displayName": "Relevant keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "facebook keywords",
+              "displayName": "facebook keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn keywords",
+              "displayName": "LinkedIn keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Logo id",
+              "displayName": "Logo id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL id",
+              "displayName": "URL id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4560,
+        1328
+      ],
+      "id": "8d003d0f-9232-4f5a-ae5b-f3fc318f397b",
+      "name": "Append or update row in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Facebook_url",
+              "type": "any"
+            },
+            {
+              "name": "Sheet_id",
+              "type": "any"
+            },
+            {
+              "name": "Creator_image_id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "426b8bae-19c3-48c3-b6b0-7a481a29a893",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        2912,
+        1328
+      ]
+    }
+  ],
+  "connections": {
+    "Message a model7": {
+      "main": [
+        [
+          {
+            "node": "Message a model13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model13": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate6": {
+      "main": [
+        [
+          {
+            "node": "Message a model30",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model30": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Message a model7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "Facebook_url": "https://www.instagram.com/harayacoaching/",
+          "Sheet_id": "1qQZtcS9ugQqM-cwTS__8QedpaknVxx7SX9XvPWyAa7M",
+          "Creator_image_id": "10zWDo8dqiibWKxXrr7oWIThXVGEh0sVy"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": null
+}

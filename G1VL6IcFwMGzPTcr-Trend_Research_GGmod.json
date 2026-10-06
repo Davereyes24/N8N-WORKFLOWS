@@ -1,0 +1,719 @@
+{
+  "name": "Trend Research - GGmod",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a strategist. Output STRICT JSON only.\n\nSchema:\n{\n  \"key_takeaways\": {\n    \"audience\": [\"\"],\n    \"content_themes\": [\"\"],\n    \"formats\": [\"\"],\n    \"posting_behaviors\": [\"\"],\n    \"hashtag_tips\": [\"\"]\n  }\n}\n\nRules:\n- Each array 3–7 bullets, concise, niche-specific, actionable.\n\nInputs:\nTone/Voice: {{ $item(0).$node['Assemble Business Inputs'].json.tone_voice || '' }}\nBusiness Research Ideas: {{ $item(0).$node['Assemble Business Inputs'].json.ideas_summary || '' }}\nCompetitor Trends: {{ $item(0).$node['Assemble Business Inputs'].json.competitor_trends || '' }}\nPlatform Trends JSON: {{ $item(0).$node['Validate Trends JSON'].json.trends_text || '' }}\n\nExisting IG hashtags: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtags_ig || []) }}\nExisting FB hashtags: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtags_fb || []) }}\nIG hashtag links: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtag_links_ig || []) }}\nFB hashtag links: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtag_links_fb || []) }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1376,
+        880
+      ],
+      "id": "a95df756-11b3-45da-a9f9-22cf900cf84f",
+      "name": "LLM — Key Takeaways JSON",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You recommend a pragmatic 7–12 item content plan. Output STRICT JSON only.\n\nSchema:\n{\n  \"calendar_recommendations\": [\n    {\n      \"idea\": \"\",\n      \"rationale\": \"\",\n      \"suggested_format\": \"reel|carousel|static|story|live\",\n      \"platforms\": [\"instagram\",\"facebook\"],\n      \"suggested_hashtags\": [],\n      \"example_links\": []\n    }\n  ]\n}\n\nRules:\n- Hashtags are slugs without #; dedupe; max 7.\n- Ground in Trends + Takeaways.\n- Prefer ideas that can be executed from recent winning patterns.\n- Keep each rationale 1–2 sentences, actionable, and tailored to the niche.\n\nInputs:\nTrends JSON: {{ JSON.stringify($item(0).$node['Validate Trends JSON'].json.trends_text || '') }}\nKey Takeaways JSON: {{ JSON.stringify((() => {\n  const j = $item(0).$node['LLM — Key Takeaways JSON']?.json || {};\n  return j.text\n      || (j.message && j.message.content)\n      || (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content)\n      || j.response\n      || j\n      || '';\n})()) }}\nExisting IG hashtags: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtags_ig || []) }}\nExisting FB hashtags: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtags_fb || []) }}\nIG hashtag links: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtag_links_ig || []) }}\nFB hashtag links: {{ JSON.stringify($item(0).$node['Build Hashtag Inputs'].json.hashtag_links_fb || []) }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1696,
+        880
+      ],
+      "id": "b8e0af89-1a59-4652-a61f-99fac08edda2",
+      "name": "LLM — Calendar Recs JSON",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You propose tactical enhancements. Output STRICT JSON only.\n\nSchema:\n{\n  \"strategy_enhancements\": {\n    \"creative\": [\"\"],\n    \"distribution\": [\"\"],\n    \"conversion\": [\"\"]\n  }\n}\n\nRules:\n- Short, testable bullets; focus on hooks, CTAs, cadence, cross-posting, creator collabs, UGC prompts, and leadflow.\n- Align with the last 30–60 days of trends and with the client's content performance and tone.\n- 4–8 bullets per section; keep each bullet to one sentence.\n\nInputs:\nTrends JSON: {{\n  // Prefer the normalized text blob; fall back to the array if needed, else {}\n  (function () {\n    var v = $node[\"Validate Trends JSON\"] && $node[\"Validate Trends JSON\"].json ? $node[\"Validate Trends JSON\"].json : {};\n    if (v.trends_text) return JSON.stringify(v.trends_text);\n    if (v.trends) return JSON.stringify({ trends: v.trends });\n    return \"{}\";\n  })()\n}}\n\nKey Takeaways JSON: {{\n  // OpenAI (jsonOutput:true) -> .json.message.content\n  (function () {\n    var n = $node[\"LLM — Key Takeaways JSON\"] && $node[\"LLM — Key Takeaways JSON\"].json ? $node[\"LLM — Key Takeaways JSON\"].json : {};\n    var cand = (n.message && n.message.content) || n.text || n.response || n.content || n;\n    return JSON.stringify(cand || {});\n  })()\n}}\n\nCalendar Recs JSON: {{\n  // OpenAI (jsonOutput:true) -> .json.message.content\n  (function () {\n    var n = $node[\"LLM — Calendar Recs JSON\"] && $node[\"LLM — Calendar Recs JSON\"].json ? $node[\"LLM — Calendar Recs JSON\"].json : {};\n    var cand = (n.message && n.message.content) || n.text || n.response || n.content || n;\n    return JSON.stringify(cand || {});\n  })()\n}}\n\nExisting IG hashtags: {{ JSON.stringify(($node[\"Build Hashtag Inputs\"] && $node[\"Build Hashtag Inputs\"].json && $node[\"Build Hashtag Inputs\"].json.hashtags_ig) || []) }}\nExisting FB hashtags: {{ JSON.stringify(($node[\"Build Hashtag Inputs\"] && $node[\"Build Hashtag Inputs\"].json && $node[\"Build Hashtag Inputs\"].json.hashtags_fb) || []) }}\nIG hashtag links: {{ JSON.stringify(($node[\"Build Hashtag Inputs\"] && $node[\"Build Hashtag Inputs\"].json && $node[\"Build Hashtag Inputs\"].json.hashtag_links_ig) || []) }}\nFB hashtag links: {{ JSON.stringify(($node[\"Build Hashtag Inputs\"] && $node[\"Build Hashtag Inputs\"].json && $node[\"Build Hashtag Inputs\"].json.hashtag_links_fb) || []) }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1376,
+        1136
+      ],
+      "id": "ed8ba498-1397-4099-afbf-afdfda4c146d",
+      "name": "LLM — Strategy Enhancements JSON",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 228331455,
+          "mode": "list",
+          "cachedResultName": "Trend research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=228331455"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Write Key": "={{ $json.writeKey }}",
+            "Chat GPT Trend Search": "={{ $json.trendsCell }}",
+            "Key Takeaways & Content Calendar Recommendations:": "={{ $json.keyCell }}",
+            "Client ID": "={{ $json.clientId }}",
+            "Run ID": "={{ $json.runId }}",
+            "isTest": "={{ $json.isTest }}"
+          },
+          "matchingColumns": [
+            "Write Key"
+          ],
+          "schema": [
+            {
+              "id": "Write Key",
+              "displayName": "Write Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Chat GPT Trend Search",
+              "displayName": "Chat GPT Trend Search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key Takeaways & Content Calendar Recommendations:",
+              "displayName": "Key Takeaways & Content Calendar Recommendations:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client ID",
+              "displayName": "Client ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Run ID",
+              "displayName": "Run ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "isTest",
+              "displayName": "isTest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1920,
+        1136
+      ],
+      "id": "1ef783a5-4435-4188-89f3-0344139a2ab1",
+      "name": "add Trends Research1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "instagram_profile_url"
+            },
+            {
+              "name": "facebook_profile_url"
+            },
+            {
+              "name": "id"
+            },
+            {
+              "name": "isTest",
+              "type": "boolean"
+            },
+            {
+              "name": "sheetDocId"
+            },
+            {
+              "name": "writeKey"
+            }
+          ]
+        }
+      },
+      "id": "4bbfbd38-03b8-45e6-aa95-336d48844eba",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -480,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"runId\": \"{{ (new Date($now)).toISOString() + '|trend-research|' + ($json.clientId || 'unknown') }}\",\n  \"writeKey\": \"{{ ($json.clientId || 'unknown') + '|trend|' + (new Date($now)).toISOString().slice(0,7).replace('-', '') }}\",\n  \"receivedAt\": \"{{ (new Date($now)).toISOString() }}\"\n}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        704
+      ],
+      "id": "888c02d0-3d2b-4afa-ba90-c67697d35e5e",
+      "name": "Run Meta"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1646583359,
+          "mode": "list",
+          "cachedResultName": "Market research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DUnFNTS-VM4fIEdMT65xw8eOv3q7Ci9_uwSytdKsKR8/edit#gid=1646583359"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        608
+      ],
+      "id": "a3385003-e95d-44cd-9c30-11fb66efb635",
+      "name": "Get Market Research Hashtags",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 960971568,
+          "mode": "list",
+          "cachedResultName": "Competitors research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=960971568"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        992
+      ],
+      "id": "8c99b62a-41f2-4481-b934-abe672407203",
+      "name": "Get Competitors Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize Inputs (drop-in replacement)\nconst j = $json || {};\nfunction str(x){return (x==null?'':String(x)).trim();}\nfunction url(x){let u = str(x); if(!u) return ''; if(!/^https?:\\/\\//i.test(u)) u='https://'+u; return u;}\nfunction arr(a){return Array.isArray(a)?a:[];}\nfunction dehash(h){return str(h).replace(/^#/,'').toLowerCase();}\n\nreturn [{\n  json: {\n    clientId: str(j.clientId || j.id || ''),\n    sheetDocId: str(j.sheetDocId || ''),\n    writeKey: str(j.writeKey || ''),\n    isTest: !!j.isTest,\n    instagram_profile_url: url(j.instagram_profile_url || ''),\n    facebook_profile_url: url(j.facebook_profile_url || ''),\n    hashtags_ig_in: arr(j.hashtags_ig || []).map(dehash).filter(Boolean),\n    hashtags_fb_in: arr(j.hashtags_fb || []).map(dehash).filter(Boolean),\n    desiredPlatforms: ['instagram','facebook']\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        704
+      ],
+      "id": "e8c53a68-9bf5-4262-b7a4-2d0d585d395a",
+      "name": "Normalize Inputs"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate Trends JSON\nfunction safeParse(s) {\n  if (!s || typeof s !== \"string\") return null;\n  const m = s.trim().match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n  const raw = m && m[1] ? m[1].trim() : s.trim();\n  try { return JSON.parse(raw); } catch { return null; }\n}\n\nfunction str(x) {\n  return (x == null ? '' : String(x)).trim();\n}\n\nfunction arr(a) {\n  return Array.isArray(a) ? a : [];\n}\n\nfunction slug(h) {\n  return str(h).replace(/^#/, '').toLowerCase();\n}\n\n// Fixed path for your actual input structure\nconst raw =\n  $json?.output?.[0]?.content?.find(c => c?.type === 'output_text')?.text ||\n  $json?.output?.[0]?.content?.[0]?.text ||\n  '';\n\nconst parsed = safeParse(raw) || {};\n\nlet trends = arr(parsed.trends).map(t => ({\n  name: str(t?.name),\n  why_trending: str(t?.why_trending),\n  how_to_use: str(t?.how_to_use),\n  platforms: arr(t?.platforms).map(str).filter(Boolean),\n  example_links: arr(t?.example_links).map(str).filter(Boolean),\n  hashtags_global: Array.from(new Set(arr(t?.hashtags_global).map(slug).filter(Boolean))).slice(0, 7),\n  hashtags_trend_specific: Array.from(new Set(arr(t?.hashtags_trend_specific).map(slug).filter(Boolean))).slice(0, 7)\n}));\n\n// Guarantee exactly 10\nif (trends.length < 10) {\n  trends = trends.concat(\n    Array.from({ length: 10 - trends.length }, () => ({\n      name: '',\n      why_trending: '',\n      how_to_use: '',\n      platforms: [],\n      example_links: [],\n      hashtags_global: [],\n      hashtags_trend_specific: []\n    }))\n  );\n}\n\nif (trends.length > 10) {\n  trends = trends.slice(0, 10);\n}\n\n// Union lists\nconst linkSet = new Set();\nconst hashSet = new Set();\n\ntrends.forEach(t => {\n  arr(t.example_links).forEach(l => linkSet.add(l));\n  arr(t.hashtags_global).forEach(h => hashSet.add(h));\n  arr(t.hashtags_trend_specific).forEach(h => hashSet.add(h));\n});\n\nreturn [\n  {\n    json: {\n      trends,\n      trends_text: JSON.stringify({ trends }),\n      trend_example_links: Array.from(linkSet),\n      trend_hashtags_union: Array.from(hashSet)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        640
+      ],
+      "id": "b4f2db6f-ef26-431b-a6c5-846990dac5bc",
+      "name": "Validate Trends JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Trend Research Row (FINAL VERSION)\n// Outputs: writeKey, trendsCell, keyCell, clientId, runId, isTest, sheetDocId\n\nfunction str(x){ return (x==null ? '' : String(x)).trim(); }\nfunction arr(a){ return Array.isArray(a) ? a : []; }\nfunction bullets(a){ if(!Array.isArray(a)||!a.length) return '—'; return a.map(x=>'• '+String(x)).join('\\n'); }\n\n// Helper: safe JSON access (preview/run safe)\nfunction J(node){ try { return $node[node].json || {}; } catch(e){ return {}; } }\n\n// Extract text content from LLM node (jsonOutput:true → .message.content)\nfunction getLLM(node){\n  const j = J(node);\n  return j.message && j.message.content\n    ? j.message.content\n    : (j.text || j.response || j.content || '');\n}\n\n// Parse JSON if stringified\nfunction maybeParse(v){\n  if (typeof v === 'string'){\n    const s = v.trim();\n    if (s.startsWith('{') || s.startsWith('[')){\n      try { return JSON.parse(s); } catch { return v; }\n    }\n    return v;\n  }\n  return v || {};\n}\n\n// === 1) TRENDS ===\nconst vTrends = J('Validate Trends JSON');\nconst trendsArr = Array.isArray(vTrends.trends) ? vTrends.trends : [];\nconst lines = [];\nconst linkBag = new Set();\nconst tagSet = new Set();\n\ntrendsArr.forEach((t,i)=>{\n  const name = str(t.name);\n  const why = str(t.why_trending);\n  const how = str(t.how_to_use);\n  const ex = arr(t.example_links);\n  const hG = arr(t.hashtags_global);\n  const hS = arr(t.hashtags_trend_specific);\n  const tags = Array.from(new Set([...hG, ...hS])).slice(0,7).map(h=>'#'+String(h).toLowerCase());\n  tags.forEach(h=>tagSet.add(h));\n  ex.forEach(l=>linkBag.add(l));\n  lines.push(`${i+1}. ${name}\\n   • Why: ${why}\\n   • How to use: ${how}\\n   • Hashtags: ${tags.join(' ')}`);\n});\n\nconst trendsCell = lines.join('\\n\\n');\n\n// === 2) KEY TAKEAWAYS ===\nconst ktRaw = getLLM('LLM — Key Takeaways JSON');\nconst ktObj = maybeParse(ktRaw) || {};\nconst kt = ktObj.key_takeaways || {};\nconst ktSection = [\n  'KEY TAKEAWAYS','',\n  'Audience:', bullets(kt.audience), '',\n  'Content Themes:', bullets(kt.content_themes), '',\n  'Formats:', bullets(kt.formats), '',\n  'Posting Behaviors:', bullets(kt.posting_behaviors), '',\n  'Hashtag Tips:', bullets(kt.hashtag_tips)\n].join('\\n');\n\n// === 3) CALENDAR RECOMMENDATIONS ===\nconst calRaw = getLLM('LLM — Calendar Recs JSON');\nconst calObj = maybeParse(calRaw) || {};\nconst cal = Array.isArray(calObj.calendar_recommendations) ? calObj.calendar_recommendations : [];\nconst calLines = cal.map((c,i)=>[\n  `${i+1}. ${str(c.idea)}`,\n  `   • Why: ${str(c.rationale)}`,\n  `   • Format: ${str(c.suggested_format)}`,\n  `   • Platforms: ${arr(c.platforms).join(', ')}`,\n  `   • Hashtags: ${arr(c.suggested_hashtags).map(h=>'#'+h).join(' ')}` +\n  (arr(c.example_links).length ? `\\n   • Examples: ${arr(c.example_links).join(', ')}` : '')\n].join('\\n'));\nconst calSection = ['CONTENT CALENDAR RECOMMENDATIONS','', ...calLines].join('\\n');\n\n// === 4) STRATEGY ENHANCEMENTS ===\nconst stRaw = getLLM('LLM — Strategy Enhancements JSON');\nconst stObj = maybeParse(stRaw) || {};\nconst st = stObj.strategy_enhancements || {};\nconst stSection = [\n  'ADDITIONAL STRATEGY ENHANCEMENTS','',\n  'Creative:', bullets(st.creative), '',\n  'Distribution:', bullets(st.distribution), '',\n  'Conversion:', bullets(st.conversion)\n].join('\\n');\n\n// === 5) COMBINE SECTIONS ===\nconst keyCell = [ktSection, '', calSection, '', stSection].join('\\n\\n');\n\n// === 6) META FIELDS ===\nconst runMeta = J('Run Meta');\nconst normalize = J('Normalize Inputs');\nconst assembled = J('Assemble Business Inputs');\n\nconst writeKey = str(runMeta.writeKey || '');\nconst runId = str(runMeta.runId || '');\nconst clientId = str(\n  assembled.clientId ||\n  normalize.clientId ||\n  ''\n);\nconst isTest = !!(J('Start').isTest || normalize.isTest || runMeta.isTest);\nconst sheetDocId = str(runMeta.sheetDocId || normalize.sheetDocId || assembled.sheetDocId || '');\n\n// === 7) FINAL OUTPUT ===\nreturn [{\n  json: {\n    writeKey,         // → \"Write Key\"\n    trendsCell,       // → \"Chat GPT Trend Search\"\n    keyCell,          // → \"Key Takeaways & Content Calendar Recommendations:\"\n    clientId,         // → \"Client ID\"\n    runId,            // → \"Run ID\"\n    isTest,           // → \"isTest\"\n    sheetDocId        // retained for reference or downstream operations\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        1136
+      ],
+      "id": "d6105bd2-c166-4cea-85e3-8379b5a4a656",
+      "name": "Build Trend Research Cell1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Hashtag Inputs from Market research (drop-in replacement)\nfunction arr(a){return Array.isArray(a)?a:[]}\nfunction slug(x){return String(x||'').trim().replace(/^#/,'').toLowerCase()}\nfunction uniq(a){return Array.from(new Set(a))}\nfunction s(x){return String(x||'').trim()}\n\n// n8n Google Sheets returns one item per row -> collect them\nconst rows = $items('Get Market Research Hashtags').map(i=>i.json);\n\nconst igTags = []; const fbTags = [];\nconst igLinks = []; const fbLinks = [];\n\nfor (const r of rows){\n  const platform = s(r['Platform'] || r['platform']).toLowerCase();\n  const tag = slug(r['Trend Description & Hashtags'] || r['hashtag'] || r['Trend']);\n  const link = s(r['Link'] || r['URL'] || r['link']);\n  if (!tag) continue;\n  if (platform === 'instagram'){ igTags.push(tag); if (link) igLinks.push(link); }\n  else if (platform === 'facebook'){ fbTags.push(tag); if (link) fbLinks.push(link); }\n}\n\n// Also include any hashtags passed from Start\nconst fromStartIG = ($item(0).$node['Normalize Inputs']?.json?.hashtags_ig_in) || [];\nconst fromStartFB = ($item(0).$node['Normalize Inputs']?.json?.hashtags_fb_in) || [];\n\nreturn [{ json: {\n  // carry forward fields the LLM prompts need\n  clientId: $item(0).$node['Normalize Inputs']?.json?.clientId || '',\n  sheetDocId: $item(0).$node['Normalize Inputs']?.json?.sheetDocId || '',\n  writeKey: $item(0).$node['Normalize Inputs']?.json?.writeKey || '',\n  instagram_profile_url: $item(0).$node['Normalize Inputs']?.json?.instagram_profile_url || '',\n  facebook_profile_url: $item(0).$node['Normalize Inputs']?.json?.facebook_profile_url || '',\n\n  hashtags_ig: uniq([...fromStartIG, ...igTags]).slice(0,50),\n  hashtags_fb: uniq([...fromStartFB, ...fbTags]).slice(0,50),\n  hashtag_links_ig: uniq(igLinks).slice(0,50),\n  hashtag_links_fb: uniq(fbLinks).slice(0,50)\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        608
+      ],
+      "id": "c7d50daa-dc84-49f4-bd6b-cab9f034ffb4",
+      "name": "Build Hashtag Inputs"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheetDocId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 731471861,
+          "mode": "list",
+          "cachedResultName": "Business research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uDRyoN12b8e4BTggUAXzr6IjLEcxgR2XVbkIZHfX_rA/edit#gid=731471861"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        784
+      ],
+      "id": "7fc70240-dcc9-49d0-8daf-0dcca6bd59ef",
+      "name": "Get Business Research",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7Q6Unn8XTKKzW2DM",
+          "name": "Dave"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assemble Business Inputs (branch-safe; reads current input only)\nfunction s(x){ return (x==null ? '' : String(x)).trim(); }\nfunction n(x){ const v = Number(x); return Number.isFinite(v) ? v : 0; }\nfunction low(x){ return s(x).toLowerCase(); }\nfunction arr(a){ return Array.isArray(a) ? a : []; }\n\nconst inItems = $input.all().map(i => i.json); // <-- read what's actually connected to this node\n\n// Heuristics to separate the two sheet outputs (based on your columns)\nconst isBizRow = r =>\n  'Platform' in r || 'Media type' in r || 'Link to post' in r || '#' in r || 'Time posted' in r;\n\nconst isCompRow = r =>\n  'What are the trends used most by competitors:' in r;\n\nconst bizRows = inItems.filter(isBizRow);\nconst compRows = inItems.filter(isCompRow);\n\n// --- Find the single summary row (6th line on your sheet design) ---\nlet summary = bizRows.find(r =>\n  s(r['Social Media Tone/Voice/Language']) ||\n  s(r['Business Research Ideas Summary']) ||\n  s(r['Comment Examples']) ||\n  s(r['Post Frequency (last month)#Posts / Frequency']) ||\n  s(r['Post Frequency (last 3 months)#Posts / Frequency'])\n) || {};\n\n// --- Extract top 5 Instagram posts (rows 1..5) ---\nconst topIG = bizRows\n  .filter(r => low(r['Platform']) === 'instagram')\n  .filter(r => [1,2,3,4,5].includes(Number(r['#'] ?? r['Rank'] ?? r['row_number'])))\n  .map(r => ({\n    rank: Number(r['#'] ?? r['Rank'] ?? 0),\n    url: s(r['Link to post']),\n    media_type: s(r['Media type']),\n    likes: n(r['Likes']),\n    comments: n(r['Comments']),\n    time_posted: s(r['Time posted']),\n  }))\n  .sort((a,b) => a.rank - b.rank);\n\n// --- Summaries ---\nconst out = {\n  clientId: s(summary['Client ID'] || summary['clientId']),\n  top_ig_posts: topIG,\n  tone_voice: s(summary['Social Media Tone/Voice/Language']),\n  comment_examples: s(summary['Comment Examples']),\n  ideas_summary: s(summary['Business Research Ideas Summary']),\n  post_frequency_last_month: s(summary['Post Frequency (last month)#Posts / Frequency']),\n  post_frequency_last_3_months: s(summary['Post Frequency (last 3 months)#Posts / Frequency']),\n  competitor_trends: s((compRows.find(r => s(r['What are the trends used most by competitors:'])) || {})['What are the trends used most by competitors:'])\n};\n\nreturn [{ json: out }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        880
+      ],
+      "id": "8d0c7c90-0475-41c3-8a6c-a6c2bd5c3483",
+      "name": "Assemble Business Inputs"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        528,
+        880
+      ],
+      "id": "9862c61e-e868-4393-af40-b88cfe03af27",
+      "name": "Gate — Biz+Comp Rows"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        960,
+        880
+      ],
+      "id": "28d1560e-e836-4da1-a9cb-0733f4ac8197",
+      "name": "Gate — Ready for Takeaways"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Emit only on first arrival from the merge\nif ($runIndex === 0) return [{ json: { ok: true } }];\nreturn [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        880
+      ],
+      "id": "69075594-23bf-4144-93d0-d4eb4deb9c13",
+      "name": "Run Once Gate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a senior social trend analyst. Output STRICT JSON only. Use the hashtag/link sets below to infer the top 10 near-term trends for this client on Instagram and Facebook."
+            },
+            {
+              "content": "=You are a senior social trend analyst. Output STRICT JSON only. Use the hashtag/link sets below to infer the top 10 near-term trends for this client on Instagram and Facebook.\n\nSchema:\n{\n  \"trends\": [\n    {\n      \"name\": \"\",\n      \"why_trending\": \"\",\n      \"how_to_use\": \"\",\n      \"platforms\": [\"instagram\",\"facebook\"],\n      \"example_links\": [],\n      \"hashtags_global\": [],\n      \"hashtags_trend_specific\": []\n    }\n  ]\n}\n\nRules:\n- Return EXACTLY 10 items in \"trends\".\n- All hashtags are lowercase slugs WITHOUT #; dedupe; max 7 per array.\n- Prefer last 30–60 days; bias to 30 days if clear.\n- Prioritize relevance to this client’s niche.\n- example_links should include IG hashtag pages, FB hashtag pages, or post URLs when visible.\n\nInputs:\nExisting IG hashtags: {{ JSON.stringify($json.hashtags_ig || []) }}\nExisting FB hashtags: {{ JSON.stringify($json.hashtags_fb || []) }}\nIG hashtag links: {{ JSON.stringify($json.hashtag_links_ig || []) }}\nFB hashtag links: {{ JSON.stringify($json.hashtag_links_fb || []) }}\nInstagram URL: {{ $json.instagramUrl || $json.instagram_profile_url || '' }}\nFacebook URL: {{ $json.facebookUrl || $json.facebook_profile_url || '' }}\nClient ID: {{ $json.clientId || '' }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        624
+      ],
+      "id": "8433f522-8ec8-427a-83fd-0cfdbfd4a391",
+      "name": "Get Trends from Hashtags (JSON)",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "LLM — Key Takeaways JSON": {
+      "main": [
+        [
+          {
+            "node": "LLM — Calendar Recs JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM — Calendar Recs JSON": {
+      "main": [
+        [
+          {
+            "node": "LLM — Strategy Enhancements JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM — Strategy Enhancements JSON": {
+      "main": [
+        [
+          {
+            "node": "Build Trend Research Cell1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Normalize Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Meta": {
+      "main": [
+        [
+          {
+            "node": "Get Market Research Hashtags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Business Research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Competitors Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Market Research Hashtags": {
+      "main": [
+        [
+          {
+            "node": "Build Hashtag Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitors Research": {
+      "main": [
+        [
+          {
+            "node": "Gate — Biz+Comp Rows",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize Inputs": {
+      "main": [
+        [
+          {
+            "node": "Run Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Trends JSON": {
+      "main": [
+        [
+          {
+            "node": "Gate — Ready for Takeaways",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Trend Research Cell1": {
+      "main": [
+        [
+          {
+            "node": "add Trends Research1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Hashtag Inputs": {
+      "main": [
+        [
+          {
+            "node": "Get Trends from Hashtags (JSON)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Business Research": {
+      "main": [
+        [
+          {
+            "node": "Gate — Biz+Comp Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Business Inputs": {
+      "main": [
+        [
+          {
+            "node": "Gate — Ready for Takeaways",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Gate — Biz+Comp Rows": {
+      "main": [
+        [
+          {
+            "node": "Assemble Business Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gate — Ready for Takeaways": {
+      "main": [
+        [
+          {
+            "node": "Run Once Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Once Gate": {
+      "main": [
+        [
+          {
+            "node": "LLM — Key Takeaways JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trends from Hashtags (JSON)": {
+      "main": [
+        [
+          {
+            "node": "Validate Trends JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "facebook_profile_url": "https://www.facebook.com/tuscansalonks/",
+          "id": "Tuscan Salon & Studios",
+          "isTest": null,
+          "sheetDocId": "1rtt7CVAQG8_vdUhdh3eLZbe_9OJBiWN2yxuAmpsutb4",
+          "writeKey": "1"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

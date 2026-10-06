@@ -1,0 +1,730 @@
+{
+  "name": "LearnWorlds Grades",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "isVma"
+            },
+            {
+              "name": "email",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -304,
+        -16
+      ],
+      "id": "67ac5cde-c4f9-4719-b12f-5cb477229a68",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3780d06-60ff-42a0-8212-1a6b89330cb7",
+              "name": "courseId",
+              "value": "doer-onboarding-week-1",
+              "type": "string"
+            },
+            {
+              "id": "d629fc1e-afa2-41e2-a70d-7f639d331d6b",
+              "name": "courseId_2",
+              "value": "doer-onboarding-ecomm-week-1",
+              "type": "string"
+            },
+            {
+              "id": "10449102-f687-4fde-ac61-a121005f1f51",
+              "name": "token",
+              "value": "REDACTED_TOKEN",
+              "type": "string"
+            },
+            {
+              "id": "588ced29-a27c-4d6c-8cb1-d48f1f7660ea",
+              "name": "emails",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "5d1ada7c-8d37-4680-a9c7-3d1b16d485c3",
+              "name": "vma",
+              "value": "[   {\"day\":\"DAY 2\",\"id\":\"68ba4d537817dce0bd05c609\"},   {\"day\":\"DAY 2\",\"id\":\"68bd10ce64f35a9d0d001f76\"},   {\"day\":\"DAY 2\",\"id\":\"68c5bbc5982728f03d0f5458\"},   {\"day\":\"DAY 2\",\"id\":\"68c5bbcde444a3a4740e2096\"},    {\"day\":\"DAY 3\",\"id\":\"68c5dc93b3b26990f30c5aac\"},   {\"day\":\"DAY 3\",\"id\":\"690ba821b6b2a9520b0575d9\"},   {\"day\":\"DAY 3\",\"id\":\"68c5dc94b3b26990f30c5ab8\"},   {\"day\":\"DAY 3\",\"id\":\"68c5dd2b9a1a14d1cf095478\"},    {\"day\":\"DAY 4\",\"id\":\"68c5dd8ea29b1b53390484f6\"},   {\"day\":\"DAY 4\",\"id\":\"68d5c4cb2942c240430591f8\"},   {\"day\":\"DAY 4\",\"id\":\"68c9c525cdba20a07e0f2506\"},    {\"day\":\"DAY 5\",\"id\":\"68c5df17770186a5670b47a8\"},   {\"day\":\"DAY 5\",\"id\":\"68c5df8e1093c0de04026917\"},    {\"day\":\"DAY 6\",\"id\":\"68ddc5faf4e25b3ba80621d7\"},   {\"day\":\"DAY 6\",\"id\":\"68ddc572366742b62e0a4c3a\"},   {\"day\":\"DAY 6\",\"id\":\"68ddc63603dcd157eb0d4784\"},    {\"day\":\"DAY 7\",\"id\":\"68ddc657369e63fefe01f9e9\"},   {\"day\":\"DAY 7\",\"id\":\"68ddc657369e63fefe01f9ee\"},   {\"day\":\"DAY 7\",\"id\":\"68ddc658369e63fefe01f9f6\"},    {\"day\":\"DAY 8\",\"id\":\"68ddc796cac0404d6803ce01\"},   {\"day\":\"DAY 8\",\"id\":\"68ddc797cac0404d6803ce0c\"},    {\"day\":\"DAY 9\",\"id\":\"68ddc6faba2c2388c103269d\"},   {\"day\":\"DAY 9\",\"id\":\"68ddc6faba2c2388c10326a2\"},   {\"day\":\"DAY 9\",\"id\":\"68ddc6fbba2c2388c10326ac\"},    {\"day\":\"DAY 10\",\"id\":\"68e5412c51cbcb0b7c016997\"},   {\"day\":\"DAY 10\",\"id\":\"68e54b56372c996ffd084a48\"},    {\"day\":\"DAY 11\",\"id\":\"68ea562d53310cfbc5049aa7\"},   {\"day\":\"DAY 11\",\"id\":\"68ea563b059c3757610aee46\"},    {\"day\":\"DAY 12\",\"id\":\"68ed1ddd864324cb5107f5c6\"} ]",
+              "type": "array"
+            },
+            {
+              "id": "a8154cb3-64b1-4cb5-aaa4-360487d4fe4a",
+              "name": "ec",
+              "value": "[   {\"day\":\"DAY 2\",\"id\":\"68c9ce954ea2850d0003a18a\"},   {\"day\":\"DAY 2\",\"id\":\"68c9ce964ea2850d0003a194\"},   {\"day\":\"DAY 2\",\"id\":\"68c9ce974ea2850d0003a19a\"},   {\"day\":\"DAY 2\",\"id\":\"68c9ce9a4ea2850d0003a1b2\"},    {\"day\":\"DAY 3\",\"id\":\"68c9ce984ea2850d0003a1a2\"},   {\"day\":\"DAY 3\",\"id\":\"68c9e961a0fa417ae307b786\"},   {\"day\":\"DAY 3\",\"id\":\"68c9ce994ea2850d0003a1a8\"},    {\"day\":\"DAY 4\",\"id\":\"68c9ce9b4ea2850d0003a1ba\"},   {\"day\":\"DAY 4\",\"id\":\"68d6c6d80bb40e68260c0934\"},   {\"day\":\"DAY 4\",\"id\":\"68c9ce9d4ea2850d0003a1c6\"},    {\"day\":\"DAY 5\",\"id\":\"68c9ce9e4ea2850d0003a1cc\"},   {\"day\":\"DAY 5\",\"id\":\"68c9ce9e4ea2850d0003a1d4\"},    {\"day\":\"DAY 6\",\"id\":\"68e3229a626eb0941505c018\"},   {\"day\":\"DAY 6\",\"id\":\"68e322a2e15f01c1d30ecf6c\"},   {\"day\":\"DAY 6\",\"id\":\"68e322ab2c494ea14a0f0e79\"},    {\"day\":\"DAY 7\",\"id\":\"68ddd3e85f6fdefa8906e02a\"},   {\"day\":\"DAY 7\",\"id\":\"68ddd3e95f6fdefa8906e02f\"},   {\"day\":\"DAY 7\",\"id\":\"68ddd3e95f6fdefa8906e034\"},    {\"day\":\"DAY 8\",\"id\":\"68ddd48de00b8c26ef0969cc\"},   {\"day\":\"DAY 8\",\"id\":\"68ddd48ce00b8c26ef0969c1\"},    {\"day\":\"DAY 9\",\"id\":\"68ddd51edf9efe036507c23d\"},   {\"day\":\"DAY 9\",\"id\":\"68ddd5d9125675b77f0d11a6\"},   {\"day\":\"DAY 9\",\"id\":\"68ddd5f2217041c00604347d\"},    {\"day\":\"DAY 10\",\"id\":\"68ddd60de392606d28095a29\"},   {\"day\":\"DAY 10\",\"id\":\"68ddd60ee392606d28095a34\"},   {\"day\":\"DAY 10\",\"id\":\"68dddea1ab331423d80ef268\"},   {\"day\":\"DAY 10\",\"id\":\"68dddf8342cb1d041a018647\"},    {\"day\":\"DAY 11\",\"id\":\"68ea4d0e1e0cf903f30d5e56\"},   {\"day\":\"DAY 11\",\"id\":\"68ea4d9c62b3188dd002fe09\"},    {\"day\":\"DAY 12\",\"id\":\"68ea4e4805a17cc7b1093dac\"} ]",
+              "type": "array"
+            },
+            {
+              "id": "4b60ff3e-30f3-4217-bbcd-df4dbb2dbf48",
+              "name": "isVma",
+              "value": "={{ $json.isVma }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "a0d81be7-8243-4cdb-85e3-d8d000e0c426",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASE_URL = 'https://learninglab.doneverse.com/admin';\nconst LW_CLIENT = '68c4261f15eefcc20b0d6556';\nconst ITEMS_PER_PAGE = 200;\n\nfunction normEmail(s) {\n  return String(s || '')\n    .replace(/\\u00A0/g, ' ')\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')\n    .trim()\n    .toLowerCase();\n}\n\nfunction ensureEmailArray(x) {\n  if (Array.isArray(x)) return x.map(normEmail).filter(Boolean);\n\n  if (typeof x === 'string') {\n    const s = x.trim();\n    if (!s) return [];\n\n    try {\n      const parsed = JSON.parse(s);\n\n      if (Array.isArray(parsed)) return parsed.map(normEmail).filter(Boolean);\n\n      if (typeof parsed === 'string') {\n        const inner = parsed.trim();\n        if (inner.startsWith('[') && inner.endsWith(']')) {\n          const parsed2 = JSON.parse(inner);\n          if (Array.isArray(parsed2)) return parsed2.map(normEmail).filter(Boolean);\n        }\n      }\n    } catch (e) {}\n\n    return s.split(',').map(normEmail).filter(Boolean);\n  }\n\n  return [];\n}\n\nasync function fetchUsersPage({ token, page }) {\n  const url =\n    `${BASE_URL}/api/v2/users` +\n    `?page=${encodeURIComponent(page)}` +\n    `&items_per_page=${encodeURIComponent(ITEMS_PER_PAGE)}`;\n\n  return await this.helpers.httpRequest({\n    method: 'GET',\n    url,\n    headers: {\n      Accept: 'application/json',\n      Authorization: `Bearer ${token}`,\n      'Lw-Client': LW_CLIENT,\n    },\n    json: true,\n  });\n}\n\nconst edit = $('Edit Fields').first().json;\nconst token = edit.token;\nif (!token) throw new Error('Missing token from node \"Edit Fields\" (expected .json.token)');\n\nconst wantedArr = ensureEmailArray(edit.emails);\nconst wanted = new Set(wantedArr);\n\nif (wanted.size === 0) {\n  return [{ json: { userIds: '', matchedUsers: [], missingEmails: [], wantedCount: 0, matchedCount: 0 } }];\n}\n\nconst matchedByEmail = new Map(); // email -> id\nconst matchedIds = new Set();\n\n// Optional. keep a tiny sample of LW emails for sanity checking\nconst sampleSeen = [];\nconst SAMPLE_LIMIT = 25;\n\nlet page = 1;\nlet totalPages = null;\n\nwhile (true) {\n  const res = await fetchUsersPage.call(this, { token, page });\n\n  const users = Array.isArray(res?.data) ? res.data : null;\n  if (users === null) {\n    throw new Error(\n      `Unexpected response shape. Expected { data: [...], meta: {...} }. ` +\n      `Top-level keys: ${Object.keys(res || {}).join(',')}`\n    );\n  }\n\n  for (const u of users) {\n    const email = normEmail(u?.email);\n    const id = u?.id != null ? String(u.id) : null;\n\n    if (email && sampleSeen.length < SAMPLE_LIMIT) sampleSeen.push(email);\n\n    if (email && id && wanted.has(email)) {\n      if (!matchedByEmail.has(email)) matchedByEmail.set(email, id);\n      matchedIds.add(id);\n    }\n  }\n\n  if (totalPages === null) {\n    totalPages = Number(res?.meta?.totalPages);\n    if (!Number.isFinite(totalPages) || totalPages < 1) totalPages = 1;\n  }\n\n  // Stop early if we found everyone\n  if (matchedByEmail.size >= wanted.size) break;\n\n  page += 1;\n  if (page > totalPages) break;\n}\n\n// Build missing list (emails we wanted but never saw)\nconst missingEmails = [];\nfor (const em of wanted) {\n  if (!matchedByEmail.has(em)) missingEmails.push(em);\n}\n\nconst matchedUsers = Array.from(matchedByEmail.entries()).map(([email, id]) => ({ email, id }));\n\nreturn [\n  {\n    json: {\n      userIds: Array.from(matchedIds).join(','),\n      matchedUsers,\n      missingEmails,\n      wantedCount: wanted.size,\n      matchedCount: matchedIds.size,\n      pagesFetched: totalPages == null ? page : Math.min(page, totalPages),\n      sampleSeenEmails: sampleSeen,\n      vma: $input.first().json.vma\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -160
+      ],
+      "id": "56dfc729-42b4-46e6-99fe-451de30b93d2",
+      "name": "Extract IDs"
+    },
+    {
+      "parameters": {
+        "url": "=https://learninglab.doneverse.com/admin/api/v2/courses/doer-onboarding-week-1/contents",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "items_per_page",
+              "value": "200"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Lw-Client",
+              "value": "68c4261f15eefcc20b0d6556"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -48,
+        -640
+      ],
+      "id": "0f24be60-a610-4ae8-aaf7-5a9d38a1498e",
+      "name": "Get Users",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst out = [];\n\nfor (const item of items) {\n  const root = item.json;\n\n  // Your shape: an array with first element holding { data: [...] }\n  const data = Array.isArray(root) ? root?.[0]?.data : root?.data;\n\n  if (!Array.isArray(data)) {\n    // Keep output valid for n8n, but empty if shape is unexpected\n    out.push({ json: { userIds: '' } });\n    continue;\n  }\n\n  const ids = data\n    .map(u => u?.id)\n    .filter(Boolean)\n    .map(String);\n\n  // Optional: de-dupe while preserving order\n  const seen = new Set();\n  const uniqueIds = [];\n  for (const id of ids) {\n    if (!seen.has(id)) {\n      seen.add(id);\n      uniqueIds.push(id);\n    }\n  }\n\n  out.push({ json: { userIds: uniqueIds.join(',') } });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -512
+      ],
+      "id": "370f357e-e6d6-40a5-9e17-682a7f8b8fca",
+      "name": "Extract ID from Node",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function extractRows(j) {\n  // Handles common shapes depending on HTTP node / merge node output\n  if (Array.isArray(j?.data)) return j.data;\n  if (Array.isArray(j?.body?.data)) return j.body.data;\n  if (Array.isArray(j?.response?.data)) return j.response.data;\n\n  // If the HTTP node returned the whole thing as an array of { data: [...] }\n  if (Array.isArray(j) && j.length && Array.isArray(j[0]?.data)) return j.flatMap(x => x?.data || []);\n\n  return [];\n}\n\nfunction normEmail(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim()\n    .toLowerCase();\n}\n\nfunction getDayFromMerged(j) {\n  // This must exist because you said you’re using merge approach.\n  // It should be attached from the Split/Set side, e.g. { day: \"DAY 2\" }\n  return String(j?.day ?? j?.Day ?? \"\").trim();\n}\n\n// Fixed DAY list: DAY 2 .. DAY 12\nconst DAYS = Array.from({ length: 11 }, (_, i) => `DAY ${i + 2}`);\n\n// userKey -> { user_id, email, dayGrades: {DAY X: {grades:[], avg:null}} }\nconst users = new Map();\n\nfunction ensureUser(userKey, user_id, email) {\n  if (!users.has(userKey)) {\n    const dayGrades = {};\n    for (const d of DAYS) dayGrades[d] = { grades: [], avg: null };\n\n    users.set(userKey, {\n      user_id: user_id || null,\n      email: email || null,\n      dayGrades,\n    });\n  } else {\n    // Fill missing id/email if we later find it\n    const u = users.get(userKey);\n    if (!u.user_id && user_id) u.user_id = user_id;\n    if (!u.email && email) u.email = email;\n  }\n  return users.get(userKey);\n}\n\nfor (const item of $input.all()) {\n  const j = item.json ?? {};\n  const day = getDayFromMerged(j);\n  if (!day) continue;              // merge must provide day\n  if (!DAYS.includes(day)) continue; // only DAY 2..DAY 12\n\n  const rows = extractRows(j);\n  if (!rows.length) continue;\n\n  for (const r of rows) {\n    const user_id = String(r?.user_id ?? r?.userId ?? \"\").trim();\n    const email = normEmail(r?.email);\n\n    // If both are empty, skip\n    if (!user_id && !email) continue;\n\n    const grade = Number(r?.grade);\n    if (!Number.isFinite(grade)) continue;\n\n    // Prefer user_id grouping, fallback to email grouping\n    const userKey = user_id ? `uid:${user_id}` : `email:${email}`;\n\n    const u = ensureUser(userKey, user_id, email);\n\n    u.dayGrades[day].grades.push(grade);\n  }\n}\n\n// Compute averages for all users and all days (including empty days)\nconst out = [];\nfor (const u of users.values()) {\n  for (const d of DAYS) {\n    const grades = u.dayGrades[d].grades;\n    if (!grades.length) {\n      u.dayGrades[d].avg = null;\n      continue;\n    }\n    const sum = grades.reduce((a, b) => a + b, 0);\n    const avg = sum / grades.length;\n    u.dayGrades[d].avg = Math.round(avg * 100) / 100;\n  }\n\n  out.push({\n    json: {\n      user_id: u.user_id,\n      email: u.email,\n      dayGrades: u.dayGrades,\n    },\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        -160
+      ],
+      "id": "ef765da7-eeb4-456f-a524-83be4c1fb194",
+      "name": "Consolidate Grades"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1ba29db-190c-4881-90d1-4da7169927bd",
+              "name": "doerEmail",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "ed702f5b-feb0-446f-8d3c-ed959f660179",
+              "name": "adminScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 2']?.avg,\n      $json.dayGrades?.['DAY 3']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            },
+            {
+              "id": "096bcade-7009-4433-b259-3d5254ee23ab",
+              "name": "designScore",
+              "value": "={{ $json.dayGrades?.['DAY 4']?.avg ?? '' }}",
+              "type": "number"
+            },
+            {
+              "id": "278e94fe-3746-4fd3-8c7c-fed34e2affcf",
+              "name": "socmedScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 5']?.avg,\n      $json.dayGrades?.['DAY 7']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            },
+            {
+              "id": "224a3dcc-695e-4ad7-903b-3fbde481ec5b",
+              "name": "emailScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 9']?.avg,\n      $json.dayGrades?.['DAY 10']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            },
+            {
+              "id": "e068fe05-e1b7-4a94-a641-40937702f768",
+              "name": "funnelScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 11']?.avg,\n      $json.dayGrades?.['DAY 12']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1616,
+        -160
+      ],
+      "id": "3262c88b-94f1-412d-ada3-6f257f68e0a5",
+      "name": "Set Grade"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "030e2516-9833-4ca9-b8b5-0a2363720200",
+              "leftValue": "={{ $json.isVma }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "3fd51254-85fc-495c-aa38-3e95e2d295d7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "vma",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -160
+      ],
+      "id": "29c604ce-9b96-452b-8817-8a3dac02a646",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "=https://learninglab.doneverse.com/admin/api/v2/assessments/{{ $json.id }}/responses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "users",
+              "value": "={{ $('Extract IDs').item.json.userIds }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Lw-Client",
+              "value": "68c4261f15eefcc20b0d6556"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 30,
+              "batchInterval": 10000
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "page",
+                    "value": "={{ ($response.body.meta?.page ?? 0) + 1 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ ($response.body.meta?.page ?? 1) >= ($response.body.meta?.totalPages ?? 1) }}",
+              "requestInterval": 3000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        768,
+        -16
+      ],
+      "id": "88930513-3b59-4b60-8995-980fe41c232f",
+      "name": "Get VMA Grades"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        -160
+      ],
+      "id": "b53917d6-7e9b-4cde-9db2-29f59d84f25f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASE_URL = 'https://learninglab.doneverse.com/admin';\nconst LW_CLIENT = '68c4261f15eefcc20b0d6556';\nconst ITEMS_PER_PAGE = 200;\n\nfunction normEmail(s) {\n  return String(s || '')\n    .replace(/\\u00A0/g, ' ')\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')\n    .trim()\n    .toLowerCase();\n}\n\nfunction ensureEmailArray(x) {\n  if (Array.isArray(x)) return x.map(normEmail).filter(Boolean);\n\n  if (typeof x === 'string') {\n    const s = x.trim();\n    if (!s) return [];\n\n    try {\n      const parsed = JSON.parse(s);\n\n      if (Array.isArray(parsed)) return parsed.map(normEmail).filter(Boolean);\n\n      if (typeof parsed === 'string') {\n        const inner = parsed.trim();\n        if (inner.startsWith('[') && inner.endsWith(']')) {\n          const parsed2 = JSON.parse(inner);\n          if (Array.isArray(parsed2)) return parsed2.map(normEmail).filter(Boolean);\n        }\n      }\n    } catch (e) {}\n\n    return s.split(',').map(normEmail).filter(Boolean);\n  }\n\n  return [];\n}\n\nasync function fetchUsersPage({ token, page }) {\n  const url =\n    `${BASE_URL}/api/v2/users` +\n    `?page=${encodeURIComponent(page)}` +\n    `&items_per_page=${encodeURIComponent(ITEMS_PER_PAGE)}`;\n\n  return await this.helpers.httpRequest({\n    method: 'GET',\n    url,\n    headers: {\n      Accept: 'application/json',\n      Authorization: `Bearer ${token}`,\n      'Lw-Client': LW_CLIENT,\n    },\n    json: true,\n  });\n}\n\nconst edit = $('Edit Fields').first().json;\nconst token = edit.token;\nif (!token) throw new Error('Missing token from node \"Edit Fields\" (expected .json.token)');\n\nconst wantedArr = ensureEmailArray(edit.emails);\nconst wanted = new Set(wantedArr);\n\nif (wanted.size === 0) {\n  return [{ json: { userIds: '', matchedUsers: [], missingEmails: [], wantedCount: 0, matchedCount: 0 } }];\n}\n\nconst matchedByEmail = new Map(); // email -> id\nconst matchedIds = new Set();\n\n// Optional. keep a tiny sample of LW emails for sanity checking\nconst sampleSeen = [];\nconst SAMPLE_LIMIT = 25;\n\nlet page = 1;\nlet totalPages = null;\n\nwhile (true) {\n  const res = await fetchUsersPage.call(this, { token, page });\n\n  const users = Array.isArray(res?.data) ? res.data : null;\n  if (users === null) {\n    throw new Error(\n      `Unexpected response shape. Expected { data: [...], meta: {...} }. ` +\n      `Top-level keys: ${Object.keys(res || {}).join(',')}`\n    );\n  }\n\n  for (const u of users) {\n    const email = normEmail(u?.email);\n    const id = u?.id != null ? String(u.id) : null;\n\n    if (email && sampleSeen.length < SAMPLE_LIMIT) sampleSeen.push(email);\n\n    if (email && id && wanted.has(email)) {\n      if (!matchedByEmail.has(email)) matchedByEmail.set(email, id);\n      matchedIds.add(id);\n    }\n  }\n\n  if (totalPages === null) {\n    totalPages = Number(res?.meta?.totalPages);\n    if (!Number.isFinite(totalPages) || totalPages < 1) totalPages = 1;\n  }\n\n  // Stop early if we found everyone\n  if (matchedByEmail.size >= wanted.size) break;\n\n  page += 1;\n  if (page > totalPages) break;\n}\n\n// Build missing list (emails we wanted but never saw)\nconst missingEmails = [];\nfor (const em of wanted) {\n  if (!matchedByEmail.has(em)) missingEmails.push(em);\n}\n\nconst matchedUsers = Array.from(matchedByEmail.entries()).map(([email, id]) => ({ email, id }));\n\nreturn [\n  {\n    json: {\n      userIds: Array.from(matchedIds).join(','),\n      matchedUsers,\n      missingEmails,\n      wantedCount: wanted.size,\n      matchedCount: matchedIds.size,\n      pagesFetched: totalPages == null ? page : Math.min(page, totalPages),\n      sampleSeenEmails: sampleSeen,\n      ec: $input.first().json.ec\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        176
+      ],
+      "id": "26134e18-6b26-43e4-9c07-b6b0d4b6771c",
+      "name": "Extract IDs1"
+    },
+    {
+      "parameters": {
+        "jsCode": "function extractRows(j) {\n  // Handles common shapes depending on HTTP node / merge node output\n  if (Array.isArray(j?.data)) return j.data;\n  if (Array.isArray(j?.body?.data)) return j.body.data;\n  if (Array.isArray(j?.response?.data)) return j.response.data;\n\n  // If the HTTP node returned the whole thing as an array of { data: [...] }\n  if (Array.isArray(j) && j.length && Array.isArray(j[0]?.data)) return j.flatMap(x => x?.data || []);\n\n  return [];\n}\n\nfunction normEmail(s) {\n  return String(s ?? \"\")\n    .replace(/\\u00A0/g, \" \")\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, \"\")\n    .trim()\n    .toLowerCase();\n}\n\nfunction getDayFromMerged(j) {\n  // This must exist because you said you’re using merge approach.\n  // It should be attached from the Split/Set side, e.g. { day: \"DAY 2\" }\n  return String(j?.day ?? j?.Day ?? \"\").trim();\n}\n\n// Fixed DAY list: DAY 2 .. DAY 12\nconst DAYS = Array.from({ length: 11 }, (_, i) => `DAY ${i + 2}`);\n\n// userKey -> { user_id, email, dayGrades: {DAY X: {grades:[], avg:null}} }\nconst users = new Map();\n\nfunction ensureUser(userKey, user_id, email) {\n  if (!users.has(userKey)) {\n    const dayGrades = {};\n    for (const d of DAYS) dayGrades[d] = { grades: [], avg: null };\n\n    users.set(userKey, {\n      user_id: user_id || null,\n      email: email || null,\n      dayGrades,\n    });\n  } else {\n    // Fill missing id/email if we later find it\n    const u = users.get(userKey);\n    if (!u.user_id && user_id) u.user_id = user_id;\n    if (!u.email && email) u.email = email;\n  }\n  return users.get(userKey);\n}\n\nfor (const item of $input.all()) {\n  const j = item.json ?? {};\n  const day = getDayFromMerged(j);\n  if (!day) continue;              // merge must provide day\n  if (!DAYS.includes(day)) continue; // only DAY 2..DAY 12\n\n  const rows = extractRows(j);\n  if (!rows.length) continue;\n\n  for (const r of rows) {\n    const user_id = String(r?.user_id ?? r?.userId ?? \"\").trim();\n    const email = normEmail(r?.email);\n\n    // If both are empty, skip\n    if (!user_id && !email) continue;\n\n    const grade = Number(r?.grade);\n    if (!Number.isFinite(grade)) continue;\n\n    // Prefer user_id grouping, fallback to email grouping\n    const userKey = user_id ? `uid:${user_id}` : `email:${email}`;\n\n    const u = ensureUser(userKey, user_id, email);\n\n    u.dayGrades[day].grades.push(grade);\n  }\n}\n\n// Compute averages for all users and all days (including empty days)\nconst out = [];\nfor (const u of users.values()) {\n  for (const d of DAYS) {\n    const grades = u.dayGrades[d].grades;\n    if (!grades.length) {\n      u.dayGrades[d].avg = null;\n      continue;\n    }\n    const sum = grades.reduce((a, b) => a + b, 0);\n    const avg = sum / grades.length;\n    u.dayGrades[d].avg = Math.round(avg * 100) / 100;\n  }\n\n  out.push({\n    json: {\n      user_id: u.user_id,\n      email: u.email,\n      dayGrades: u.dayGrades,\n    },\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        176
+      ],
+      "id": "64df7389-12cb-4cef-a65f-ba6dfda68fc8",
+      "name": "Consolidate Grades1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "ec",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        512,
+        176
+      ],
+      "id": "52c60c98-85a5-4ceb-9538-a851d4e5fca7",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1008,
+        176
+      ],
+      "id": "85e7571a-321e-4e23-b07b-6306f63b398d",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "url": "=https://learninglab.doneverse.com/admin/api/v2/assessments/{{ $json.id }}/responses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "users",
+              "value": "={{ $('Extract IDs1').item.json.userIds }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Lw-Client",
+              "value": "68c4261f15eefcc20b0d6556"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 30,
+              "batchInterval": 10000
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "page",
+                    "value": "={{ ($response.body.meta?.page ?? 0) + 1 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ ($response.body.meta?.page ?? 1) >= ($response.body.meta?.totalPages ?? 1) }}",
+              "requestInterval": 3000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        752,
+        320
+      ],
+      "id": "627c197d-6eb7-459f-84e2-5eeb263c6afb",
+      "name": "Get EC Grades"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1ba29db-190c-4881-90d1-4da7169927bd",
+              "name": "doerEmail",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "ed702f5b-feb0-446f-8d3c-ed959f660179",
+              "name": "adminScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 2']?.avg,\n      $json.dayGrades?.['DAY 3']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            },
+            {
+              "id": "096bcade-7009-4433-b259-3d5254ee23ab",
+              "name": "designScore",
+              "value": "={{ $json.dayGrades?.['DAY 4']?.avg ?? '' }}",
+              "type": "number"
+            },
+            {
+              "id": "278e94fe-3746-4fd3-8c7c-fed34e2affcf",
+              "name": "socmedScore",
+              "value": "={{\n  (() => {\n    const vals = [\n      $json.dayGrades?.['DAY 5']?.avg,\n      $json.dayGrades?.['DAY 7']?.avg\n    ].filter(v => v != null && v !== '');\n\n    if (!vals.length) return '';\n\n    const avg =\n      vals.reduce((a, b) => Number(a) + Number(b), 0) / vals.length;\n\n    // Round UP to 2 decimals\n    return (Math.ceil(avg * 100) / 100).toFixed(2);\n  })()\n}}\n",
+              "type": "number"
+            },
+            {
+              "id": "224a3dcc-695e-4ad7-903b-3fbde481ec5b",
+              "name": "emailScore",
+              "value": "={{ $json.dayGrades?.['DAY 11']?.avg ?? '' }}",
+              "type": "number"
+            },
+            {
+              "id": "e068fe05-e1b7-4a94-a641-40937702f768",
+              "name": "funnelScore",
+              "value": "={{ $json.dayGrades?.['DAY 12']?.avg ?? '' }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        176
+      ],
+      "id": "f3f298c4-74b1-481c-82e3-57db2ca3b876",
+      "name": "Set Grade2"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract IDs": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Users": {
+      "main": [
+        []
+      ]
+    },
+    "Extract ID from Node": {
+      "main": [
+        []
+      ]
+    },
+    "Consolidate Grades": {
+      "main": [
+        [
+          {
+            "node": "Set Grade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract IDs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract IDs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get VMA Grades",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get VMA Grades": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Grades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract IDs1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidate Grades1": {
+      "main": [
+        [
+          {
+            "node": "Set Grade2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Get EC Grades",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Consolidate Grades1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get EC Grades": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "isVma": "false",
+          "email": [
+            "rey.salang@outsourceddoers.com",
+            "nevina.gareza@outsourceddoers.com",
+            "ranielam.braza@doneverse.com",
+            "john.perez@outsourceddoers.com",
+            "matt.descargar@doneverse.com",
+            "kent.kilapkilap@outsourceddoers.com",
+            "vergel.deguzman@outsourceddoers.com",
+            "jules.ripas@doneverse.com",
+            "markdavida.cortez@doneverse.com",
+            "keisha.delossantos@outsourceddoers.com",
+            "alyssa.bagsic@outsourceddoers.com",
+            "rommel.martinez@outsourceddoers.com",
+            "jv.arenas@outsourceddoers.com",
+            "jared.nalaza@doneverse.com",
+            "carmille.salcedo@outsourceddoers.com",
+            "anissa.baricante@outsourceddoers.com",
+            "nathan.gimena@outsourceddoers.com",
+            "manuel.tuballa@outsourceddoers.com",
+            "sophia.piquero-gaid@outsourceddoers.com",
+            "casandra.frasco@outsourceddoers.com",
+            "babes.amper@outsourceddoers.com",
+            "chylle.remonde@outsourceddoers.com"
+          ]
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": null
+}

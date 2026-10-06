@@ -1,0 +1,130 @@
+{
+  "name": "Allocation Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -160
+      ],
+      "id": "e8827ec5-19db-4112-ac27-b9037fdbf6f3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "vr5594vUAHizd9qz",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/vr5594vUAHizd9qz",
+          "cachedResultName": "Creatives Agent — Clear Tables"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -160
+      ],
+      "id": "cfc0972f-045d-4d85-b9ac-f7530ca1af34",
+      "name": "Call 'Clear Tables'"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        -160
+      ],
+      "id": "8f973899-186a-4732-89d7-2915eb95e2ee",
+      "name": "Execute Workflow"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "QFkXogiRO4LU6OZj",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/QFkXogiRO4LU6OZj",
+          "cachedResultName": "Creatives Agent — Google Sheet Reconciliation"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        -160
+      ],
+      "id": "56341c2e-c76f-4bad-bee7-66e3d98e2f99",
+      "name": "Execute Workflow1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Call 'Clear Tables'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Clear Tables'": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

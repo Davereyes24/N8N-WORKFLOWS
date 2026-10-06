@@ -1,0 +1,1440 @@
+{
+  "name": "Course Builder Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $('Set: Parse Typeform Response').item.json.Gdrive }}",
+            "mode": "url"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -880,
+        -272
+      ],
+      "id": "ca7153be-c17b-44b0-9b6b-4af005b5a610",
+      "name": "Drive: List Founder-Provided Folder (for import)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "name": "={{ $json.name }}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Drive: Create \"Founder images\" Subfolder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -656,
+        -272
+      ],
+      "id": "29b0886b-d889-4045-aa22-5d7ea20e7947",
+      "name": "Drive: Copy Founder Assets → \"Founder images\"",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Founder images",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1104,
+        -272
+      ],
+      "id": "2a1a9fa5-1864-4c12-a592-074bbe70b3cf",
+      "name": "Drive: Create \"Founder images\" Subfolder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "Creatives",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Merge: Client Root Folder (existing or new)').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        -272
+      ],
+      "id": "5f0e51a1-a12f-4e14-9037-f5b372898bcb",
+      "name": "Drive: Create \"Creatives\" Subfolder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "18JN8zmotmpb_rPRxcDhrLhQN34Zsx_8mZabm6V960ng",
+          "mode": "id"
+        },
+        "name": "={{ $('Merge: Client Root Folder (existing or new)').item.json.name }} Calendar",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "value": "0AOMkMB_ymZHFUk9PVA",
+          "mode": "list",
+          "cachedResultName": "AI agent Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/0AOMkMB_ymZHFUk9PVA"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Merge: Client Root Folder (existing or new)').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "copyRequiresWriterPermission": true
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        -272
+      ],
+      "id": "2b4999e3-1c70-49da-ae52-3aa69277645c",
+      "name": "Drive: Copy Research+Calendar Template → Client Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b67b14e9-d513-42a3-91d5-ea4d03f481ea",
+              "leftValue": "={{ $json.found }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        -272
+      ],
+      "id": "911726b3-7f97-42f6-90b5-ba9e61d8d17f",
+      "name": "IF: Client Folder Exists?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "use-existing-id",
+              "name": "id",
+              "value": "={{ $('Code: Decide Existing vs Create').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "use-existing-name",
+              "name": "name",
+              "value": "={{ $('Code: Decide Existing vs Create').item.json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1552,
+        -368
+      ],
+      "id": "d3ed7cbc-2c3a-44db-b231-cb3f616754d0",
+      "name": "Set: Use Existing Client Root Folder"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        -1328,
+        -272
+      ],
+      "id": "b3761272-1d24-48ca-bdeb-50495fc9ca34",
+      "name": "Merge: Client Root Folder (existing or new)",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "platforms",
+              "name": "Platform",
+              "type": "string",
+              "value": "={{ (() => { const v = $('Set: Parse Typeform Response').item.json['Preferred page']; if (Array.isArray(v)) return v.join(', '); if (typeof v === 'string' && v.trim().startsWith('[')) { try { const a = JSON.parse(v); return Array.isArray(a) ? a.join(', ') : String(v || ''); } catch(e) {} } return String(v || ''); })() }}"
+            },
+            {
+              "id": "sheet-id",
+              "name": "Sheet ID",
+              "type": "string",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "id": "clickup-task-id",
+              "name": "Clickup task ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "logo-image-id",
+              "name": "Logo image ID",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "creatives-folder-id",
+              "name": "Creatives folder ID",
+              "type": "string",
+              "value": "={{ $('Drive: Create \"Creatives\" Subfolder').item.json.id }}"
+            },
+            {
+              "id": "client-folder-url",
+              "name": "=Client's folder URL",
+              "type": "string",
+              "value": "={{ 'https://drive.google.com/drive/folders/' + $('Merge: Client Root Folder (existing or new)').item.json.id }}"
+            },
+            {
+              "id": "brand-colors",
+              "name": "Brand colors",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "relevant-keywords",
+              "name": "=Relevant keywords",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "url-image-id",
+              "name": "URL image id",
+              "type": "string",
+              "value": "="
+            },
+            {
+              "id": "creator-images-folder-id",
+              "name": "Creator images folder id",
+              "type": "string",
+              "value": "={{ $('Drive: Create \"Founder images\" Subfolder').item.json.id }}"
+            },
+            {
+              "id": "ig-url",
+              "name": "Instagram Profile URL",
+              "type": "string",
+              "value": "={{ $('Merge: Client Root Folder (existing or new)').item.json.Instagram }}"
+            },
+            {
+              "id": "fb-url",
+              "name": "Facebook Profile URL",
+              "type": "string",
+              "value": "={{ $('Merge: Client Root Folder (existing or new)').item.json['Facebook link'] }}"
+            },
+            {
+              "id": "li-url",
+              "name": "LinkedIn URL",
+              "type": "string",
+              "value": "="
+            },
+            {
+              "id": "client-id",
+              "name": "Client ID",
+              "type": "string",
+              "value": "={{ $('Merge: Client Root Folder (existing or new)').item.json.name }}"
+            },
+            {
+              "id": "21dc1211-b727-4396-a1d5-9a7d19c568aa",
+              "name": "brand",
+              "value": "={{ $('Set: Parse Typeform Response').item.json.Brand }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        -272
+      ],
+      "id": "aeec4b24-8d6e-4c7d-8e93-145b5ab9af1f",
+      "name": "Set: Assemble Context Vars (Sheet/Folder IDs, URLs)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "908aedf5-fd84-4140-9222-5dba91db6b80",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2672,
+        -272
+      ],
+      "id": "512a05c7-7b7e-4d59-af9e-896c8da4af7f",
+      "name": "Webhook: Typeform Intake (Online Course)",
+      "webhookId": "908aedf5-fd84-4140-9222-5dba91db6b80"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"foundersName\": \"{{ $json.body.form_response.answers[0].text }}\",\n  \"foundersEmail\": \"{{ $json.body.form_response.answers[1].email }}\",\n  \"foundersBusinessName\": \"{{ $json.body.form_response.answers[2].text }}\",\n  \"doersName\": \"{{ $json.body.form_response.answers[3].text }}\",\n  \"doersEmail\": \"{{ $json.body.form_response.answers[4].email }}\",\n  \"coursePortalName\": \"{{ $json.body.form_response.answers[5].text }}\",\n  \"portalToolUsed\": \"{{ $json.body.form_response.answers[6].choice.label }}\",\n  \"noToolYet\": \"{{ $json.body.form_response.answers[7].choice.label }}\",\n  \"accountType\": \"{{ $json.body.form_response.answers[8].choice.label }}\",\n  \"ghlAccessMethod\": \"{{ $json.body.form_response.answers[9].choice.label }}\",\n\n  \"adminurl1\": \"{{ $json.body.form_response.answers[10].text }}\",\n  \"adminusername1\": \"{{ $json.body.form_response.answers[11].text }}\",\n  \"adminpassword1\": \"{{ $json.body.form_response.answers[12].text }}\",\n  \"adminusername2\": \"{{ $json.body.form_response.answers[13].text }}\",\n  \"adminpassword2\": \"{{ $json.body.form_response.answers[14].text }}\",\n\n  \"portalBuildLocation\": \"{{ $json.body.form_response.answers[15].choice.label }}\",\n  \"wordpressRequirements\": {{ $json.body.form_response.answers[16].boolean }},\n  \"wordpressPortalBuildLocation\": \"{{ $json.body.form_response.answers[17].choice.label }}\",\n  \"hostingAccessMethod\": \"{{ $json.body.form_response.answers[18].choice.label }}\",\n\n  \"adminurl2\": \"{{ $json.body.form_response.answers[19].text }}\",\n  \"adminusername3\": \"{{ $json.body.form_response.answers[20].text }}\",\n  \"adminpassword3\": \"{{ $json.body.form_response.answers[21].text }}\",\n\n  \"domainAccessMethod\": \"{{ $json.body.form_response.answers[22].choice.label }}\",\n  \"adminurl3\": \"{{ $json.body.form_response.answers[23].text }}\",\n  \"adminusername4\": \"{{ $json.body.form_response.answers[24].text }}\",\n  \"adminpassword4\": \"{{ $json.body.form_response.answers[25].text }}\",\n\n  \"portalLayoutWordpressOptions\": \"{{ $json.body.form_response.answers[26].choice.label }}\",\n  \"portalLayoutGhlOptions\": \"{{ $json.body.form_response.answers[27].choice.label }}\",\n  \"portalLayoutKajabiOptionsTemplate\": \"{{ $json.body.form_response.answers[28].choice.label }}\",\n\n  \"courseOutlineCompleted\": {{ $json.body.form_response.answers[29].boolean }},\n  \"courseModuleNames\": \"{{ $json.body.form_response.answers[30].text }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2448,
+        -272
+      ],
+      "id": "a8a32a64-2a37-451b-a5dc-88e2c8828288",
+      "name": "Set: Parse Typeform Response"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.foundersBusinessName }}",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1qQcfZqBV9VmnMWCm3s5R7oLEtCYdnQNl",
+            "mode": "list",
+            "cachedResultName": "Course Builder",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1qQcfZqBV9VmnMWCm3s5R7oLEtCYdnQNl"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2224,
+        -272
+      ],
+      "id": "354e01b4-c696-4be9-973b-5e0946629f9d",
+      "name": "List Existing Client Folders",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalized = ($item(0).$node['Set: Parse Typeform Response']?.json) || {};\nconst targetName = String(normalized.foundersBusinessName || '').trim();\n\nif (!targetName) {\n  return [{\n    json: {\n      ...normalized,\n      found: false,\n      // no id on purpose\n      name: '',\n      error: 'Missing founder business name'\n    },\n    pairedItem: 0\n  }];\n}\n\n\nconst items = $items(); // [{ json: { id, name, ... } }, ...]\n\nlet match = null;\n\n\nfor (const it of items) {\n  const j = it.json ?? it;\n  const n = String(j.name || '').trim();\n  if (!n) continue;\n  if (n.localeCompare(targetName, undefined, { sensitivity: 'accent' }) === 0) {\n    match = j;\n    break;\n  }\n}\n\n\nif (!match) {\n  const lower = targetName.toLowerCase();\n  match = items.map(it => it.json ?? it)\n               .find(j => String(j.name || '').toLowerCase().trim() === lower) || null;\n}\n\n\nconst base = {\n  ...normalized,\n  found: !!match,\n  name: targetName,\n  listedCount: items.length\n};\n\nif (match && match.id) {\n  base.id = match.id;\n}\n\nreturn [{ \n  json: base,\n  pairedItem: 0 \n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2000,
+        -272
+      ],
+      "id": "51f47592-b979-4a83-a96b-da3dfb1b8f4a",
+      "name": "Code: Decide Existing vs Create"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Code: Decide Existing vs Create').item.json.foundersBusinessName }}",
+        "driveId": {
+          "__rl": true,
+          "value": "0AOMkMB_ymZHFUk9PVA",
+          "mode": "list",
+          "cachedResultName": "AI agent Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/0AOMkMB_ymZHFUk9PVA"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1qQcfZqBV9VmnMWCm3s5R7oLEtCYdnQNl",
+          "mode": "list",
+          "cachedResultName": "Course Builder",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1qQcfZqBV9VmnMWCm3s5R7oLEtCYdnQNl"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1552,
+        -176
+      ],
+      "id": "52b61d13-cd54-4654-b0a1-6e04cd5ccf49",
+      "name": "Create Client Root Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NuZPqyTJtukiOUec",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Drive: List Founder-Provided Folder (for import)": {
+      "main": [
+        [
+          {
+            "node": "Drive: Copy Founder Assets → \"Founder images\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Copy Founder Assets → \"Founder images\"": {
+      "main": [
+        [
+          {
+            "node": "Drive: Create \"Creatives\" Subfolder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Create \"Founder images\" Subfolder": {
+      "main": [
+        [
+          {
+            "node": "Drive: List Founder-Provided Folder (for import)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Create \"Creatives\" Subfolder": {
+      "main": [
+        [
+          {
+            "node": "Drive: Copy Research+Calendar Template → Client Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Copy Research+Calendar Template → Client Folder": {
+      "main": [
+        [
+          {
+            "node": "Set: Assemble Context Vars (Sheet/Folder IDs, URLs)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Client Folder Exists?": {
+      "main": [
+        [
+          {
+            "node": "Set: Use Existing Client Root Folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Client Root Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Use Existing Client Root Folder": {
+      "main": [
+        [
+          {
+            "node": "Merge: Client Root Folder (existing or new)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge: Client Root Folder (existing or new)": {
+      "main": [
+        [
+          {
+            "node": "Drive: Create \"Founder images\" Subfolder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Typeform Intake (Online Course)": {
+      "main": [
+        [
+          {
+            "node": "Set: Parse Typeform Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Parse Typeform Response": {
+      "main": [
+        [
+          {
+            "node": "List Existing Client Folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Existing Client Folders": {
+      "main": [
+        [
+          {
+            "node": "Code: Decide Existing vs Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Decide Existing vs Create": {
+      "main": [
+        [
+          {
+            "node": "IF: Client Folder Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Client Root Folder": {
+      "main": [
+        [
+          {
+            "node": "Merge: Client Root Folder (existing or new)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook: Typeform Intake (Online Course)": [
+      {
+        "json": {
+          "headers": {
+            "host": "doneverse.app.n8n.cloud",
+            "user-agent": "Typeform Webhooks",
+            "content-length": "13837",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "34.230.177.131",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9a4c432217fbd708-IAD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "traceparent": "00-bb29e3c3bbb4e4cfc8a6e381cad622ac-0297bfb3ec1aa180-01",
+            "x-forwarded-for": "34.230.177.131, 172.71.195.22",
+            "x-forwarded-host": "doneverse.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-7b6dc7c86c-dbhqg",
+            "x-is-trusted": "yes",
+            "x-real-ip": "34.230.177.131",
+            "x-request-id": "3f625c77-b2c4-4c61-bbb0-c2e8c4ecd06b"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event_id": "REDACTED_SECRET",
+            "event_type": "form_response",
+            "form_response": {
+              "form_id": "KGmSxgPb",
+              "token": "REDACTED_TOKEN",
+              "landed_at": "2025-11-26T20:51:10Z",
+              "submitted_at": "2025-11-26T20:51:10Z",
+              "definition": {
+                "id": "KGmSxgPb",
+                "title": "Doing Teams - Online Course",
+                "fields": [
+                  {
+                    "id": "3EJVRM46irdu",
+                    "ref": "061a1cd1-b0df-4160-924a-c8b5ebcab336",
+                    "type": "short_text",
+                    "title": "Founder's Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "soZ8dre7PObo",
+                    "ref": "39eba010-f97f-48e0-b837-072d5e2743d1",
+                    "type": "email",
+                    "title": "Founder's Email",
+                    "properties": {}
+                  },
+                  {
+                    "id": "ofxJkc2VuEiZ",
+                    "ref": "3b9851e2-570f-42f2-9f44-156d797880b8",
+                    "type": "short_text",
+                    "title": "Founder's Business Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "bZ1imFC9Yyiu",
+                    "ref": "4af6f35a-e44b-4169-aec7-97769268bec8",
+                    "type": "short_text",
+                    "title": "Doer's Name",
+                    "properties": {}
+                  },
+                  {
+                    "id": "WEdYw77WGXG5",
+                    "ref": "650791db-b56b-4d46-8cda-287720d52516",
+                    "type": "email",
+                    "title": "Doer's Email (@doneverse.com)",
+                    "properties": {}
+                  },
+                  {
+                    "id": "ZIdQDhZjZfJ4",
+                    "ref": "76a439c3-5db0-47f5-b239-372d7fbabfa5",
+                    "type": "short_text",
+                    "title": "*What is the name of the Course Portal?*",
+                    "properties": {}
+                  },
+                  {
+                    "id": "XlAq5cBIFD0l",
+                    "ref": "166168f2-099d-484f-ada9-3944625ba461",
+                    "type": "multiple_choice",
+                    "title": "*What portal tool are you using?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "AxdgK6S2yQAy",
+                        "ref": "9f682c90-819d-4265-99ab-5028fce875bb",
+                        "label": "GoHighLevel"
+                      },
+                      {
+                        "id": "WEEZxu3D0njL",
+                        "ref": "53c3f908-dfc3-48ad-8dea-0af25439c37b",
+                        "label": "Kajabi"
+                      },
+                      {
+                        "id": "s63rdlR58sZQ",
+                        "ref": "4c550628-e25d-4d90-87b8-09b1c71d8f92",
+                        "label": "Wordpress with Learndash"
+                      },
+                      {
+                        "id": "lwtZQzKzaYLO",
+                        "ref": "bf16fd9a-3b23-4eba-b9da-445522d76886",
+                        "label": "I don't have a tool yet"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "DxD2g4BUdOrh",
+                    "ref": "88c1082d-af3f-49c5-b31a-606c3cfb0618",
+                    "type": "multiple_choice",
+                    "title": "*No Tool Yet?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "H48ZhfsyAtUs",
+                        "ref": "56c9338f-d83f-4e80-b30d-6f01062edd14",
+                        "label": "GoHighLevel"
+                      },
+                      {
+                        "id": "XYdDcSmL0nr3",
+                        "ref": "2ce2a6b8-fdc6-4dfa-925f-b976758ae714",
+                        "label": "Kajabi"
+                      },
+                      {
+                        "id": "TzgAQz9aoqGK",
+                        "ref": "91c6e842-5ae3-4141-ab06-414a7d344099",
+                        "label": "Wordpress with LearnDash"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PxRhNoJ3eyK1",
+                    "ref": "cc50ab19-c897-4d93-aab4-2c9ca7c84a4a",
+                    "type": "multiple_choice",
+                    "title": "*Does your Founder have an Agency Account or Sub Account?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "PM7QbvtNQRXj",
+                        "ref": "10ec0898-1d80-4c0b-83b3-8bc7a7527c20",
+                        "label": "Agency Account"
+                      },
+                      {
+                        "id": "5AvxZRkhSqhD",
+                        "ref": "29b66c27-6094-4a60-bd95-be68ae086b14",
+                        "label": "Sub Account"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "uDPRbuSl4Wo0",
+                    "ref": "451acaf0-3d05-4618-be22-6ffe1567da19",
+                    "type": "multiple_choice",
+                    "title": "*How would you like us to access your Founder's GHL Account?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "Ba4Rm8CgJrtn",
+                        "ref": "03ff7aa4-2b19-4eb5-b606-8703005eec59",
+                        "label": "Invite us as an Admin"
+                      },
+                      {
+                        "id": "hkBbywDRdG8h",
+                        "ref": "15c3045e-348e-4c16-978a-50f810586e4e",
+                        "label": "Provide the Admin logins you already have"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "369ouBZfBY9e",
+                    "ref": "af17b332-fbae-40d3-83b4-cc89ee3b3bd5",
+                    "type": "short_text",
+                    "title": "URL",
+                    "properties": {}
+                  },
+                  {
+                    "id": "HjZGl1mA4fTe",
+                    "ref": "5ebc1668-42b0-4124-8f58-60b61ffa1e08",
+                    "type": "short_text",
+                    "title": "Username",
+                    "properties": {}
+                  },
+                  {
+                    "id": "DtOSkHKAqOIK",
+                    "ref": "b9fa2e45-4e91-4a4e-b2aa-9077ef284743",
+                    "type": "short_text",
+                    "title": "Password",
+                    "properties": {}
+                  },
+                  {
+                    "id": "cbkEQl2Uj9zV",
+                    "ref": "29100dae-7c24-43ca-9003-d501251d1388",
+                    "type": "short_text",
+                    "title": "Username",
+                    "properties": {}
+                  },
+                  {
+                    "id": "nITyYTCnz52i",
+                    "ref": "46110c59-7323-4a03-8b3d-f528e6a2a262",
+                    "type": "short_text",
+                    "title": "Password",
+                    "properties": {}
+                  },
+                  {
+                    "id": "6nb0eSCAUZL4",
+                    "ref": "54e216b7-114d-4898-bfe7-55fc2fa5e878",
+                    "type": "multiple_choice",
+                    "title": "*Where would you like us to build the portal?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "rKeDA1oOIANn",
+                        "ref": "accb4bf4-4097-49c7-9960-8401cad9ad40",
+                        "label": "Subdomain"
+                      },
+                      {
+                        "id": "vgQGmTRIlegk",
+                        "ref": "a0d5c2d1-e45c-4faf-9029-ef47fb8a86b7",
+                        "label": "Custom Domain"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "TRw2p1Kiykze",
+                    "ref": "68739178-ba7d-48fc-9fb0-4649de088c57",
+                    "type": "yes_no",
+                    "title": "*WordPress Requirements*",
+                    "properties": {}
+                  },
+                  {
+                    "id": "ZsDDy07YD9VJ",
+                    "ref": "e4bdcdd2-db0c-4701-b50b-a0ee28f5abe5",
+                    "type": "multiple_choice",
+                    "title": "*Where would you like us to build your portal?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "zB3b10xOhP96",
+                        "ref": "6fa92f37-194b-4f7f-9ee5-b0a3ad91c68e",
+                        "label": "Main Website"
+                      },
+                      {
+                        "id": "PXWja9lQqaZn",
+                        "ref": "de6b336f-3952-4e41-93e0-7270ad6d4425",
+                        "label": "Subdomain"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "hD0n1wet28NX",
+                    "ref": "283209fe-d0fd-4c7a-88e5-acb160d7ad28",
+                    "type": "multiple_choice",
+                    "title": "*How would you like us to access your web hosting account?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "UFhYkJIezOIz",
+                        "ref": "586e94c7-c9a8-41f4-8841-aabc29ced50c",
+                        "label": "Invite us as an Admin"
+                      },
+                      {
+                        "id": "1YPz6tpNEsCh",
+                        "ref": "e3cac9df-c602-400a-bd06-138a19a14e7d",
+                        "label": "Send us Admin logins you already have"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "JYcMPQArWuDZ",
+                    "ref": "7adcaa62-14e7-4e26-ad15-45f389c0df71",
+                    "type": "short_text",
+                    "title": "URL",
+                    "properties": {}
+                  },
+                  {
+                    "id": "DpDquxMHJWn1",
+                    "ref": "5d5b95f3-7d08-42dc-bb8b-2595cc5261b5",
+                    "type": "short_text",
+                    "title": "Username",
+                    "properties": {}
+                  },
+                  {
+                    "id": "uc7s5pTygj2g",
+                    "ref": "ae621232-63ee-43f8-974c-b9ebcac5fdd2",
+                    "type": "short_text",
+                    "title": "Password",
+                    "properties": {}
+                  },
+                  {
+                    "id": "xLUXTjzl0cmQ",
+                    "ref": "b00b28c5-a4e2-4dbd-8e76-e223e90eb662",
+                    "type": "multiple_choice",
+                    "title": "*How would you like us to access your Founder's domain account?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "DdDoy31SAGh2",
+                        "ref": "10bf876f-2551-43d4-8871-df2525dc447e",
+                        "label": "Invite us as an Admin"
+                      },
+                      {
+                        "id": "eeQufzQ1Cs1D",
+                        "ref": "4b7fa0b2-fb65-4f50-b868-af1e87f29116",
+                        "label": "Send us Admin logins you already have"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "9RBGctpSGpBu",
+                    "ref": "319c14b4-feeb-43a8-9e68-c6f3fb610b62",
+                    "type": "short_text",
+                    "title": "URL",
+                    "properties": {}
+                  },
+                  {
+                    "id": "zD48SSRPiJTB",
+                    "ref": "58ac39ee-c86f-4b36-a727-7ab8230d83c2",
+                    "type": "short_text",
+                    "title": "Username",
+                    "properties": {}
+                  },
+                  {
+                    "id": "a8goAS19f8tp",
+                    "ref": "9ac29894-d2bd-48dc-ac6f-41a0d7296ec2",
+                    "type": "short_text",
+                    "title": "Password",
+                    "properties": {}
+                  },
+                  {
+                    "id": "s5qxfI6YjF1b",
+                    "ref": "c9180e94-eb71-4425-aae5-36c06ae6157d",
+                    "type": "multiple_choice",
+                    "title": "*Please review the portal layout options. Which out of our four portal layouts do you prefer?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "eGuF2j0UD788",
+                        "ref": "7f627737-6a07-4233-b778-070576e6a996",
+                        "label": "Option A"
+                      },
+                      {
+                        "id": "Ku8xEr4AOLGA",
+                        "ref": "a53f027f-af57-4c6d-b0e9-aa9ed2459fc1",
+                        "label": "Option B"
+                      },
+                      {
+                        "id": "hZdbvZb8GaM7",
+                        "ref": "b4f49d44-cef6-48be-8a38-2b3eacddbbc2",
+                        "label": "Option C"
+                      },
+                      {
+                        "id": "l9YcxzPWjGKD",
+                        "ref": "39017b90-0996-47bf-b294-bf9cc638814c",
+                        "label": "Option D"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "Ost2kY1ly7lx",
+                    "ref": "0e5b60dc-eae9-4ce2-b2c6-fe7d34096fd7",
+                    "type": "multiple_choice",
+                    "title": "*Please review the portal layout options. Which out of our three portal layouts do you prefer?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "BtVIQkvtmZ32",
+                        "ref": "dd2e9858-b751-43a0-943b-29fe3930c5d9",
+                        "label": "Option A (Classic)"
+                      },
+                      {
+                        "id": "2RLJVkElgwtX",
+                        "ref": "4326156c-59ce-4f0d-b1f3-3d94fd50febb",
+                        "label": "Option B (New York)"
+                      },
+                      {
+                        "id": "wmUYlabF6x94",
+                        "ref": "3b869673-7aaa-4566-aa62-ab0551466d78",
+                        "label": "Option C (Neo Classic)"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "2bkXrfW6LxSb",
+                    "ref": "5da214c8-25f5-45f3-8bd0-bd1140bb50a6",
+                    "type": "multiple_choice",
+                    "title": "*Please review the portal layout options. Which out of our three portal layouts do you prefer?*",
+                    "properties": {},
+                    "choices": [
+                      {
+                        "id": "ThqrdOnX88CE",
+                        "ref": "d95c8794-44c3-4a0e-b84e-639103f0c4b7",
+                        "label": "Option A (Template 1)"
+                      },
+                      {
+                        "id": "belknqDl6ndW",
+                        "ref": "65ae747d-c913-4d73-93c9-3323988d603c",
+                        "label": "Option B (Template 2)"
+                      },
+                      {
+                        "id": "QtlBazoTyJnc",
+                        "ref": "59f1da48-fe09-45c4-85ef-240c3dd102a4",
+                        "label": "Option C (Template 3)"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "6UHGQdqSjD3l",
+                    "ref": "ff75ba0c-cda4-4e1c-83a1-5bff80261652",
+                    "type": "yes_no",
+                    "title": "Has your Founder completed your Course Outline?",
+                    "properties": {}
+                  },
+                  {
+                    "id": "ORSmHOWjXNox",
+                    "ref": "73a15655-32aa-458d-a39b-d01fedd3e3ea",
+                    "type": "long_text",
+                    "title": "Please provide your Course and Module names that will make up your course",
+                    "properties": {}
+                  }
+                ],
+                "endings": [
+                  {
+                    "id": "YZj7cpflVJUT",
+                    "ref": "5f568550-1867-40dc-bcf5-67480e5ef9b2",
+                    "title": "*Thank you *for submitting your Online Course Brief!",
+                    "type": "thankyou_screen",
+                    "properties": {
+                      "description": "We'll be in touch via your Outsourced Doers email soon",
+                      "button_text": "again",
+                      "show_button": false,
+                      "share_icons": false,
+                      "button_mode": "default_redirect"
+                    },
+                    "attachment": {
+                      "type": "image",
+                      "href": "https://images.typeform.com/images/vQpNaFykDucZ",
+                      "properties": {
+                        "description": "25. All done_ (2) (1)"
+                      }
+                    },
+                    "layout": {
+                      "type": "stack",
+                      "attachment": {
+                        "type": "image",
+                        "href": "https://images.typeform.com/images/vQpNaFykDucZ",
+                        "properties": {
+                          "description": "25. All done_ (2) (1)"
+                        }
+                      },
+                      "viewport_overrides": {
+                        "small": {
+                          "type": "stack"
+                        },
+                        "large": {
+                          "type": "split",
+                          "placement": "right"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "settings": {
+                  "partial_responses_to_all_integrations": false
+                }
+              },
+              "answers": [
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "3EJVRM46irdu",
+                    "type": "short_text",
+                    "ref": "061a1cd1-b0df-4160-924a-c8b5ebcab336"
+                  }
+                },
+                {
+                  "type": "email",
+                  "email": "an_account@example.com",
+                  "field": {
+                    "id": "soZ8dre7PObo",
+                    "type": "email",
+                    "ref": "39eba010-f97f-48e0-b837-072d5e2743d1"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "ofxJkc2VuEiZ",
+                    "type": "short_text",
+                    "ref": "3b9851e2-570f-42f2-9f44-156d797880b8"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "bZ1imFC9Yyiu",
+                    "type": "short_text",
+                    "ref": "4af6f35a-e44b-4169-aec7-97769268bec8"
+                  }
+                },
+                {
+                  "type": "email",
+                  "email": "an_account@example.com",
+                  "field": {
+                    "id": "WEdYw77WGXG5",
+                    "type": "email",
+                    "ref": "650791db-b56b-4d46-8cda-287720d52516"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "ZIdQDhZjZfJ4",
+                    "type": "short_text",
+                    "ref": "76a439c3-5db0-47f5-b239-372d7fbabfa5"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "AxdgK6S2yQAy",
+                    "label": "GoHighLevel",
+                    "ref": "9f682c90-819d-4265-99ab-5028fce875bb"
+                  },
+                  "field": {
+                    "id": "XlAq5cBIFD0l",
+                    "type": "multiple_choice",
+                    "ref": "166168f2-099d-484f-ada9-3944625ba461"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "H48ZhfsyAtUs",
+                    "label": "GoHighLevel",
+                    "ref": "56c9338f-d83f-4e80-b30d-6f01062edd14"
+                  },
+                  "field": {
+                    "id": "DxD2g4BUdOrh",
+                    "type": "multiple_choice",
+                    "ref": "88c1082d-af3f-49c5-b31a-606c3cfb0618"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "PM7QbvtNQRXj",
+                    "label": "Agency Account",
+                    "ref": "10ec0898-1d80-4c0b-83b3-8bc7a7527c20"
+                  },
+                  "field": {
+                    "id": "PxRhNoJ3eyK1",
+                    "type": "multiple_choice",
+                    "ref": "cc50ab19-c897-4d93-aab4-2c9ca7c84a4a"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "Ba4Rm8CgJrtn",
+                    "label": "Invite us as an Admin",
+                    "ref": "03ff7aa4-2b19-4eb5-b606-8703005eec59"
+                  },
+                  "field": {
+                    "id": "uDPRbuSl4Wo0",
+                    "type": "multiple_choice",
+                    "ref": "451acaf0-3d05-4618-be22-6ffe1567da19"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "369ouBZfBY9e",
+                    "type": "short_text",
+                    "ref": "af17b332-fbae-40d3-83b4-cc89ee3b3bd5"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "HjZGl1mA4fTe",
+                    "type": "short_text",
+                    "ref": "5ebc1668-42b0-4124-8f58-60b61ffa1e08"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "DtOSkHKAqOIK",
+                    "type": "short_text",
+                    "ref": "b9fa2e45-4e91-4a4e-b2aa-9077ef284743"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "cbkEQl2Uj9zV",
+                    "type": "short_text",
+                    "ref": "29100dae-7c24-43ca-9003-d501251d1388"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "nITyYTCnz52i",
+                    "type": "short_text",
+                    "ref": "46110c59-7323-4a03-8b3d-f528e6a2a262"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "rKeDA1oOIANn",
+                    "label": "Subdomain",
+                    "ref": "accb4bf4-4097-49c7-9960-8401cad9ad40"
+                  },
+                  "field": {
+                    "id": "6nb0eSCAUZL4",
+                    "type": "multiple_choice",
+                    "ref": "54e216b7-114d-4898-bfe7-55fc2fa5e878"
+                  }
+                },
+                {
+                  "type": "boolean",
+                  "boolean": true,
+                  "field": {
+                    "id": "TRw2p1Kiykze",
+                    "type": "yes_no",
+                    "ref": "68739178-ba7d-48fc-9fb0-4649de088c57"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "zB3b10xOhP96",
+                    "label": "Main Website",
+                    "ref": "6fa92f37-194b-4f7f-9ee5-b0a3ad91c68e"
+                  },
+                  "field": {
+                    "id": "ZsDDy07YD9VJ",
+                    "type": "multiple_choice",
+                    "ref": "e4bdcdd2-db0c-4701-b50b-a0ee28f5abe5"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "UFhYkJIezOIz",
+                    "label": "Invite us as an Admin",
+                    "ref": "586e94c7-c9a8-41f4-8841-aabc29ced50c"
+                  },
+                  "field": {
+                    "id": "hD0n1wet28NX",
+                    "type": "multiple_choice",
+                    "ref": "283209fe-d0fd-4c7a-88e5-acb160d7ad28"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "JYcMPQArWuDZ",
+                    "type": "short_text",
+                    "ref": "7adcaa62-14e7-4e26-ad15-45f389c0df71"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "DpDquxMHJWn1",
+                    "type": "short_text",
+                    "ref": "5d5b95f3-7d08-42dc-bb8b-2595cc5261b5"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "uc7s5pTygj2g",
+                    "type": "short_text",
+                    "ref": "ae621232-63ee-43f8-974c-b9ebcac5fdd2"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "DdDoy31SAGh2",
+                    "label": "Invite us as an Admin",
+                    "ref": "10bf876f-2551-43d4-8871-df2525dc447e"
+                  },
+                  "field": {
+                    "id": "xLUXTjzl0cmQ",
+                    "type": "multiple_choice",
+                    "ref": "b00b28c5-a4e2-4dbd-8e76-e223e90eb662"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "9RBGctpSGpBu",
+                    "type": "short_text",
+                    "ref": "319c14b4-feeb-43a8-9e68-c6f3fb610b62"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "zD48SSRPiJTB",
+                    "type": "short_text",
+                    "ref": "58ac39ee-c86f-4b36-a727-7ab8230d83c2"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "a8goAS19f8tp",
+                    "type": "short_text",
+                    "ref": "9ac29894-d2bd-48dc-ac6f-41a0d7296ec2"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "eGuF2j0UD788",
+                    "label": "Option A",
+                    "ref": "7f627737-6a07-4233-b778-070576e6a996"
+                  },
+                  "field": {
+                    "id": "s5qxfI6YjF1b",
+                    "type": "multiple_choice",
+                    "ref": "c9180e94-eb71-4425-aae5-36c06ae6157d"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "BtVIQkvtmZ32",
+                    "label": "Option A (Classic)",
+                    "ref": "dd2e9858-b751-43a0-943b-29fe3930c5d9"
+                  },
+                  "field": {
+                    "id": "Ost2kY1ly7lx",
+                    "type": "multiple_choice",
+                    "ref": "0e5b60dc-eae9-4ce2-b2c6-fe7d34096fd7"
+                  }
+                },
+                {
+                  "type": "choice",
+                  "choice": {
+                    "id": "ThqrdOnX88CE",
+                    "label": "Option A (Template 1)",
+                    "ref": "d95c8794-44c3-4a0e-b84e-639103f0c4b7"
+                  },
+                  "field": {
+                    "id": "2bkXrfW6LxSb",
+                    "type": "multiple_choice",
+                    "ref": "5da214c8-25f5-45f3-8bd0-bd1140bb50a6"
+                  }
+                },
+                {
+                  "type": "boolean",
+                  "boolean": true,
+                  "field": {
+                    "id": "6UHGQdqSjD3l",
+                    "type": "yes_no",
+                    "ref": "ff75ba0c-cda4-4e1c-83a1-5bff80261652"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Lorem ipsum dolor",
+                  "field": {
+                    "id": "ORSmHOWjXNox",
+                    "type": "long_text",
+                    "ref": "73a15655-32aa-458d-a39b-d01fedd3e3ea"
+                  }
+                }
+              ],
+              "ending": {
+                "id": "YZj7cpflVJUT",
+                "ref": "5f568550-1867-40dc-bcf5-67480e5ef9b2"
+              }
+            }
+          },
+          "webhookUrl": "https://doneverse.app.n8n.cloud/webhook-test/908aedf5-fd84-4140-9222-5dba91db6b80",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": null
+}

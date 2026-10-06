@@ -1,0 +1,1060 @@
+{
+  "name": "Branding Extraction",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1Kf_NYkLyhGxy7Vbiz0xS3YVSf3sObUITEdxdIdvKA04/edit?tab=t.0"
+      },
+      "id": "3b6a5846-a58c-4a03-9538-d0bd8936ab8e",
+      "name": "Get Project Brief Information",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        384
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "dA6wpEM7oMHnMbK1",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A21:D22"
+            }
+          }
+        }
+      },
+      "id": "a31dc6d6-67bc-4c70-841d-bee622534f8e",
+      "name": "Get Imagery",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        -1664,
+        -64
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A7:D9"
+            }
+          }
+        }
+      },
+      "id": "7ccc06ba-ec46-46a0-b128-de107b5f078f",
+      "name": "Get Colors",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        -1440,
+        576
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17E6XSUUu6lIpSq1y1Pxf0vAr7V1zcFpx2PmwjqBgPC8/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A10:D12"
+            }
+          }
+        }
+      },
+      "id": "d6fdbf86-712c-43ab-9207-1b600e2feb8e",
+      "name": "Get Fonts",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        -1440,
+        768
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1jR6p9Tmdj2AjmsfwMoLVv3-khp_5xowQstR6mpz5P3U/edit?gid=1355995464#gid=1355995464",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Course Tile Examples",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jR6p9Tmdj2AjmsfwMoLVv3-khp_5xowQstR6mpz5P3U/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "13337c19-883e-4b0c-b678-50829fb5ea83",
+      "name": "Course Tile Prompt",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        -1664,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o",
+        "prompt": {
+          "messages": [
+            {
+              "content": "You are a slide design assistant for an educational media team. Your task is to generate a structured JSON context profile that includes:  1 course title tile (based on the Course Image Prompt)  3 lesson tiles (based on the Lesson Image Prompt)  All tile designs should align with a consistent brand style while adapting to the inputs and specific visual context for each tile type.  Inputs: Font Style/Type: Defines all text styling (e.g., bold, italic, font weight, serif vs sans-serif).  Color Guide: Defines background gradients, accent elements, text contrast, and optional overlays or shadows.  Imagery Guide: Types of photography, framing (e.g., overhead, split layout), mood (e.g., clean, inviting), and subjects allowed (e.g., lifestyle, abstract, food, founder, etc.).  Project Brief: Includes course purpose, tone, audience, emotional outcome, and thematic cues.  Course Image Prompt: Describes layout and imagery for the course title tile.  Lesson Image Prompt: Describes layout for each of the 3 lesson tiles. Change imagery based on course information  Instructions: Use the Course Image Prompt as layout/style reference for the course title tile.  Use the Lesson Image Prompt as layout reference for the lesson tiles. Change imagery based on course information  Apply the Font Style/Type consistently but adjust hierarchy between course and lesson slides.  Color elements (backgrounds, accents, lines) should follow the Color Guide and vary slightly to add modular interest.  For founder imagery, if present, set \"founder\": true   Maintain the 16:9 ratio, proper margins, and brand-compliant composition.  Place text and faces at least 1/5 from edges.  All output should be structured in a tiles array with one \"course\" tile and three \"lesson\" tiles.  Output JSON Format: {   \"tiles\": [     {       \"type\": \"course\",       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, professional, empowering\",         \"font\": {           \"source\": \"<from Font Style input>\",           \"borders\": {             \"enabled\": true,             \"color\": \"<contrasting or from Color Guide>\",             \"width\": \"2px\"           },           \"variants\": [\"bold\", \"italic\", \"serif header\", \"sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"clean\", \"soft\"],         \"layout_constraints\": {           \"text_and_faces_margin\": \"at least 1/5 away from edge\",           \"text_visibility\": \"high contrast with background\"         },         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": false           },           \"shapes\": [             {               \"type\": \"abstract\",               \"colors\": [\"pastel lavender\", \"peach\"],               \"placement\": [\"bottom left\", \"top right\"]             }           ],           \"shadows\": {             \"enabled\": false           }         }       },       \"title_text\": {         \"structure\": [           {             \"position\": \"middle\",             \"style\": \"bold\",             \"size\": \"large\",             \"example\": \"The Coaching Business Accelerator\"           },           {             \"position\": \"bottom\",             \"style\": \"sans-serif\",             \"size\": \"medium\",             \"example\": \"Build, Grow & Scale Your Profitable Coaching Business\"           }         ]       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"background\": \"off-white\",             \"content\": \"title and subtitle\"           },           \"right\": {             \"content\": \"founder image\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder seated with hand on chin\",           \"pose\": \"seated, confident, thoughtful\",           \"clothing\": \"business-casual with gold wristwatch\",           \"mood\": \"confident and professional\"         }       ],       \"courses_supported\": [\"business coaching\", \"entrepreneurship\"],       \"intended_use\": \"course title slide\",       \"overall_mood\": [\"clean\", \"empowering\", \"business-focused\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 1,       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, minimalist, elegant\",         \"font\": {           \"source\": \"<from Font Style input>\",           \"variants\": [\"bold serif title\", \"clean sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"light cream\"],         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": true,             \"color\": \"gold\",             \"thickness\": \"thin\"           },           \"shapes\": [             {               \"type\": \"semi-circle\",               \"colors\": [\"<from Color Guide>\"],               \"placement\": [\"bottom left behind subject\"]             }           ]         }       },       \"title_text\": {         \"main\": \"The Profitable Coach Mindset\",         \"subtitle\": \"Adopt the Beliefs & Habits of Successful Entrepreneurs\"       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"content\": \"founder photo\"           },           \"right\": {             \"content\": \"title and subtitle\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder standing confidently in white suit\",           \"pose\": \"one hand on hip, one foot stepping forward\",           \"clothing\": \"white suit with coordinating shirt\",           \"mood\": \"professional, approachable\"         }       ],       \"overall_mood\": [\"minimalist\", \"elegant\", \"professional\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 2,       \"founder\": true,       \"...\": \"same structure with new title/subtitle/image details\"     },     {       \"type\": \"lesson\",       \"lesson_number\": 3,       \"founder\": true,       \"...\": \"same structure with new title/subtitle/image details\"     }   ] }"
+            },
+            {
+              "content": "Project Brief: Brand Overview Brand Name: Two Friends Coaching Tone: Warm, professional, empowering Target Audience: Female professionals ages 30–55 seeking personal coaching to enhance confidence and productivity ________________   Project Goals * Build a visually engaging, brand-aligned website for the launch of a new coaching course  * Communicate transformation and empowerment  * Offer a seamless CTA experience for booking consultations or enrolling in the course  * Use brand-consistent visuals, messaging, and layout  ________________   Course Overview Course Title: Confidence Catalyst: Mastering Mindset & Growth  Subtitle: \"From Self-Doubt to Self-Driven\" Course Description:  A 6-module coaching experience that helps female professionals reframe self-doubt, boost clarity, and unlock sustainable personal growth using mindset mastery and proven success habits. ________________   Lesson & Module Titles    1. Welcome & Orientation – Get Grounded in Growth     2. Module 1: Break Through the Noise – Identifying Inner Critic Patterns     3. Module 2: Rewire for Confidence – Mindset Reframing Techniques     4. Module 3: Clarify Your Vision – Creating Alignment & Purpose     5. Module 4: Boundaries & Burnout – Saying Yes to Yourself     6. Module 5: Growth in Action – Building Consistency & Motivation     7. Module 6: Your Empowerment Plan – Roadmap for the Next 90 Days     8. Bonus Lesson: Live Q&A Integration Workshop  Course Sample Prompt: Image should be 16:9 ratio. A modern, professional course title slide with a split layout. The left two-thirds of the image has a clean, off-white background. On this side, large, bold font (font type can be found in Brand Standard Sheet) displays the title: “The Coaching Business Accelerator”. Below the title, in a smaller size font, it says: “Build, Grow & Scale Your Profitable Coaching Business”. The right third of the image features a confident, stylish hyper realistic photo of the Founder wearing business-casual attire and a gold wristwatch. Founder is seated with their hand thoughtfully resting on their chin, exuding confidence and professionalism. The background is minimal and light. There are soft, abstract accent shapes in pastel colors (lavender in the bottom left corner and peach in the top right corner) that add a modern, creative touch to the design. The overall style is clean, empowering, and suitable for a business or coaching course.  Lesson Sample Prompt: Image should be 16:9 ratio. A clean, modern course title slide with a split layout. The left half of the image features a photo of the Founder standing against a white wall with one leg wearing stepping forward slightly, with one hand on their hip. They're wearing an all-white suit with a shirt color that compliments their natural coloring. Founder is smiling and appears professional and approachable. There is a subtle semi-circle accent in a color from the Brand Standard Sheet in the bottom left corner behind them. The right half of the image has a light cream or off-white background. Large, bold serif font displays the title: “The Profitable Coach Mindset” Below the title, there is a thin gold horizontal line. Under the line, in a clean sans-serif font, it says: “Adopt the Beliefs & Habits of Successful Entrepreneurs” The overall design is minimalist, elegant, and professional—suitable for a business or coaching course.  Font style/type → Heading Font: Playfair Display; Used on main titles and headers Body Font: Lato; General website or content text Button Font: Lato Bold; All caps or sentence case depending on CTA  Color Guide → Primary Color: #2660A4; For headlines and major branding Secondary Color: #188BF6; CTA buttons or secondary highlights Accent Color: #963484; Use sparingly for visual pop  Imagery Guide → Photography Style: Natural, bright; No stock photos with overlays Icon Style: Line icons only; Must match font weight"
+            },
+            {
+              "role": "assistant",
+              "content": "{   \"tiles\": [     {       \"type\": \"course\",       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"warm, professional, empowering\",         \"font\": {           \"source\": \"Font style/type inputs: Playfair Display for titles, Lato for subtitles\",           \"borders\": {             \"enabled\": true,             \"color\": \"#963484\",  \"width\": \"2px\"           },           \"variants\": [\"bold\", \"italic\", \"serif header\", \"sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"clean\", \"soft\"],         \"layout_constraints\": {           \"text_and_faces_margin\": \"at least 1/5 away from edge\",           \"text_visibility\": \"high contrast with background\"         },         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": false           },           \"shapes\": [             {               \"type\": \"abstract\",               \"colors\": [\"pastel lavender\", \"peach\"],               \"placement\": [\"bottom left\", \"top right\"]             }           ],           \"shadows\": {             \"enabled\": false           }         }       },       \"title_text\": {         \"structure\": [           {             \"position\": \"middle\",             \"style\": \"bold\",             \"size\": \"large\",             \"example\": \"Confidence Catalyst: Mastering Mindset & Growth\"           },           {             \"position\": \"bottom\",             \"style\": \"sans-serif\",             \"size\": \"medium\",             \"example\": \"From Self-Doubt to Self-Driven\"           }         ]       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"background\": \"off-white\",             \"content\": \"title and subtitle\"           },           \"right\": {             \"content\": \"founder image\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder seated with hand on chin\",           \"pose\": \"seated, confident, thoughtful\",           \"clothing\": \"business-casual with gold wristwatch\",           \"mood\": \"confident and professional\"         }       ],       \"courses_supported\": [\"personal coaching\", \"personal growth\"],       \"intended_use\": \"course title slide\",       \"overall_mood\": [\"clean\", \"empowering\", \"coaching-focused\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 1,       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, minimalist, elegant\",         \"font\": {           \"source\": \"Font style/type inputs: Playfair Display for titles, Lato for subtitles\",           \"variants\": [\"bold serif title\", \"clean sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"light cream\"],         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": true,             \"color\": \"gold\",             \"thickness\": \"thin\"           },           \"shapes\": [             {               \"type\": \"semi-circle\",               \"colors\": [\"#963484\"],               \"placement\": [\"bottom left behind subject\"]             }           ]         }       },       \"title_text\": {         \"main\": \"Break Through the Noise\",         \"subtitle\": \"Identifying Inner Critic Patterns\"       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"content\": \"founder photo\"           },           \"right\": {             \"content\": \"title and subtitle\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder standing confidently in white suit\",           \"pose\": \"one hand on hip, one foot stepping forward\",           \"clothing\": \"white suit with coordinating shirt\",           \"mood\": \"professional, approachable\"         }       ],       \"overall_mood\": [\"minimalist\", \"elegant\", \"professional\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 2,       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, minimalist, elegant\",         \"font\": {           \"source\": \"Font style/type inputs: Playfair Display for titles, Lato for subtitles\",           \"variants\": [\"bold serif title\", \"clean sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"light cream\"],         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": true,             \"color\": \"gold\",             \"thickness\": \"thin\"           },           \"shapes\": [             {               \"type\": \"semi-circle\",               \"colors\": [\"#963484\"],               \"placement\": [\"bottom left behind subject\"]             }           ]         }       },       \"title_text\": {         \"main\": \"Rewire for Confidence\",         \"subtitle\": \"Mindset Reframing Techniques\"       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"content\": \"founder photo\"           },           \"right\": {             \"content\": \"title and subtitle\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder seated at a modern desk with laptop open\",     \"pose\": \"leaning slightly forward with hands resting on the keyboard\",     \"clothing\": \"navy blazer over a light blouse\",     \"mood\": \"focused, confident\"         }       ],       \"overall_mood\": [\"minimalist\", \"elegant\", \"professional\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 3,       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, minimalist, elegant\",         \"font\": {           \"source\": \"Font style/type inputs: Playfair Display for titles, Lato for subtitles\",           \"variants\": [\"bold serif title\", \"clean sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"light cream\"],         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": true,             \"color\": \"gold\",             \"thickness\": \"thin\"           },           \"shapes\": [             {               \"type\": \"semi-circle\",               \"colors\": [\"#963484\"],               \"placement\": [\"bottom left behind subject\"]             }           ]         }       },       \"title_text\": {         \"main\": \"Clarify Your Vision\",         \"subtitle\": \"Creating Alignment & Purpose\"       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"content\": \"founder photo\"           },           \"right\": {             \"content\": \"title and subtitle\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder walking confidently down a bright corridor\",           \"pose\": \"mid-step, briefcase in hand\",           \"clothing\": \"cream suit with pastel blouse\",           \"mood\": \"dynamic, forward-thinking\"         }       ],       \"overall_mood\": [\"minimalist\", \"elegant\", \"professional\"]     }   ] }"
+            },
+            {
+              "content": "Color Guide: Defines background gradients, accent elements, text contrast, and optional overlays or shadows.  Imagery Guide: Types of photography, framing (e.g., overhead, split layout), mood (e.g., clean, inviting), and subjects allowed (e.g., lifestyle, abstract, food, founder, etc.).  Project Brief: Includes course purpose, tone, audience, emotional outcome, and thematic cues.  Course Image Prompt: Describes layout and imagery for the course title tile.  Lesson Image Prompt: Describes layout for each of the 3 lesson tiles. Change imagery based on course information  Instructions: Use the Course Image Prompt as layout/style reference for the course title tile.  Use the Lesson Image Prompt as layout reference for the lesson tiles. Change imagery based on course information  Apply the Font Style/Type consistently but adjust hierarchy between course and lesson slides.  Color elements (backgrounds, accents, lines) should follow the Color Guide and vary slightly to add modular interest.  For founder imagery, if present, set \"founder\": true   Maintain the 16:9 ratio, proper margins, and brand-compliant composition.  Place text and faces at least 1/5 from edges.  All output should be structured in a tiles array with one \"course\" tile and three \"lesson\" tiles.  Output JSON Format: {   \"tiles\": [     {       \"type\": \"course\",       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, professional, empowering\",         \"font\": {           \"source\": \"<from Font Style input>\",           \"borders\": {             \"enabled\": true,             \"color\": \"<contrasting or from Color Guide>\",             \"width\": \"2px\"           },           \"variants\": [\"bold\", \"italic\", \"serif header\", \"sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"clean\", \"soft\"],         \"layout_constraints\": {           \"text_and_faces_margin\": \"at least 1/5 away from edge\",           \"text_visibility\": \"high contrast with background\"         },         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": false           },           \"shapes\": [             {               \"type\": \"abstract\",               \"colors\": [\"pastel lavender\", \"peach\"],               \"placement\": [\"bottom left\", \"top right\"]             }           ],           \"shadows\": {             \"enabled\": false           }         }       },       \"title_text\": {         \"structure\": [           {             \"position\": \"middle\",             \"style\": \"bold\",             \"size\": \"large\",             \"example\": \"The Coaching Business Accelerator\"           },           {             \"position\": \"bottom\",             \"style\": \"sans-serif\",             \"size\": \"medium\",             \"example\": \"Build, Grow & Scale Your Profitable Coaching Business\"           }         ]       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"background\": \"off-white\",             \"content\": \"title and subtitle\"           },           \"right\": {             \"content\": \"founder image\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder seated with hand on chin\",           \"pose\": \"seated, confident, thoughtful\",           \"clothing\": \"business-casual with gold wristwatch\",           \"mood\": \"confident and professional\"         }       ],       \"courses_supported\": [\"business coaching\", \"entrepreneurship\"],       \"intended_use\": \"course title slide\",       \"overall_mood\": [\"clean\", \"empowering\", \"business-focused\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 1,       \"founder\": true,       \"aspect_ratio\": \"16:9\",       \"style\": {         \"general\": \"modern, minimalist, elegant\",         \"font\": {           \"source\": \"<from Font Style input>\",           \"variants\": [\"bold serif title\", \"clean sans-serif subtitle\"]         },         \"background_types\": [\"split\", \"light cream\"],         \"accent_elements\": {           \"horizontal_line\": {             \"enabled\": true,             \"color\": \"gold\",             \"thickness\": \"thin\"           },           \"shapes\": [             {               \"type\": \"semi-circle\",               \"colors\": [\"<from Color Guide>\"],               \"placement\": [\"bottom left behind subject\"]             }           ]         }       },       \"title_text\": {         \"main\": \"The Profitable Coach Mindset\",         \"subtitle\": \"Adopt the Beliefs & Habits of Successful Entrepreneurs\"       },       \"layout_options\": [         {           \"type\": \"split\",           \"left\": {             \"content\": \"founder photo\"           },           \"right\": {             \"content\": \"title and subtitle\"           }         }       ],       \"image_elements\": [         {           \"type\": \"founder\",           \"description\": \"Founder standing confidently in white suit\",           \"pose\": \"one hand on hip, one foot stepping forward\",           \"clothing\": \"white suit with coordinating shirt\",           \"mood\": \"professional, approachable\"         }       ],       \"overall_mood\": [\"minimalist\", \"elegant\", \"professional\"]     },     {       \"type\": \"lesson\",       \"lesson_number\": 2,       \"founder\": true,       \"...\": \"same structure with new title/subtitle/image details\"     },     {       \"type\": \"lesson\",       \"lesson_number\": 3,       \"founder\": true,       \"...\": \"same structure with new title/subtitle/image details\"     }   ] }"
+            },
+            {
+              "content": "=Project Brief: {{ $('Get Project Brief Information').item.json.content }}\n\nCourse Sample Prompt: {{ $('Course Tile Prompt').item.json.PROMPT }}  \nLesson Sample Prompt: {{ $json.PROMPT }}\n\nFont style/type → {{ $('Parse Fonts').item.json.fonts }}\nColor Guide →  {{ $('Parse Colors').item.json.colors }}\nImagery Guide → {{ $('Parse Imagery').item.json.imagery }}"
+            }
+          ]
+        },
+        "simplifyOutput": false,
+        "options": {
+          "maxTokens": 3048,
+          "n": 1,
+          "temperature": 1,
+          "topP": 1
+        },
+        "requestOptions": {}
+      },
+      "id": "d04659d8-62ed-4288-95f4-c2567cf07f38",
+      "name": "Extract Course/Lesson Titles",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        160
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "domain"
+            },
+            {
+              "name": "founderEmail"
+            },
+            {
+              "name": "appPass"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1664,
+        576
+      ],
+      "id": "d6f86b9a-8610-402f-a779-acb7761a2273",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "functionCode": "const row = items[0].json;\n\nlet entries = Object.entries(row).filter(([key]) => key !== 'row_number');\n\nconst bKey = entries[1][0];\nconst cKey = entries[2][0];\nconst dKey = entries[3][0];\n\nconst bVal = entries[1][1];\nconst cVal = entries[2][1];\nconst dVal = entries[3][1];\n\nconst line1 = `${bKey}:${cKey};${dKey}`;\nconst line2 = `${bVal}:${cVal};${dVal}`;\n\nreturn [\n  {\n    json: {\n      imagery: `${line1}\\n${line2}`\n    }\n  }\n];"
+      },
+      "id": "6e60555a-b951-4cc9-aeeb-51974ac2e4e2",
+      "name": "Parse Imagery",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        -64
+      ],
+      "executeOnce": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "functionCode": "const row = items[0].json;\n\nlet entries = Object.entries(row).filter(([key]) => key !== 'row_number');\n\nconst b1 = entries[1][0];\nconst c1 = entries[2][0];\nconst d1 = entries[3][0];\n\nconst b2 = entries[1][1];\nconst c2 = entries[2][1];\nconst d2 = entries[3][1];\n\nconst b3 = entries[1][2];\nconst c3 = entries[2][2];\nconst d3 = entries[3][2];\n\nconst line1 = `${b1}:${c1};${d1}`;\nconst line2 = `${b2}:${c2};${d2}`;\nconst line3 = `${b3}:${c3};${d3}`;\n\nreturn [\n  {\n    json: {\n      colors: `${line1}\\n${line2}\\n${line3}`\n    }\n  }\n];"
+      },
+      "id": "f791aece-586c-4cd6-9313-99fa1bba0646",
+      "name": "Parse Colors",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const row = items[0].json;\n\nlet entries = Object.entries(row).filter(([key]) => key !== 'row_number');\n\nconst b1 = entries[1][0];\nconst c1 = entries[2][0];\nconst d1 = entries[3][0];\n\nconst b2 = entries[1][1];\nconst c2 = entries[2][1];\nconst d2 = entries[3][1];\n\nconst b3 = entries[1][2];\nconst c3 = entries[2][2];\nconst d3 = entries[3][2];\n\nconst line1 = `${b1}:${c1};${d1}`;\nconst line2 = `${b2}:${c2};${d2}`;\nconst line3 = `${b3}:${c3};${d3}`;\n\nreturn [\n  {\n    json: {\n      fonts: `${line1}\\n${line2}\\n${line3}`\n    }\n  }\n];"
+      },
+      "id": "1514dfbd-34c2-4570-ae35-93fff63add4e",
+      "name": "Parse Fonts",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -992,
+        560
+      ],
+      "id": "e3d97302-2209-424c-946a-dcc3769eabcd",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PpLoRkmg7UN2U5fQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PpLoRkmg7UN2U5fQ",
+          "cachedResultName": "Course Builder — Course Tile Builder"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "founderEmail": "={{ $('When Executed by Another Workflow').item.json.founderEmail }}",
+            "courses": "={{ $json.courses }}",
+            "lessons": "={{ $json.lessons }}",
+            "websiteDomain": "={{ $('When Executed by Another Workflow').item.json.domain }}",
+            "appPass": "={{ $('When Executed by Another Workflow').item.json.appPass }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "websiteDomain",
+              "displayName": "websiteDomain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "founderEmail",
+              "displayName": "founderEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "appPass",
+              "displayName": "appPass",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "courses",
+              "displayName": "courses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            },
+            {
+              "id": "lessons",
+              "displayName": "lessons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        560
+      ],
+      "id": "639d87a3-8eac-4343-b53c-8c5580140795",
+      "name": "Call 'Course Tile Builder'"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a course builder specialist and instructional designer.\n\nYou will receive the full text of a source document in:\n{{ $json.content }}\n\nYour job is to extract a clean, LMS ready structure from that content AND generate full learning CONTENT for each lesson, topic, and quiz using only information supported or directly implied by the document. The brand tone and personality are included inside the source document text, so follow that voice.\n\nDo the following:\n\n1) Identify any natural course level groupings in the document.\n2) For each course, break the content into lessons that follow a logical progression.\n3) For each lesson, map the correct topics to that lesson.\n4) If the document clearly implies a quiz for a lesson, include a quiz entry.\n5) Avoid duplicate or near duplicate lessons and topics. Merge overlaps instead of repeating them.\n6) Do not invent facts not supported by the document. You may expand into instructional content only if it is consistent with and directly implied by the document’s ideas, tone, and audience.\n7) Course Objective is the purpose for taking the course. It should follow the statement \"By the end of this course\" and must start with \"You will...\". It must NOT be a paraphrased copy of the course description.\n8) Remove numbering from titles (courses, lessons, topics, quizzes). Keep the meaning, remove the number text.\n\nYour response must be valid JSON only. No extra text. No comments. No markdown. Do not wrap in backticks.\n\nUse exactly this JSON shape:\n\n{\n  \"has_courses\": boolean,\n  \"reason\": string,\n  \"courses\": [\n    {\n      \"course_key\": \"course_1\",\n      \"course_title\": string,\n      \"course_description\": string,\n      \"course_subtitle\": string,\n      \"course_objective\": string,\n      \"lessons\": [\n        {\n          \"lesson_key\": \"course_1_lesson_1\",\n          \"lesson_title\": string,\n          \"lesson_short_description\": string,\n          \"lesson_duration\": string,\n\n          \"lesson_content\": {\n            \"overview\": string,\n            \"learning_outcomes\": [string, string, string],\n            \"key_takeaways\": [string, string, string],\n            \"activity\": {\n              \"title\": string,\n              \"instructions\": string,\n              \"worksheet_prompts\": [string, string, string]\n            }\n          },\n\n          \"topics\": [\n            {\n              \"title\": string,\n              \"description\": string,\n\n              \"content\": {\n                \"explanation\": string,\n                \"steps\": [string, string, string],\n                \"example\": string,\n                \"reflection_questions\": [string, string, string]\n              }\n            }\n          ],\n\n          \"quiz\": null OR {\n            \"title\": string,\n            \"description\": string,\n            \"questions\": [\n              {\n                \"type\": \"multiple_choice\",\n                \"question\": string,\n                \"options\": [string, string, string, string],\n                \"correct_index\": number,\n                \"rationale\": string\n              },\n              {\n                \"type\": \"true_false\",\n                \"question\": string,\n                \"correct\": boolean,\n                \"rationale\": string\n              }\n            ]\n          }\n        }\n      ]\n    }\n  ]\n}\n\nSpecial cases and rules:\n\nA) If the document contains at least one clear course or lesson structure:\n- Set \"has_courses\" to true.\n- Fill \"courses\" with the extracted structure.\n- Set \"reason\" to a short explanation, e.g. \"Courses detected from section headings\".\n\nB) If the document does not contain any clear course or lesson structure:\n- Set \"has_courses\" to false.\n- Set \"courses\" to [].\n- Set \"reason\" to a short explanation, e.g. \"Only raw notes, no clear course structure found\".\n- When \"has_courses\" is false, do not invent any courses, lessons, topics, quizzes, or content.\n\nContent generation rules (when has_courses is true):\n\n1) Course fields:\n- If course_description, course_subtitle, or course_objective are not clearly provided, generate them based on the document’s brand tone, personality, audience, and the course idea in the document.\n\n2) Lessons and topics:\n- If a lesson has no clear topics from the document, generate 3 to 4 topics that are consistent with the document’s stated course idea and brand voice.\n- lesson_short_description must be a short plain text summary (1–2 sentences).\n- lesson_duration must be plain text (e.g. \"45 minutes\", \"1 hour\", \"90 minutes\").\n\n3) Lesson content:\n- lesson_content.overview: 80–140 words, plain text.\n- learning_outcomes: exactly 3 items.\n- key_takeaways: exactly 3 items.\n- activity: exactly 1 activity per lesson. worksheet_prompts: exactly 3 prompts.\n\n4) Topic content:\n- content.explanation: 120–200 words, plain text.\n- steps: exactly 3 steps.\n- reflection_questions: exactly 3 questions.\n- example: 1 short scenario or example, plain text.\n\n5) Quizzes:\n- Only include a quiz if clearly implied by the document. Otherwise set quiz to null.\n- If quiz is included, generate exactly 6 questions:\n  - 4 multiple_choice questions (4 options each)\n  - 2 true_false questions\n- correct_index must be 0–3.\n- Questions must test the lesson’s concepts as described or implied in the document. Do not add unrelated material.\n\nFormatting rules:\n- All strings must be plain text only. No HTML. No markdown.\n- Output must be a single JSON object that matches the schema exactly.\n- Do not include any extra keys outside the schema.\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        576
+      ],
+      "id": "3c5c3973-fade-4d50-9301-a0eba247ca4d",
+      "name": "Retrieve Course and Lesson",
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a course builder specialist and instructional designer.\n\nYou will receive a brand or project brief as raw text in:\n{{$('Merge').first().json.content}}\n\nThe brief may include:\n- Brand name\n- Tone or personality\n- Target audience\n- Industry or niche\n- Main offer or course idea\n- Project goals for a website or program\n\nYour job is to DESIGN a complete online learning structure based on that brief. You must infer a sensible course or program that this brand would realistically deliver to its audience. You must also generate LMS ready CONTENT for each lesson, topic, and quiz.\n\nFollow these steps carefully.\n\n1) Read the brief and infer:\n- brand_name\n- tone\n- target_audience\n- the main transformation or outcome they want for the audience\n- the primary topic or theme of the coaching or service\n\n2) Design one or more courses that this brand could credibly offer.\n- Usually 2 primary courses is enough. If it clearly makes sense, you may create 3 to 4.\n- Each course must align with the brand, tone, audience, and desired transformation.\n- Each course must have an Objective which is the purpose for taking the course. It should follow the statement \"By the end of this course\" and must start with \"You will...\". It must NOT be a paraphrased copy of the course description.\n\n3) For each course, design a logical sequence of lessons.\n- Aim for 3 to 5 lessons per course.\n- Lessons must progress from foundations to applied practice or integration.\n- Each lesson must have a clear purpose.\n\n4) For each lesson, design topics.\n- Aim for 2 to 5 topics per lesson.\n- Topics should break the lesson into meaningful sections.\n- Each topic needs a short description.\n\n5) For each lesson, add a quiz object.\n- Prefer to include a quiz unless there is a strong reason not to. If not appropriate, set quiz to null.\n\n6) Avoid duplicates.\n- Merge overlapping lessons or topics. Keep the structure lean and usable in an LMS.\n\nYour response MUST be valid JSON only. No extra text. No comments. No markdown. Do not wrap in backticks.\n\nUse exactly this JSON shape:\n\n{\n  \"has_courses\": boolean,\n  \"reason\": string,\n  \"courses\": [\n    {\n      \"course_key\": \"course_1\",\n      \"course_title\": string,\n      \"course_description\": string,\n      \"course_subtitle\": string,\n      \"course_objective\": string,\n      \"lessons\": [\n        {\n          \"lesson_key\": \"course_1_lesson_1\",\n          \"lesson_title\": string,\n          \"lesson_short_description\": string,\n          \"lesson_duration\": string,\n\n          \"lesson_content\": {\n            \"overview\": string,\n            \"learning_outcomes\": [string, string, string],\n            \"key_takeaways\": [string, string, string],\n            \"activity\": {\n              \"title\": string,\n              \"instructions\": string,\n              \"worksheet_prompts\": [string, string, string]\n            }\n          },\n\n          \"topics\": [\n            {\n              \"title\": string,\n              \"description\": string,\n\n              \"content\": {\n                \"explanation\": string,\n                \"steps\": [string, string, string],\n                \"example\": string,\n                \"reflection_questions\": [string, string, string]\n              }\n            }\n          ],\n\n          \"quiz\": null OR {\n            \"title\": string,\n            \"description\": string,\n            \"questions\": [\n              {\n                \"type\": \"multiple_choice\",\n                \"question\": string,\n                \"options\": [string, string, string, string],\n                \"correct_index\": number,\n                \"rationale\": string\n              },\n              {\n                \"type\": \"true_false\",\n                \"question\": string,\n                \"correct\": boolean,\n                \"rationale\": string\n              }\n            ]\n          }\n        }\n      ]\n    }\n  ]\n}\n\nAdditional output rules:\n\nA) Always set has_courses to true for this task, unless the brief is empty or meaningless.\n- If the brief is empty, set has_courses false, courses [], and reason \"No usable brief provided\".\n\nB) Titles:\n- Remove numbering from course, lesson, topic, and quiz titles if you add any numbering.\n- Keep all strings plain text only. No HTML. No markdown.\n\nC) Durations:\n- lesson_duration must always be present (examples: \"30 min\", \"45 min\", \"60 min\", \"90 min\", \"TBD\").\n\nD) Lesson content constraints:\n- lesson_content.overview: 80 to 140 words.\n- learning_outcomes: exactly 3.\n- key_takeaways: exactly 3.\n- activity: 1 activity per lesson, worksheet_prompts exactly 3.\n\nE) Topic content constraints:\n- content.explanation: 120 to 200 words.\n- steps: exactly 3.\n- reflection_questions: exactly 3.\n- example: 1 short scenario, plain text.\n\nF) Quizzes:\n- If quiz is included, generate exactly 6 questions:\n  - 4 multiple_choice (4 options each)\n  - 2 true_false\n- correct_index must be 0 to 3.\n- If a quiz truly does not fit a lesson, set quiz to null.\n\nG) Topics:\n- If a specific lesson truly does not need topics, you may set topics to [].\n- Prefer at least 2 topics per core lesson.\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        48,
+        656
+      ],
+      "id": "b5afa8d2-cacc-4a45-8674-69be32123a11",
+      "name": "Generate Courses and Lessons",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1jR6p9Tmdj2AjmsfwMoLVv3-khp_5xowQstR6mpz5P3U/edit?gid=1355995464#gid=1355995464",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1355995464,
+          "mode": "list",
+          "cachedResultName": "Lesson Tile Examples",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jR6p9Tmdj2AjmsfwMoLVv3-khp_5xowQstR6mpz5P3U/edit#gid=1355995464"
+        },
+        "options": {}
+      },
+      "id": "c306f3b8-c410-46f0-be03-a5268601781a",
+      "name": "Lesson Tile Prompt",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        -1440,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fTqlNnhYdVqPp384",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e622396-28b0-4b40-ade7-5c8034067356",
+              "leftValue": "={{ $json.has_courses }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        576
+      ],
+      "id": "17f2617b-6839-49cb-a293-5f4c7e26d9d8",
+      "name": "Course Provided?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.first().json.output;\nconst msg = Array.isArray(res) && res.length > 0 ? res[0] : null;\n\nif (!msg || !Array.isArray(msg.content) || msg.content.length === 0) {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"No content array found in OpenAI output\",\n      courses: [],\n      lessons: [],\n      raw: $input.first().json,\n    },\n  };\n}\n\nconst block = msg.content[0];\n\nif (!block || typeof block.text !== \"string\") {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"No text field found in first content block\",\n      courses: [],\n      lessons: [],\n      raw: $input.first().json,\n    },\n  };\n}\n\nconst text = block.text;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(text);\n} catch (e) {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"Failed to parse JSON from output_text: \" + String(e.message || e),\n      courses: [],\n      lessons: [],\n      raw_text: text,\n    },\n  };\n}\n\n// normalize\nconst courses = Array.isArray(parsed.courses) ? parsed.courses : [];\nconst lessons = [];\n\ncourses.forEach((course, cIdx) => {\n  const courseLessons = Array.isArray(course.lessons) ? course.lessons : [];\n\n  courseLessons.forEach((lesson, lIdx) => {\n\n    const fullLesson = {\n      ...lesson,\n      course_key: course.course_key ?? `course_${cIdx + 1}`,\n      course_title: course.course_title ?? \"\",\n      course_description: course.course_description ?? \"\",\n      course_subtitle: course.course_subtitle ?? \"\",\n      course_objective: course.course_objective ?? \"\",\n      course_index: cIdx + 1,\n      lesson_key: lesson.lesson_key ?? `course_${cIdx + 1}_lesson_${lIdx + 1}`,\n      lesson_index: lIdx + 1,\n    };\n\n  \n    fullLesson.topics = Array.isArray(lesson.topics) ? lesson.topics : [];\n    fullLesson.quiz = lesson.quiz ?? null;\n\n    lessons.push(fullLesson);\n  });\n});\n\nreturn {\n  json: {\n    has_courses: Boolean(parsed.has_courses),\n    reason: parsed.reason || \"\",\n    courses,   \n    lessons,  \n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        576
+      ],
+      "id": "31bc3dd7-cdd4-45b0-8dc9-8d65baf67269",
+      "name": "Parse Course Details"
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.first().json.output;\nconst msg = Array.isArray(res) && res.length > 0 ? res[0] : null;\n\nif (!msg || !Array.isArray(msg.content) || msg.content.length === 0) {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"No content array found in OpenAI output\",\n      courses: [],\n      lessons: [],\n      raw: $input.first().json,\n    },\n  };\n}\n\nconst block = msg.content[0];\n\nif (!block || typeof block.text !== \"string\") {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"No text field found in first content block\",\n      courses: [],\n      lessons: [],\n      raw: $input.first().json,\n    },\n  };\n}\n\nconst text = block.text;\n\nlet parsed;\ntry {\n  parsed = JSON.parse(text);\n} catch (e) {\n  return {\n    json: {\n      has_courses: false,\n      reason: \"Failed to parse JSON from output_text: \" + String(e.message || e),\n      courses: [],\n      lessons: [],\n      raw_text: text,\n    },\n  };\n}\n\n\nconst courses = Array.isArray(parsed.courses) ? parsed.courses : [];\nconst lessons = [];\n\ncourses.forEach((course, cIdx) => {\n  const courseLessons = Array.isArray(course.lessons) ? course.lessons : [];\n\n  courseLessons.forEach((lesson, lIdx) => {\n\n    const fullLesson = {\n      ...lesson,\n      course_key: course.course_key ?? `course_${cIdx + 1}`,\n      course_title: course.course_title ?? \"\",\n      course_description: course.course_description ?? \"\",\n      course_subtitle: course.course_subtitle ?? \"\",\n      course_objective: course.course_objective ?? \"\",\n      course_index: cIdx + 1,\n      lesson_key: lesson.lesson_key ?? `course_${cIdx + 1}_lesson_${lIdx + 1}`,\n      lesson_index: lIdx + 1,\n    };\n\n  \n    fullLesson.topics = Array.isArray(lesson.topics) ? lesson.topics : [];\n    fullLesson.quiz = lesson.quiz ?? null;\n\n    lessons.push(fullLesson);\n  });\n});\n\nreturn {\n  json: {\n    has_courses: Boolean(parsed.has_courses),\n    reason: parsed.reason || \"\",\n    courses,  \n    lessons,   \n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        656
+      ],
+      "id": "f05f45fd-c013-40f5-9bbb-d8aa0a030ac3",
+      "name": "Parse Generated Courses"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "nt0pFvKVv07EDRkt",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/nt0pFvKVv07EDRkt",
+          "cachedResultName": "Course Builder — Modify Site Themes"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "colors": "={{ $('Merge').item.json.colors }}",
+            "fonts": "={{ $('Merge').item.json.fonts }}",
+            "websiteDomain": "={{ $('When Executed by Another Workflow').item.json.domain }}",
+            "founderEmail": "={{ $('When Executed by Another Workflow').item.json.founderEmail }}",
+            "appPass": "={{ $('When Executed by Another Workflow').item.json.appPass }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "websiteDomain",
+              "displayName": "websiteDomain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "founderEmail",
+              "displayName": "founderEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "appPass",
+              "displayName": "appPass",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "colors",
+              "displayName": "colors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fonts",
+              "displayName": "fonts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1072,
+        560
+      ],
+      "id": "cd0dc2f2-4a0d-4ca3-b882-c0d0788bd35f",
+      "name": "Call 'Modify Site Themes'"
+    },
+    {
+      "parameters": {
+        "jsCode": "let t =  $input.first().json.output[0].content[0].text|| \"\";\n\n// parse\nconst obj = JSON.parse(t);\n\n// sanity\nif (!obj.html || !obj.css) throw new Error(\"Missing html or css in AI output\");\n\n\nreturn [{ json: obj }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        560
+      ],
+      "id": "77fb273f-23d8-4b85-897c-adde269dfe13",
+      "name": "Parse Webpage key Elements"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=$('When Executed by Another Workflow').item.json.domain }}/wp-json/od/v1/custom-page?slug=home {{ ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "html",
+              "value": "={{ $json.html }}"
+            },
+            {
+              "name": "css",
+              "value": "={{ $json.css }}"
+            },
+            {
+              "name": "js",
+              "value": "={{ $json.js }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1840,
+        560
+      ],
+      "id": "09ab7116-36e1-4509-bdb4-8040358ffb3a",
+      "name": "Upload Custom Page Slug",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "xRNslTryseI1Qe6J",
+          "name": "WP_Admin Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d361f2f0-11ef-40cc-9689-c2ec3242d8e5",
+              "name": "elementor_data",
+              "value": "[   {     \"id\": \"a1b2c3d\",     \"elType\": \"container\",     \"settings\": {       \"flex_direction\": \"column\",       \"content_width\": \"full\",       \"width\": { \"unit\": \"%\", \"size\": 100 }     },     \"elements\": [       {         \"id\": \"b2c3d4e\",         \"elType\": \"widget\",         \"settings\": {           \"shortcode\": \"[od_custom_page slug=\\\"home\\\"]\"         },         \"elements\": [],         \"widgetType\": \"shortcode\"       }     ],     \"isInner\": false   } ]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        560
+      ],
+      "id": "403a7b33-46d2-4be8-880a-eb509597dfc2",
+      "name": "Prepare Elementor Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://members.thefreedomway.online/wp-json/od/v1/elementor-meta?post_id=25\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "elementor_data",
+              "value": "={{ $json.elementor_data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2256,
+        560
+      ],
+      "id": "df35fcad-be63-46b2-99f3-70db98af6645",
+      "name": "Update Home Page",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "xRNslTryseI1Qe6J",
+          "name": "WP_Admin Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a senior web designer and front-end developer who specializes in building high-converting course portal homepages with clean, modern UI and strong brand voice.\n\nCreate the MAIN CONTENT ONLY for a course portal homepage. Do not include <html>, <head>, <body>, <header>, navigation menus, or footer. The theme already handles those.\n\nDo not wrap the JSON in triple backticks. Output format must be valid JSON only with exactly these keys:\n- \"html\"\n- \"css\"\n- \"js\"\n\nRules:\n1) \"html\" must be one single string containing only the main page markup. Wrap everything in a single root <main id=\"od-home\"> ... </main>.\n2) \"css\" must be one single string. Scope all selectors under #od-home to avoid affecting the rest of the site.\n3) \"js\" must be an empty string unless absolutely necessary. If used, keep it minimal and only for small interactions. Prefer using <details><summary> for FAQ to keep JS empty.\n4) Use only semantic, lightweight elements: section, div, h1-h3, p, ul/li, a, button, details/summary.\n5) All CTAs must use these placeholders exactly:\n   - Primary CTA URL: \"Book a free consultation\"\n   - Secondary CTA URL: \"Attend a free webinar\"\n6) Include these sections in order:\n   - Hero: headline, subheadline, 2 CTAs\n   - Credibility strip (short social proof) / Statistics\n   - Key benefits (3–6)\n   - Featured courses (see offered courses)\n   - How it works (3 steps)\n   - Why's and reasons to enroll \n   - About the company\n   - FAQ (4–6) using <details><summary>\n   - Final CTA block\n7) Copy tone and personality - CHECK BRAND BRIEF\n8) Typography and colors:\n  - {{ $('Merge').item.json.fonts }}\n  - {{ $('Merge').item.json.colors }}\n   - Background: light, clean. Ensure strong contrast and accessibility.\n9) Make it responsive with simple CSS (max-width container, flexible cards, stacked on mobile).\n10) Use the provided fonts by referencing CSS variables only:\n   - font-family: var(--od-heading-font) for headings\n   - font-family: var(--od-body-font) for body\n   Use colors via:\n   - var(--od-primary)\n   - var(--od-secondary)\n\nImportant:\n- Do NOT output explanations.\n- Do NOT output markdown.\n- Output ONLY the JSON object with html/css/js strings.\n\nBrand brief/context:\n{{ $('Merge').item.json.content }}\n\n\nOffered Courses:\n{{\n  $('Course Provided?').item.json.has_courses\n    ? $('Parse Course Details').item.json.courses\n    : $('Parse Generated Courses').item.json.courses\n}}\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        560
+      ],
+      "id": "a2653a7d-d430-47f8-b06a-49afb5c41922",
+      "name": "Generate Home Page Content",
+      "credentials": {
+        "openAiApi": {
+          "id": "dUA9kUZ0VaMiADrq",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get Project Brief Information": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Imagery": {
+      "main": [
+        [
+          {
+            "node": "Parse Imagery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Colors": {
+      "main": [
+        [
+          {
+            "node": "Parse Colors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Fonts": {
+      "main": [
+        [
+          {
+            "node": "Parse Fonts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Course Tile Prompt": {
+      "main": [
+        [
+          {
+            "node": "Lesson Tile Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Project Brief Information",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Colors",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Fonts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Course/Lesson Titles": {
+      "main": [
+        []
+      ]
+    },
+    "Parse Imagery": {
+      "main": [
+        []
+      ]
+    },
+    "Parse Colors": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Parse Fonts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Course and Lesson",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Course and Lesson": {
+      "main": [
+        [
+          {
+            "node": "Parse Course Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Courses and Lessons": {
+      "main": [
+        [
+          {
+            "node": "Parse Generated Courses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lesson Tile Prompt": {
+      "main": [
+        [
+          {
+            "node": "Extract Course/Lesson Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Course Provided?": {
+      "main": [
+        [
+          {
+            "node": "Call 'Course Tile Builder'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Courses and Lessons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Course Details": {
+      "main": [
+        [
+          {
+            "node": "Course Provided?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Generated Courses": {
+      "main": [
+        [
+          {
+            "node": "Call 'Course Tile Builder'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Course Tile Builder'": {
+      "main": [
+        [
+          {
+            "node": "Call 'Modify Site Themes'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Modify Site Themes'": {
+      "main": [
+        [
+          {
+            "node": "Generate Home Page Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Webpage key Elements": {
+      "main": [
+        [
+          {
+            "node": "Upload Custom Page Slug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Custom Page Slug": {
+      "main": [
+        [
+          {
+            "node": "Prepare Elementor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Elementor Data": {
+      "main": [
+        [
+          {
+            "node": "Update Home Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Home Page Content": {
+      "main": [
+        [
+          {
+            "node": "Parse Webpage key Elements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "domain": "members.thefreedomway.online",
+          "founderEmail": "rielly@outsourcedoers.com",
+          "appPass": "REDACTED_APPPASS"
+        }
+      }
+    ]
+  },
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

@@ -1,0 +1,392 @@
+{
+  "name": "Add location",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/locations/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED_AUTHORIZATION"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        352
+      ],
+      "id": "1f68875b-5b3e-4880-b172-4c8ac094d2c4",
+      "name": "Get all Locations",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "locations",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        352
+      ],
+      "id": "a2965a09-8654-4703-a75e-1b7bcb4f9bba",
+      "name": "Split Out",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        928,
+        352
+      ],
+      "id": "aedc234f-4e6d-42c8-8e3f-a85b7b2c048e",
+      "name": "Loop Over Items",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bghc7sS_lZ2Op4_J7AWFubLg5WY-BKs4SXopttF5ZSw",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bghc7sS_lZ2Op4_J7AWFubLg5WY-BKs4SXopttF5ZSw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Location ID",
+              "lookupValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        448
+      ],
+      "id": "b09d1047-0534-48e4-b2d7-80ce7bcc52ce",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yRUYvvt44CdSekwx",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        192
+      ],
+      "id": "be94b49a-aa6d-4648-bb07-76ff1bcbb382",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "18846dd3-1909-4110-9b09-d120cb1e8996",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=Cold call",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "d45c6f05-426b-4195-8bbf-00756c10f429",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "test",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "f769b40c-5a4c-4e38-a8ac-0fdca0a4c167",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=Roofing rocket",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "31de90c1-bcba-4e90-ac1a-29b22550fba2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Template",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "9f8f4ff9-32b8-440d-877c-ae83c3d771b4",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Billing",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "bd4cb394-aba0-46eb-9602-81f9b965aaf6",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Gold Cube Marketing LLC",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "223e7c39-f99b-4c13-9edf-7c17014cf9fe",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Marketing Magi",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        352
+      ],
+      "id": "086210cf-777d-44cf-9127-8236860387ef",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        448
+      ],
+      "id": "3cf99847-3ce7-49d9-b1eb-e3fe61c354b3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ntCA9ymSayimj028",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ntCA9ymSayimj028",
+          "cachedResultName": "Add location name"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $json.data }}"
+          },
+          "matchingColumns": [
+            "name",
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        432
+      ],
+      "name": "Call My Sub-workflow",
+      "id": "b7367379-9fc6-45d0-b0b2-e0d06451323f"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get all Locations": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get all Locations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Call My Sub-workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call My Sub-workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "390a9a2e-8b56-4703-a241-48dcfeaf4933",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fce82b4b6a4d03b7a0b1863a4b13d4aafb912f17e3eb260af456542bc92983eb"
+  },
+  "id": "LagufZsB3mlBDJZ3",
+  "tags": []
+}

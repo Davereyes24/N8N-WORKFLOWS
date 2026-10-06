@@ -1,0 +1,416 @@
+{
+  "name": "reporting loop",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2672,
+        688
+      ],
+      "id": "a8be2967-0552-4e36-a6b2-de871c222370",
+      "name": "Wait",
+      "webhookId": "3b3eb393-ed0d-4dc0-b1ed-b994f6d611dd",
+      "alwaysOutputData": true,
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        608
+      ],
+      "id": "70341f7c-7a90-4779-92fb-66d38765875a",
+      "name": "Loop Over Items",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        608
+      ],
+      "id": "b2dd45fe-2bc7-4db3-a94f-6c9e6161b5d1",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aEHcdN4cgxcKEXRn",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aEHcdN4cgxcKEXRn",
+          "cachedResultName": "Add leads to sheet"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $json.data }}",
+            "name ": "={{ $('Start').item.json.Location }}",
+            "stages": "={{ $('Loop Over Items').item.json['Pipeline  stages'] }}",
+            "token": "=REDACTED_SECRET",
+            "location": "={{ $('Start').item.json.locationId }}"
+          },
+          "matchingColumns": [
+            "stage_name_result",
+            "dateAdded",
+            "firstName",
+            "lastName",
+            "phone",
+            "id",
+            "locationId",
+            "tags"
+          ],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name ",
+              "displayName": "name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "stages",
+              "displayName": "stages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        608
+      ],
+      "name": "Call Add leads to sheet",
+      "id": "13ba7e63-531f-438f-9284-630af724ae9a"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "access_token"
+            },
+            {
+              "name": "locationId"
+            },
+            {
+              "name": "Location"
+            },
+            {
+              "name": "Pipeline name"
+            },
+            {
+              "name": "Pipeline ID"
+            },
+            {
+              "name": "Pipeline  stages"
+            }
+          ]
+        }
+      },
+      "id": "4f52d4d0-eedf-4d4b-9d21-0b645b0d5286",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        1104,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6220ee0f-24b9-47f7-8085-c23952ef9134",
+              "name": "done",
+              "value": "done",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        416
+      ],
+      "id": "69e9cebf-b0b1-42dd-b481-4cd959f4172a",
+      "name": "Edit Fields",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/opportunities/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer REDACTED_AUTHORIZATION"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('Start').item.json.locationId }}\",\n  \"page\": {{ $json.Tranches }},\n  \"limit\": 100,\n  \"filters\": [\n    {\n      \"field\": \"pipeline_id\",\n      \"operator\": \"eq\",\n      \"value\": \"{{ $('Start').item.json['Pipeline ID'] }}\"\n    }\n  ],\n  \"sort\": [\n    {\n      \"field\": \"date_added\",\n      \"direction\": \"desc\"\n    }\n  ],\n  \"additionalDetails\": {\n    \"notes\": true,\n    \"tasks\": true,\n    \"calendarEvents\": false\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1776,
+        608
+      ],
+      "id": "3c909c08-1662-47d3-8a2a-f1853b9c2891",
+      "name": "Get opportunities"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "opportunities",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        608
+      ],
+      "id": "a2443940-ce4f-4a94-9706-60ba6044f6dd",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TVogo_07yWyb5QOOCn9IHBAGCN3B-NSNAvs3X_3VM00",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TVogo_07yWyb5QOOCn9IHBAGCN3B-NSNAvs3X_3VM00/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1552,
+        608
+      ],
+      "id": "c873f766-197d-4bbc-8cf2-60f11bb22b41",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yRUYvvt44CdSekwx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "access_token": "REDACTED_ACCESS_TOKEN",
+          "locationId": "LWnIj3wAYEIXcM2UhHQ9",
+          "Location": " Five Star Roofing and Property Services",
+          "Pipeline name": "Facebook Ads",
+          "Pipeline ID": "B46faBc0TYvmYxQqcMD7",
+          "Pipeline  stages": "[{\"id\":\"7013d33a-9896-4871-b530-3e06c39d1973\",\"name\":\"Form Submitted🧍\",\"originId\":\"NzVlYWViM2ItN2QyNy00ZmU1LTk2NjEtOTAxNDM2MDUxNzNm\",\"position\":0,\"showInFunnel\":true,\"showInPieChart\":true},{\"id\":\"a9c084d3-e72e-4429-8e19-78cf5f4f2c3c\",\"name\":\"Hot Lead 🔥\",\"originId\":\"NDJkMWFiYmUtOWZmOS00NTliLTlmODQtNTI0ODBlMzE0OGI1\",\"position\":1,\"showInFunnel\":true,\"showInPieChart\":true},{\"id\":\"d07ba929-ce19-4f7c-9832-a7f50dc14971\",\"name\":\"Not Interested 📉\",\"originId\":\"YjU4MDdlMTUtNzNlMS00YjQ2LWI3NGEtNzEwMDBmODFhYjZi\",\"position\":2,\"showInFunnel\":true,\"showInPieChart\":true},{\"id\":\"92a68a59-1c06-4baf-a80a-21e296f67609\",\"name\":\"Booked 💸\",\"originId\":\"MDcwZDNhMjItZDNkYS00NWM5LTk0ZWMtOWEwZmI5MjEwZjJm\",\"position\":3,\"showInFunnel\":true,\"showInPieChart\":true}]"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Call Add leads to sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Add leads to sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get opportunities": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get opportunities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "1acb40a6-7519-40e8-b41f-6619c81af204",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fce82b4b6a4d03b7a0b1863a4b13d4aafb912f17e3eb260af456542bc92983eb"
+  },
+  "id": "iHEfmXcMMzgbmqM7",
+  "tags": []
+}
